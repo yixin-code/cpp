@@ -1,5 +1,19 @@
 # 语言基础
 ## c和c++区别
+### 命名空间
+```cpp
+    #include <iostream>
+    namespace yixin
+    {
+        int num;
+        namespace yixin2 // 可以嵌套
+        {
+            int num;
+        }
+    }
+    yixin::num = 11;
+    yixin::yixin2::num = 22;
+```
 ## 指针 引用 数组 内存
 ## 输入输出
 ## 继承
