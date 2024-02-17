@@ -1,3 +1,33 @@
+# GDB
+## 下一步
+* n 不进入函数
+* s 进入函数
+## 继续执行
+* c
+## 打印信息
+* p num
+* ptype num 显示类型
+## 查看内存中的值
+* x/16xw 0x01 查看以0x01开始，16个单元每个单元4字节
+    * x 16进制，d 10进制，u 无符号，t2进制
+    * b 1字节，h 2字节，w 4字节，g 8字节
+## 查看反汇编
+* disassemble /m 地址或函数名
+## 设置变量值
+* set var num=11
+* set args aaa 设置命令行参数
+## 段错误 调试core文件
+* 查看用户资源限定
+    * umilit -a
+    * 设置无限制
+        * umilit -c unlimited 
+    * 调试
+        * gdb core文件名
+        * 查看函数调用栈
+            * bt 
+## 调试正在运行的程序
+    * ps -ef | grep ./a.out
+    * gdb ./a.out -p 进程编号
 # c语言
 ## 常量
 * 整型 1 2 3
