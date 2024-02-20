@@ -1,7 +1,6 @@
 TARGET=a.out
 
-TEMP=./输入输出/cin/统计输出次数.cpp
-# TEMP=./test/29.cpp
+TEMP=./语言基础/宏/宏函数.cpp
 
 # 将.c替换成.o
 SRC=$(patsubst %.cpp, %.o, $(TEMP))
