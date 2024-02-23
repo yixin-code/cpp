@@ -1,6 +1,6 @@
 TARGET=a.out
 
-TEMP=./语言基础/宏/宏函数.cpp
+TEMP=./c语言/输入输出/scanf2.cpp
 
 # 将.c替换成.o
 SRC=$(patsubst %.cpp, %.o, $(TEMP))

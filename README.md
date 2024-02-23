@@ -30,7 +30,8 @@
     std::cout << num << "\n"; // 4 * 4 + 11 = 27
     print(); // hello world
 ```
-## 格式化输出
+## 输入输出
+### printf格式化输出
 * %d：输出十进制整数。 
 * %f：输出浮点数。 
 * %c：输出字符。 
@@ -42,6 +43,22 @@
 * %g：根据实际情况选择%f或%e格式输出浮点数。
 * printf("%05.3f\n");
     * 宽度为5 填充0 显示点后3位小数
+### scanf匹配
+* [当scanf中有空白字符时，可以匹配0个或多个](./语言基础/输入输出/scanf.cpp)
+```cpp
+    // 输入 num    =   11  ,  num2   =   22
+    // num2会匹配失败','前没有空格所以无法匹配后续
+    scanf("num   = %d, num2 =   %d", &num, &num2);
+    printf("num = %d, num2 = %d\n", num, num2);
+```
+* [数值匹配时会忽略数值前面的空白字符](./c语言/输入输出/scanf2.cpp)
+```cpp
+    // 输入:    11    22     33
+    scanf("%d%d%d", &num, &num2, &num3);
+    printf("num = %d, num2 = %d, num3 = %d\n", num, num2, num3);
+```
+### scanf输入返回值
+* 返回成功匹配的次数
 ## sscanf 通配符
 * 格式化从字符串中输入
 * %*s或%*d 跳过数据
