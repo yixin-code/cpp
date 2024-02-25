@@ -8,6 +8,7 @@
     * 生成目标文件
 * 连接
     * 连接库 系统引导 生成可执行程序
+## ![内存分区](./资源/内存分区.png)
 ## 常量
 * 整型 1 2 3
 * 浮点型 1.1 2.2 3.3
@@ -37,7 +38,8 @@
 * %c：输出字符。 
 * %s：输出字符串。 
 * %p：输出指针地址。 
-* %x：输出十六进制整数。 
+* %x：输出十六进制整数。0x开头 
+* %o：输出八进制整数。0开头
 * %u：输出无符号十进制整数。 
 * %e：输出科学计数法表示的浮点数。 
 * %g：根据实际情况选择%f或%e格式输出浮点数。
@@ -57,8 +59,30 @@
     scanf("%d%d%d", &num, &num2, &num3);
     printf("num = %d, num2 = %d, num3 = %d\n", num, num2, num3);
 ```
+* [%c不会忽略前面的空白字符](./c语言/输入输出/scanf3.cpp)
+```cpp
+    char ch = 0;
+
+    scanf("%c", &ch); // 输入：   a
+    printf("[%c]", ch); // [ ]
+
+    while(getchar() != '\n');
+
+    // 空白字符可以匹配0个或多个
+    scanf(" %c", &ch); // 输入：   a
+    printf("[%c]", ch); // [a]
+```
 ### scanf输入返回值
 * 返回成功匹配的次数
+### 读写字符getchar/putchar
+```cpp
+    char ch = getchar();
+    putchar(ch);
+```
+#### 舍弃剩余字符
+```cpp
+    while (getchar() != '\,');
+```
 ## sscanf 通配符
 * 格式化从字符串中输入
 * %*s或%*d 跳过数据
@@ -79,8 +103,20 @@
 * float 有效位 6-7
 * double 有效位 15-16
 * long double 有效位 18-19
-# 内存分区
-![内存分区](./资源/内存分区.png)
+## ascii码: A 65, a 97, space 32
+## 字符控制 c中需要加头文件ctype.h c++中无需加头文件
+* 转大写 toupper(int)
+* 转小写 tolower(int)
+* 是否为数字 isdigit(int)
+* 是否为字母 isalpha(int)
+* 是否为字母或数字 isalnum(int)
+* 是否为大写字母 isupper(int)
+* 是否为小写字母 islower(int)
+* 是否是空白字符 isspace(int)
+## bool类型 stdbool.h
+```cpp
+    printf("sizeof(bool): %ld\n", sizeof(bool)); // 1    
+```
 ---
 ---
 ---
