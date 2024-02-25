@@ -117,6 +117,10 @@
 ```cpp
     printf("sizeof(bool): %ld\n", sizeof(bool)); // 1    
 ```
+## 隐式类型转换
+* short, char 运算会隐式转换成int(计算机在运算int类型数据最快)
+* 有符号, 无符号 运算会隐式转换成 无符号(有无符号不要一起进行运算)
+    > char -> short -> int -> long -> long long -> float -> double
 ---
 ---
 ---
