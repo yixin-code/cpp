@@ -118,9 +118,24 @@
     printf("sizeof(bool): %ld\n", sizeof(bool)); // 1    
 ```
 ## 隐式类型转换
-* short, char 运算会隐式转换成int(计算机在运算int类型数据最快)
-* 有符号, 无符号 运算会隐式转换成 无符号(有无符号不要一起进行运算)
-    > char -> short -> int -> long -> long long -> float -> double
+> char -> short -> int -> long -> long long -> float -> double
+* short, char 运算会隐式转换成int
+    > 计算机在运算int类型数据最快
+    > int 运算注意 int 越界
+* 有符号, 无符号 运算会隐式转换成 无符号
+    > 有无符号不要一起进行运算
+## typedef
+* 基础类型
+    * typedef int_type int
+* 数组
+    * typedef int arr_type[11];
+* 函数指针
+    * typedef void (*p_func_type)();
+## sizeof 编译时期确定 得到的结果是一个常量表达式
+## 运算符
+### 算术运算符
+* 取模运算不能用于浮点数
+    * a % b 符号和a相同
 ---
 ---
 ---
