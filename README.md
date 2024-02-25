@@ -132,6 +132,11 @@
 > 1111 1101, -3 源码 1000 0011
 > 1111 1111, 补码
 > 0000 0001, 源码
+---
+---
+---
+---
+---
 # GDB
 ## 下一步
 * n 不进入函数
@@ -162,3 +167,24 @@
 ## 调试正在运行的程序
     * ps -ef | grep ./a.out
     * gdb ./a.out -p 进程编号
+---
+---
+---
+---
+---
+# 软件
+## 微信
+* yay -Sy wechat-uos
+## QQ
+* yay -Sy linuxqq
+## vscode
+* yay -Sy visual-studio-code-bin
+## lazygit
+* yay -Sy lazygit
+## onlyoffice 办公
+* yay -Sy onlyoffice-bin
+## warpd 键盘控制鼠标
+* yay -Sy warpd
+    > super + meat + x
+    > v 选中拖拽
+## virtualbox 虚拟机
