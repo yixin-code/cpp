@@ -224,3 +224,10 @@
     > super + meat + x
     > v 选中拖拽
 ## virtualbox 虚拟机
+* sudo pacman -S virtualbox virtualbox-guest-iso
+* sudo gpasswd -a yixin vboxusers
+* sudo systemctl enable vboxweb.service
+* yay -S rdesktop
+* sudo systemctl enable vboxweb.service
+* sudo systemctl start vboxweb.service
+* sudo /sbin/rcvboxdrv setup
