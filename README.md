@@ -168,6 +168,18 @@
 > 1111 1101, -3 源码 1000 0011
 > 1111 1111, 补码
 > 0000 0001, 源码
+## linux目录作用
+* usr 用户安装的软件、库文件、头文件等资源
+    * bin 用户安装的可执行文件
+    * sbin 用户安装的系统管理工具和系统服务的可执行文件
+    * lib 用户安装的库文件
+    * include 存放头文件
+    * share 程序资源文件，文档 帮助文件 等
+    * local 用户安装的软件
+## linux命令
+### 压缩解压缩
+* 压缩 tar -czvf xxx.tar.gz file1 file2
+* 解压缩 tar -xzvf xxx.tar.gz
 ---
 ---
 ---
@@ -212,7 +224,44 @@
 * web服务器，反向代理，负载均衡，邮件代理等
 * 轻量级服务器，运行是系统资源消耗少
 * 并发处理百万级TCP连接，稳定，热部署(运行时可升级)，高度模块化设计(每个模块间耦合性很低)，开源可以开发模块
-## epoll高并发，只需要占用更多内存
+* nginx采用epoll技术高并发，只需要占用更多内存
+    * 其中包含：内存池，线程池，进程池，事件驱动等等
+## nignx环境搭建
+* 需要的库
+    * pcre库：解析正则表达式
+    * zlib库：压缩解压缩
+    * openssl库：ssl功能，网站加密通讯
+    * 官网 www.nignx.org
+        * mainline 主线版 更新快稳定性略差
+        * stable 稳定版
+        * legacy 往期版
+    * wget 连接
+### 编译安装
+* 执行 ./configure
+    * 生成中间文件 objs 其中 ngx_modules.c 包含哪些模块会编译到nginx中
+* 执行 make 编译
+* 执行 sudo make install 安装
+### 源码目录
+* auto 编译相关脚本
+    * cc 检查编译器脚本
+    * lib 检查依赖库脚本
+    * os 检查操作系统脚本
+    * type 检查平台类型脚本
+* CHANGES 修复功能说明
+* conf 默认配置文件
+* configure 执行生产中间文件
+* contrib 脚本工具，vi语法高亮
+* html 欢迎 错误 的html页面
+* man 帮助文件
+* src 源码目录
+    * core 核心代码
+    * event 事件模块相关代码
+    * http web服务相关代码
+    * mail 邮件模块相关代码
+    * os 操作系统模块相关代码
+    * stream 流处理模块相关代码
+## 使用
+* 可执行程序在 /usr/local/nginx/sbin/nginx
 ---
 ---
 ---
