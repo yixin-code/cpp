@@ -262,6 +262,16 @@
     * stream 流处理模块相关代码
 ## 使用
 * 可执行程序在 /usr/local/nginx/sbin/nginx
+### nginx整体结构
+* 一个 master 进程，一个到多个 worker 进程(为master进程的子进程)
+    * master 监控进程
+    * worker 工作进程
+* master和worker之间通讯可以使用信号 共享内存
+    * worker 如果挂掉 master 会立刻 fork() 一个新的 worker
+* worker 需要几个
+    * 多核情况下，将每个worker配置在单独内核上，最大程度减少cup进程切换成本
+        * lscpu 查看cpu
+            * therads 2 和 cores 6 相乘
 ---
 ---
 ---
