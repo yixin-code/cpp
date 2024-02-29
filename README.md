@@ -167,7 +167,56 @@
     i = i + 1;      i = i + 1;
 ```
 ### 关系运算符 > < 从左向右
-### 逻辑运算符 &&(优先级高于或) || 会发生短路现象 从左到右
+### 逻辑运算符 &&(优先级高于||) || 会发生短路现象 从左到右
+### 位运算
+#### 左移 右移 << >>
+* i << j 左移 低位补0
+* i >> j 右移 高位补符号位
+#### 与 & 置1
+```cpp
+    // 一个数为奇偶数
+    bool is_odd(int num) {
+        return num & 0x1;
+    }
+```
+```cpp
+    // 一个数是否为2的幂
+        // 2的幂只有一位为1
+        // 1000 0000
+        // &
+        // 0111 1111
+        // 0000 0000
+    bool is_power_of_two(int num) {
+        return (num & (num - 1)) == 0;
+    }
+```
+```cpp
+    // 权重最低的位的值
+        // 正负数二进制表示只有权重最低位相同
+        // 0101 1000
+        // &
+        // 1010 1000
+        // 0000 1000
+    int weight_lowest_order(int num) {
+        return num & (-num);
+    }
+```
+#### 异或 ^ 相同数字异或为0
+```cpp
+    // 找出数组中为一不成对的数字
+    int find_single(const std::vector<int>& vec) {
+        int num = 0;
+        for (const auto& val : vec) {
+            num ^= vec[i];
+        }
+        return num;
+    }
+```
+---
+---
+---
+---
+---
 ---
 ---
 ---
@@ -195,6 +244,11 @@
 ### 压缩解压缩
 * 压缩 tar -czvf xxx.tar.gz file1 file2
 * 解压缩 tar -xzvf xxx.tar.gz
+---
+---
+---
+---
+---
 ---
 ---
 ---
@@ -230,6 +284,11 @@
 ## 调试正在运行的程序
     * ps -ef | grep ./a.out
     * gdb ./a.out -p 进程编号
+---
+---
+---
+---
+---
 ---
 ---
 ---
@@ -292,6 +351,11 @@
 ---
 ---
 ---
+---
+---
+---
+---
+---
 # 软件
 ## 微信
 * yay -Sy wechat-uos
@@ -301,12 +365,17 @@
 * yay -Sy visual-studio-code-bin
 ## lazygit
 * yay -Sy lazygit
+    * ssh-keygen -t rsa
 ## onlyoffice 办公
 * yay -Sy onlyoffice-bin
 ## warpd 键盘控制鼠标
 * yay -Sy warpd
     > super + meat + x
     > v 选中拖拽
+## 文件搜索
+* sudo pacman -S fzf
+## 文本搜索
+* sudo pacman -S the_silver_searcher
 ## virtualbox 虚拟机
 * sudo pacman -S virtualbox virtualbox-guest-iso
 * sudo gpasswd -a yixin vboxusers
