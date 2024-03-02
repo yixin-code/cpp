@@ -1,4 +1,4 @@
-# c语言
+# c语言 c++
 ## 编译步骤
 * 预处理
     * 生成预处理文件
@@ -210,6 +210,56 @@
             num ^= vec[i];
         }
         return num;
+    }
+```
+## 控制语句
+### switch 语句
+```cpp
+    switch (整型 字符型) {
+        case 常量表达式: {
+            statement
+            break;
+        }
+        // 多个 case 可以共用一条语句
+        case 常量表达式: case 常量表达式2: case 常量表达式3: {
+            statement
+            break;
+        }
+        default: {
+            statement
+            break;
+        }
+    }
+```
+#### switch和if else
+* switch可读性、效率都高于if else
+### 三目运算符 从右向左结合
+```cpp
+    int i = 1, j = 2, k = 0;
+    k = i > j ? ++i : ++j;
+    i : 1, j : 3, k : 3
+```
+### goto不能跨函数 不能跳过定义
+### 数组
+* 数组下标从0开始
+    * 数组地址即是首元素地址，如果从1开始会浪费空间，或增加计算量(-1)
+* arr[i] == *(arr + i)
+```cpp
+    // 数组元素不能发生改变
+    const int arr[3] {1, 2, 3};
+    arr[0] = 11; // error
+```
+#### 多维数组
+```cpp
+    // 3组 组元素为 int[4]
+    int arr[3][4] {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}};
+```
+## 随机数
+```cpp
+    #include <ctime>
+    srand((unsigned)time(nullpter));
+    for (int i = 0; i < 11; ++i) {
+        int num = rand() % 10 + 1; // 1 - 10
     }
 ```
 ---
