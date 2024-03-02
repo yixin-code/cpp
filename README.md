@@ -240,7 +240,7 @@
     i : 1, j : 3, k : 3
 ```
 ### goto不能跨函数 不能跳过定义
-### 数组
+## 数组
 * 数组下标从0开始
     * 数组地址即是首元素地址，如果从1开始会浪费空间，或增加计算量(-1)
 * arr[i] == *(arr + i)
@@ -249,7 +249,7 @@
     const int arr[3] {1, 2, 3};
     arr[0] = 11; // error
 ```
-#### 多维数组
+### 多维数组
 ```cpp
     // 3组 组元素为 int[4]
     int arr[3][4] {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}};
@@ -294,6 +294,11 @@
 ### 压缩解压缩
 * 压缩 tar -czvf xxx.tar.gz file1 file2
 * 解压缩 tar -xzvf xxx.tar.gz
+### 查看
+#### 查看cpu
+* lscpu
+#### 查看硬盘存储
+* du -h
 ---
 ---
 ---
@@ -345,26 +350,10 @@
 ---
 ---
 # nginx
+## 概念
 * web服务器，反向代理，负载均衡，邮件代理等
 * 轻量级服务器，运行是系统资源消耗少
 * 并发处理百万级TCP连接，稳定，热部署(运行时可升级)，高度模块化设计(每个模块间耦合性很低)，开源可以开发模块
-* nginx采用epoll技术高并发，只需要占用更多内存
-    * 其中包含：内存池，线程池，进程池，事件驱动等等
-## nignx环境搭建
-* 需要的库
-    * pcre库：解析正则表达式
-    * zlib库：压缩解压缩
-    * openssl库：ssl功能，网站加密通讯
-    * 官网 www.nignx.org
-        * mainline 主线版 更新快稳定性略差
-        * stable 稳定版
-        * legacy 往期版
-    * wget 连接
-### 编译安装
-* 执行 ./configure
-    * 生成中间文件 objs 其中 ngx_modules.c 包含哪些模块会编译到nginx中
-* 执行 make 编译
-* 执行 sudo make install 安装
 ### 源码目录
 * auto 编译相关脚本
     * cc 检查编译器脚本
@@ -384,9 +373,9 @@
     * mail 邮件模块相关代码
     * os 操作系统模块相关代码
     * stream 流处理模块相关代码
-## 使用
-* 可执行程序在 /usr/local/nginx/sbin/nginx
 ### nginx整体结构
+* nginx采用epoll技术高并发，只需要占用更多内存
+    * 其中包含：内存池，线程池，进程池，事件驱动等等
 * 一个 master 进程，一个到多个 worker 进程(为master进程的子进程)
     * master 监控进程
     * worker 工作进程
@@ -396,6 +385,31 @@
     * 多核情况下，将每个worker配置在单独内核上，最大程度减少cup进程切换成本
         * lscpu 查看cpu
             * therads 2 和 cores 6 相乘
+## nignx环境搭建
+* 需要的库
+    * pcre库：解析正则表达式
+    * zlib库：压缩解压缩
+    * openssl库：ssl功能，网站加密通讯
+    * 官网 www.nignx.org
+        * mainline 主线版 更新快稳定性略差
+        * stable 稳定版
+        * legacy 往期版
+    * wget 连接
+### 编译安装
+* 执行 ./configure
+    * 生成中间文件 objs 其中 ngx_modules.c 包含哪些模块会编译到nginx中
+* 执行 make 编译
+* 执行 sudo make install 安装
+## 使用
+* 可执行程序在 /usr/local/nginx/sbin/nginx
+    * kill -9 workerid 杀死一个进程master进程会再次新建一个worker进程
+* 热重载配置文件 sudo nginx -s reload
+    * sudo nginx -s stop 立刻退出
+    * sudo nginx -s quit 等待当前服务执行完毕退出
+    * sudo nginx -s reopen 重新打开
+### 配置worker数量
+* sudo vi /usr/local/nginx/conf/nginx.conf
+    * worker_processes 数量 设置成cpu核心数量(lscpu查看therads和cores相乘)
 ---
 ---
 ---
