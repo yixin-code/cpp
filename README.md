@@ -120,6 +120,14 @@
 * float 有效位 6-7
 * double 有效位 15-16
 * long double 有效位 18-19
+### 浮点数判断
+```cpp
+    // 用需要的精度来做判断
+    float f = 1.234f;
+    if ((f - 1.234) < 0.001 && (f - 1.234) > 0.001) {
+        statement
+    }
+```
 ## ascii码: A 65, a 97, space 32
 ## 字符控制 c中需要加头文件ctype.h c++中无需加头文件
 * 转大写 toupper(int)
@@ -135,6 +143,7 @@
     printf("sizeof(bool): %ld\n", sizeof(bool)); // 1    
 ```
 ## 隐式类型转换
+> 整型默认int 浮点型double
 > char -> short -> int -> long -> long long -> float -> double
 * short, char 运算会隐式转换成int
     > 计算机在运算int类型数据最快
@@ -154,6 +163,7 @@
 * 取模运算不能用于浮点数
     * a % b 符号和a相同
 ### 赋值运算符可能会发生隐式类型转换
+* 整型默认int 浮点型double
 ### 自增自减运算符
 ```cpp
     // 都是未定义行为
