@@ -438,6 +438,9 @@
     * pgid 进程组id
 * ps -eo pid,ppid,sid,pgid,cmd | grep -E 'PID|a.out|fish'
     * o 指定输出选项
+### 后台执行./a.out &, fg变为前台
+### 创建新会话使其变为新的组长
+* setsid ./a.out
 ## 会话(session)
 * 一个或多个进程组的集合
 * 一般情况下，一个shell中的所有进程都是属于一个会话的。
