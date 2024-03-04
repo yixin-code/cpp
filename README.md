@@ -438,7 +438,7 @@
     * pgid 进程组id
 * ps -eo pid,ppid,sid,pgid,cmd | grep -E 'PID|a.out|fish'
     * o 指定输出选项
-### 后台执行./a.out &, fg变为前台
+### 后台执行./a.out &, 变为前台fg
 ### 创建新会话使其变为新的组长
 * setsid ./a.out
 ## 会话(session)
