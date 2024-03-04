@@ -1,6 +1,6 @@
 TARGET=a.out
 
-TEMP=./c语言/输入输出/scanf3.cpp
+TEMP=./linux/linux系统编程/进程/新建会话.cpp
 
 # 将.c替换成.o
 SRC=$(patsubst %.cpp, %.o, $(TEMP))

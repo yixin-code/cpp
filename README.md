@@ -289,6 +289,118 @@
     sleep(1); // 秒
     usleep(1); // 微秒
 ```
+## 信号
+### 常用信号
+|信号名|信号值|默认处理动作|发出信号原因|
+|-----|-----|----------|----------|
+|SIGHUP|1|终止当前shell中的进程|关闭终端|
+|SIGINT|2|终止程序|按下ctrl+c|
+|SIGKILL|9|终止程序，不能捕获忽略|强制杀死程序|
+|SIGSEGV|11|段错误，不能捕获忽略|无效内存引用（数组越界，错误指针操作）|
+|SIGALRM|14|终止程序|闹钟信号alarm|
+|SIGTERM|15|终止程序|杀死程序 kill 编号 killall 进程名|
+|SIGCHLD|17|忽略不做处理|子进程结束信号|
+### 信号处理
+* 信号处理采用系统的默认操作，大部分信号默认操作都是终止进程
+```cpp
+    #include <signal.h>
+    signal(信号, SIG_DFL); // 信号默认处理，可处理后恢复默认
+```
+* 设置中断处理函数，收到信号由函数处理
+```cpp
+    #include <signal.h>
+    void func(int sig) { // 必须带参
+        std::cout << "signal num: " << num << "\n";
+        signal(num, SIG_DFL); // 处理后，可以恢复信号默认操作
+    }
+    int main() {
+        signal(信号, func);    // 信号由函数处理
+    }
+```
+* 忽略某个信号，对该信号不做任何处理
+```cpp
+    #include <signal.h>
+    signal(信号, SIG_IGN); // 信号忽略
+```
+### 孤儿进程(父进程终止，由init进程接管的进程)
+* [忽略sighub信号可以在终端关闭后，进程可以继续执行(孤儿进程)](./linux/linux系统编程/信号/孤儿进程.cpp)
+```cpp
+    #include <signal.h>
+    int main() {
+        signal(SIGHUP, SIG_IGN); // 忽略sighub信号
+        while (true) {
+            std::cout << "sleep\n";
+            sleep(1); // 秒
+        }
+        std::cout << "main end\n";
+        return 0;
+    }
+```
+### 闹钟信号(定时任务)
+* [定时任务](./linux/linux系统编程/信号/闹钟.cpp)
+```cpp
+    #include <unistd.h>
+    #include <signal.h>
+    void alarm_func(int sig) {
+        std::cout << "收到信号: " << sig << ", 执行定时任务\n";
+        alarm(3); // 之后每3秒执行一次，并不是递归
+    }
+    int main() {
+        signal(SIGALRM, alarm_func);
+        alarm(3); // 3秒后执行
+        while (true) {
+            std::cout << "等待中...\n";
+            sleep(1);
+        }
+        return 0;
+    }
+```
+## 进程
+### 会话 session
+#### [新建会话，并成为进程组组长(可以在关闭终端后进程仍能继续执行)](./linux/linux系统编程/进程/新建会话.cpp)
+```cpp
+    #include <unistd.h>
+    int main() {
+        pid_t pid = fork(); // 创建子进程
+        if (pid < 0) {
+            perror("11, fork error");
+        }
+        else if (pid > 0) {
+            while (true) {
+                std::cout << getpid() << " -- " << getpgid(0) << ", father wait...\n";
+                sleep(1);
+            }
+        }
+        else if (pid == 0) {
+            setsid(); // 新建会话，并成为进程组组长
+            while (true) {
+                std::cout << getpid() << " -- " << getpgid(0) << ", son wait...\n";
+                sleep(1);
+            }
+        }
+        std::cout << "main end" << std::endl;
+        return 0;
+    }
+```
+* ps -eo pid,ppid,sid,pgid,cmd | grep -E 'PID|a.out|fish'
+    * o 指定输出选项
+* 组长进程调用setsid() 无效，pid==pgid 就是组长
+    * setsid 创建一个新的会话，并成为新会话的组长
+        * 进程已经是组长进程。会返回错误，不会创建新会话。
+    * 可以在子进程调用 setsid 之前，使用 setpgid 将子进程的进程组 ID 设置为其父进程的进程组 ID。
+```cpp
+    setpgid(0, getpgid(getppid())); // 0该进程pid
+```
+---
+---
+---
+---
+---
+---
+---
+---
+---
+---
 # 计算机
 ## 补码
 * 十进制补码存储源码显示
@@ -319,10 +431,21 @@
 * lscpu
 #### 查看硬盘存储
 * du -h
+#### 查看进程
+* ps -ef 查看所有进程
+* ps -ef | grep $(环境变量当前shell的pid)查看当前shell中的所有进程
+    * sid 会话id
+    * pgid 进程组id
+* ps -eo pid,ppid,sid,pgid,cmd | grep -E 'PID|a.out|fish'
+    * o 指定输出选项
 ## 会话(session)
 * 一个或多个进程组的集合
 * 一般情况下，一个shell中的所有进程都是属于一个会话的。
     * shell 是 session leader。可以调用系统函数创建新的会话(session)
+    * 终端断开，会给session leader发送SIGHUP信号(默认终止进程)
+        * 终止session下的所有进程
+* sid 会话id session id
+![session leader](./资源/session_leader.png)
 ### 进程组(process group)
 * 一个或多个进程的集合
     * 每个进程组有唯一的进程组ID
