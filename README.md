@@ -16,7 +16,8 @@
 * 字符串型 "a" "b" "c"
 ### 常量表达式
 * 编译期间可以直接求值的表达式
-### [宏函数](./语言基础/宏/宏函数.cpp)
+### 宏函数
+* [宏函数](./语言基础/宏/宏函数.cpp)
 * 提高效率，普通函数调用会造成额外开销
 ```cpp
     #define func(x) ((x) * (x) + 11)
@@ -90,7 +91,8 @@
 * %[a-z] 匹配a到z
 * %[^a-z] 不匹配a到z
 * 条件必须逐一匹配否则直接退出
-## [整形运算默认是int](./c语言/基础类型/整型运算.cpp)
+## 整形运算默认是int
+* [整形运算默认是int](./c语言/基础类型/整型运算.cpp)
 ```cpp
     // 0000 0000 0000 0000 0000 0000 1001 1001
     // 000 0000 0000 0000 0000 0000 1001 1001 0
@@ -289,38 +291,24 @@
     sleep(1); // 秒
     usleep(1); // 微秒
 ```
-## 信号
-### 常用信号
-|信号名|信号值|默认处理动作|发出信号原因|
-|-----|-----|----------|----------|
-|SIGHUP|1|终止当前shell中的进程|关闭终端|
-|SIGINT|2|终止程序|按下ctrl+c|
-|SIGKILL|9|终止程序，不能捕获忽略|强制杀死程序|
-|SIGSEGV|11|段错误，不能捕获忽略|无效内存引用（数组越界，错误指针操作）|
-|SIGALRM|14|终止程序|闹钟信号alarm|
-|SIGTERM|15|终止程序|杀死程序 kill 编号 killall 进程名|
-|SIGCHLD|17|忽略不做处理|子进程结束信号|
-### 信号处理
-* 信号处理采用系统的默认操作，大部分信号默认操作都是终止进程
+## 进程
+### 创建子进程
+* [创建子进程](./linux/linux系统编程/进程/创建子进程.cpp)
 ```cpp
+    #include <iostream>
+    #include <unistd.h>
     #include <signal.h>
-    signal(信号, SIG_DFL); // 信号默认处理，可处理后恢复默认
-```
-* 设置中断处理函数，收到信号由函数处理
-```cpp
-    #include <signal.h>
-    void func(int sig) { // 必须带参
-        std::cout << "signal num: " << num << "\n";
-        signal(num, SIG_DFL); // 处理后，可以恢复信号默认操作
+    pid_t pid;
+    pid = fork();
+    // 失败返回一个负数，等于0子进程pid，大于0为父进程
+    if (pid < 0) {
+        exit(1);
+    } else if (pid == 0) { // 子进程
+        std::cout << "son process pid: " << getpid() << ", ppid: " << getppid() << "\n";
+    } else { // 父进程
+        std::cout << "father process pid: " << getpid() << ", son pid: " << pid << "\n";
+        sleep(1);
     }
-    int main() {
-        signal(信号, func);    // 信号由函数处理
-    }
-```
-* 忽略某个信号，对该信号不做任何处理
-```cpp
-    #include <signal.h>
-    signal(信号, SIG_IGN); // 信号忽略
 ```
 ### 孤儿进程(父进程终止，由init进程接管的进程)
 * [忽略sighub信号可以在终端关闭后，进程可以继续执行(孤儿进程)](./linux/linux系统编程/信号/孤儿进程.cpp)
@@ -336,28 +324,9 @@
         return 0;
     }
 ```
-### 闹钟信号(定时任务)
-* [定时任务](./linux/linux系统编程/信号/闹钟.cpp)
-```cpp
-    #include <unistd.h>
-    #include <signal.h>
-    void alarm_func(int sig) {
-        std::cout << "收到信号: " << sig << ", 执行定时任务\n";
-        alarm(3); // 之后每3秒执行一次，并不是递归
-    }
-    int main() {
-        signal(SIGALRM, alarm_func);
-        alarm(3); // 3秒后执行
-        while (true) {
-            std::cout << "等待中...\n";
-            sleep(1);
-        }
-        return 0;
-    }
-```
-## 进程
 ### 会话 session
-#### [新建会话，并成为进程组组长(可以在关闭终端后进程仍能继续执行)](./linux/linux系统编程/进程/新建会话.cpp)
+#### 新建会话，并成为进程组组长(可以在关闭终端后进程仍能继续执行)
+* [新建会话，并成为进程组组长(可以在关闭终端后进程仍能继续执行)](./linux/linux系统编程/进程/新建会话.cpp)
 ```cpp
     #include <unistd.h>
     int main() {
@@ -390,6 +359,85 @@
     * 可以在子进程调用 setsid 之前，使用 setpgid 将子进程的进程组 ID 设置为其父进程的进程组 ID。
 ```cpp
     setpgid(0, getpgid(getppid())); // 0该进程pid
+```
+## 信号
+### 常用信号
+|信号名|信号值|默认处理动作|发出信号原因|
+|-----|-----|----------|----------|
+|SIGHUP|1|终止当前shell中的进程|关闭终端|
+|SIGINT|2|终止程序|按下ctrl+c|
+|SIGKILL|9|终止程序，不能捕获忽略|强制杀死程序|
+|SIGSEGV|11|段错误，不能捕获忽略|无效内存引用（数组越界，错误指针操作）|
+|SIGALRM|14|终止程序|闹钟信号alarm|
+|SIGTERM|15|终止程序|杀死程序 kill 编号 killall 进程名|
+|SIGCHLD|17|忽略不做处理|子进程结束信号|
+### 发送信号kill
+* [发送信号](./linux/linux系统编程/信号/发送信号.cpp)
+```cpp
+    #include <iostream>
+    #include <unistd.h>
+    #include <signal.h>
+    pid_t pid;
+    pid = fork();
+    // 失败返回一个负数，等于0子进程pid，大于0为父进程
+    if (pid < 0) { // 失败
+        exit(1);
+    } else if (pid == 0) { // 子进程
+        while (true) {
+            std::cout << "son wait...\n";
+            sleep(1);
+        }
+    } else { // 父进程
+        std::cout << "son pid: " << pid << "\n";
+        sleep(3);
+        kill(pid, SIGINT); // 发送信号给子进程
+        while (true) {
+            std::cout << "father wait...\n";
+            sleep(1);
+        }
+    }
+
+```
+### 信号处理
+* 信号处理采用系统的默认操作，大部分信号默认操作都是终止进程
+```cpp
+    #include <signal.h>
+    signal(信号, SIG_DFL); // 信号默认处理，可处理后恢复默认
+```
+* 设置中断处理函数，收到信号由函数处理
+```cpp
+    #include <signal.h>
+    void func(int sig) { // 必须带参
+        std::cout << "signal num: " << num << "\n";
+        signal(num, SIG_DFL); // 处理后，可以恢复信号默认操作
+    }
+    int main() {
+        signal(信号, func);    // 信号由函数处理
+    }
+```
+* 忽略某个信号，对该信号不做任何处理
+```cpp
+    #include <signal.h>
+    signal(信号, SIG_IGN); // 信号忽略
+```
+### 闹钟信号(定时任务)
+* [定时任务](./linux/linux系统编程/信号/闹钟.cpp)
+```cpp
+    #include <unistd.h>
+    #include <signal.h>
+    void alarm_func(int sig) {
+        std::cout << "收到信号: " << sig << ", 执行定时任务\n";
+        alarm(3); // 之后每3秒执行一次，并不是递归
+    }
+    int main() {
+        signal(SIGALRM, alarm_func);
+        alarm(3); // 3秒后执行
+        while (true) {
+            std::cout << "等待中...\n";
+            sleep(1);
+        }
+        return 0;
+    }
 ```
 ---
 ---
@@ -426,6 +474,10 @@
 ### 压缩解压缩
 * 压缩 tar -czvf xxx.tar.gz file1 file2
 * 解压缩 tar -xzvf xxx.tar.gz
+### 查找
+#### 文件内容查找
+* sudo find / -name 'signal.h' | xargs grep -in 'SIGHUP'
+    * xargs 将输入转为命令行参数。使不支持管道的命令，支持管道
 ### 查看
 #### 查看cpu
 * lscpu
@@ -438,6 +490,7 @@
     * pgid 进程组id
 * ps -eo pid,ppid,sid,pgid,cmd | grep -E 'PID|a.out|fish'
     * o 指定输出选项
+* ps -aux | grep -E 'PID|a.out|fish'
 ### 后台执行./a.out &, 变为前台fg
 ### 创建新会话使其变为新的组长
 * setsid ./a.out
