@@ -1,6 +1,7 @@
 TARGET=a.out
 
-TEMP=./linux/linux系统编程/进程/创建子进程.cpp
+TEMP=./c语言/递归/汉诺塔.cpp
+# TEMP=./linux/linux系统编程/进程/创建子进程.cpp
 
 # 将.c替换成.o
 SRC=$(patsubst %.cpp, %.o, $(TEMP))

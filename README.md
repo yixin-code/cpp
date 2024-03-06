@@ -9,6 +9,8 @@
 * 连接
     * 连接库 系统引导 生成可执行程序
 ## ![内存分区](./资源/内存分区.png)
+## 作用域生命周期
+* static局部变量是在进入函数时被初始化的，生命周期为定义到程序结束
 ## 常量
 * 整型 1 2 3
 * 浮点型 1.1 2.2 3.3
@@ -252,6 +254,44 @@
     i : 1, j : 3, k : 3
 ```
 ### goto不能跨函数 不能跳过定义
+### 递归
+#### 斐波那契数列
+* [斐波那契数列](./c语言/递归/斐波那契数列.cpp)
+```cpp
+    long long fibonacci(int n) {
+        if (n == 0) { return 0; }
+        if (n == 1) { return 1; }
+        return fibonacci(n - 1) + fibonacci(n - 2);
+    }
+```
+* [斐波那契数列非递归](./c语言/递归/斐波那契数列非递归.cpp)
+```cpp
+    long long fibonacci(int n) {
+        if (n == 0) { return 0; }
+        if (n == 1) { return 1; }
+        long long num = 0;
+        long long num2 = 1;
+        for (int i = 2; i <= n; ++i) {
+            long long temp = num + num2;
+            num = num2;
+            num2 = temp;
+        }
+        return num2;
+    }
+```
+#### 汉诺塔
+* [汉诺塔](./c语言/递归/汉诺塔.cpp)
+```cpp
+    void hanoi(int n, char a, char b,char c) { // a b c 三个柱子
+        if (n == 1) {
+            std::cout << a << "->" << c << std::endl;
+            return;
+        }
+        hanoi(n - 1, a, c, b); // a - > b
+        std::cout << a << "->" << c << std::endl; // a -> c
+        hanoi(n - 1, b, a, c); // b -> c
+    }
+```
 ## 数组
 * 数组下标从0开始
     * 数组地址即是首元素地址，如果从1开始会浪费空间，或增加计算量(-1)
@@ -273,6 +313,34 @@
     for (int i = 0; i < 11; ++i) {
         int num = rand() % 10 + 1; // 1 - 10
     }
+```
+---
+---
+---
+---
+---
+---
+---
+---
+---
+---
+### 时间复杂度
+* O(log n)
+```cpp
+    while (left <= right) {  
+        int mid = left + (right - left) / 2; // 防止溢出  
+        if (arr[mid] == target) {  
+            return true; // 找到目标，返回true  
+        } else if (arr[mid] < target) {  
+            left = mid + 1; // 目标在右侧  
+        } else {  
+            right = mid - 1; // 目标在左侧  
+        }  
+    }  
+```
+* O(n)
+```cpp
+    for (int i = 0; i < n; ++i)
 ```
 ---
 ---
