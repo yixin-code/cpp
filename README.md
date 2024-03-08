@@ -365,7 +365,6 @@
 ```cpp
     #include <iostream>
     #include <unistd.h>
-    #include <signal.h>
     pid_t pid;
     pid = fork();
     // 失败返回一个负数，等于0子进程pid，大于0为父进程
@@ -445,8 +444,7 @@
     #include <iostream>
     #include <unistd.h>
     #include <signal.h>
-    pid_t pid;
-    pid = fork();
+    pid_t pid = fork();
     // 失败返回一个负数，等于0子进程pid，大于0为父进程
     if (pid < 0) { // 失败
         exit(1);
@@ -468,6 +466,7 @@
 ```
 ### 信号处理
 * 信号处理采用系统的默认操作，大部分信号默认操作都是终止进程
+* signal 返回信号编号
 ```cpp
     #include <signal.h>
     signal(信号, SIG_DFL); // 信号默认处理，可处理后恢复默认
@@ -480,7 +479,7 @@
         signal(num, SIG_DFL); // 处理后，可以恢复信号默认操作
     }
     int main() {
-        signal(信号, func);    // 信号由函数处理
+        signal(信号, func); // 信号由函数处理
     }
 ```
 * 忽略某个信号，对该信号不做任何处理
@@ -506,6 +505,41 @@
         }
         return 0;
     }
+```
+### 可重入函数，信号处理时是安全的
+* [不可重入函数](./linux/linux系统编程/信号/不可重入函数.cpp)
+* malloc、printf都是不可重入函数
+```cpp
+    #include <iostream>
+    #include <signal.h>
+    #include <unistd.h>
+    int g_num = 11;
+    void func(int sig) {
+        g_num = sig;
+        std::cout << "signal: " << sig << ", " << "g_num: " << g_num << "\n";
+    }
+    int main() {
+        signal(SIGINT, func); // 会改变g_num值
+        while (true) {
+            g_num = 22;
+            sleep(1);
+            std::cout << "g_num: " << g_num << ", wait...\n";
+        }
+        return 0;
+    }
+```
+* 尽可能的不要在信号处理函数中调用系统函数
+    * 必要情况下需确保调用函数是可重入函数
+    * 需要调用修改errno，可以先备份在恢复
+## 系统错误 errno
+* [系统错误errno](./linux/linux系统编程/系统错误/系统错误.cpp)
+```cpp
+    #include <cerrno>
+    #include <fstream>
+    #include <cstring>
+    std::ifstream fin;
+    fin.open("a.txt");
+    std::cout << "errno: " << errno << strerror(errno) << "\n";
 ```
 ---
 ---
@@ -538,6 +572,16 @@
     * include 存放头文件
     * share 程序资源文件，文档 帮助文件 等
     * local 用户安装的软件
+## 体系结构
+![体系结构](./资源/linux体系结构.png)
+* 内核：控制计算机资源，为程序提供运行环境
+* 程序可以运行在用户态和内核态上
+    * 一些系统调用，异常会运行在内核态上(由系统决定)
+![用户内核硬件](./资源/用户内核硬件.png)
+* 用户态、内核态切换
+    * 用户态执行操作和访问资源会受到限制，内核态执行则没有限制
+    * 程序执行是只有需要切换到内核态时，才会由系统自动切换。
+        * 可以保护系统，合理分配资源、避免资源冲突、耗尽
 ## linux命令
 ### 压缩解压缩
 * 压缩 tar -czvf xxx.tar.gz file1 file2
