@@ -531,6 +531,33 @@
 * 尽可能的不要在信号处理函数中调用系统函数
     * 必要情况下需确保调用函数是可重入函数
     * 需要调用修改errno，可以先备份在恢复
+### 信号集(每个进程中都会有一个信号集)
+* 相当于一串二进制，计入了哪些信号被阻塞。所以相同信号函数正在处理时，将不会继续捕获该信号
+    * 0000 1000
+* linux中使用sigset_t表示信号集
+#### 将信号集全部置1, sigfillset(&sig)
+#### 将信号集全部置0, sigemptyset(&sig)
+#### 将某个信号值1(相当于阻塞该信号), sigaddset(&sig, SIGHUP)
+#### 将某个信号值0, sigdelset(&sig, SIGHUP)
+#### sigprocmask 可以设置进程中信号集的内容
+* 参数1
+    * SIG_BLOCK 设置阻塞信号
+    * SIG_UNBLOCK 移除阻塞信号
+    * SIG_SETMASK 设置当前信号集为第二参数指向
+* 参数2
+    * 信号集指针，要添加删除或添加的信号，null为不设置
+* 参数3
+    * 保存设置前的信号集，null为不保存
+```cpp
+    #include <signal.h>
+    sigset_t new_sigmask, old_mask; // 信号集
+    sigemptyset(&new_sigmask); // 清空信号集
+    sigaddset(&new_sigmask, SIGINT); // 设置信号集
+    if (sigprocmask(SIG_BLOCK, &new_sigmask, &old_mask) == -1) { // 将信号集添加到当前屏蔽字中
+        perror("");
+        exit(1);
+    }
+```
 ## 系统错误 errno
 * [系统错误errno](./linux/linux系统编程/系统错误/系统错误.cpp)
 ```cpp
