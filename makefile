@@ -1,6 +1,6 @@
 TARGET=a.out
 
-TEMP=./linux/linux系统编程/系统错误/系统错误.cpp
+TEMP=./linux/linux系统编程/信号/信号集.cpp
 
 # 将.c替换成.o
 SRC=$(patsubst %.cpp, %.o, $(TEMP))

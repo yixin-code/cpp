@@ -548,13 +548,25 @@
     * 信号集指针，要添加删除或添加的信号，null为不设置
 * 参数3
     * 保存设置前的信号集，null为不保存
+#### 测试一个信号是否被阻塞。sigismember(&sig, SIGINT)阻塞返回1 没有阻塞返回0 失败返回-1
+* 信号被阻塞等待处理，阻塞该信号结束继续处理
+* [信号集](./linux/linux系统编程/信号/信号集.cpp)
 ```cpp
     #include <signal.h>
-    sigset_t new_sigmask, old_mask; // 信号集
-    sigemptyset(&new_sigmask); // 清空信号集
-    sigaddset(&new_sigmask, SIGINT); // 设置信号集
-    if (sigprocmask(SIG_BLOCK, &new_sigmask, &old_mask) == -1) { // 将信号集添加到当前屏蔽字中
-        perror("");
+    #include <unistd.h>
+    sigset_t new_make, old_make;  // 信号集结构体
+    sigemptyset(&new_make);       // 清空信号集
+    sigaddset(&new_make, SIGINT); // 设置SIGINT信号
+    signal(SIGINT, func_sigint);
+    if (sigprocmask(SIG_BLOCK, &new_make, &old_make) == -1) { // 设置信号集，保存原信号集
+        perror("20, if (sigprocmask(SIG_BLOCK, &new_make, &old_make) == -1)");
+        exit(1);
+    }
+    if (sigismember(&new_make, SIGINT) == 1) { // 测试信号是否被阻塞
+        std::cout << "sigint signal obstruct\n";
+    }
+    if (sigprocmask(SIGINT, &old_make, nullptr) == -1) { // 恢复原始信号集
+        perror("31, if (sigprocmask(SIGINT, &old_make, nullptr) == -1) {");
         exit(1);
     }
 ```
