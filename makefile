@@ -1,6 +1,6 @@
 TARGET=a.out
 
-TEMP=./linux/linux系统编程/信号/信号集.cpp
+TEMP=./linux/linux系统编程/进程/等待子进程.cpp
 
 # 将.c替换成.o
 SRC=$(patsubst %.cpp, %.o, $(TEMP))

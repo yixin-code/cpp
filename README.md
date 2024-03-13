@@ -360,6 +360,7 @@
     usleep(1); // 微秒
 ```
 ## 进程
+* ps -eo pid,ppid,sid,pgid,cmd,stat | grep -E 'PID|a.out|fish'
 ### 创建子进程
 * [创建子进程](./linux/linux系统编程/进程/创建子进程.cpp)
 ```cpp
@@ -372,7 +373,7 @@
         exit(1);
     } else if (pid == 0) { // 子进程
         std::cout << "son process pid: " << getpid() << ", ppid: " << getppid() << "\n";
-    } else { // 父进程
+    } else { // 父进程中的pid就是子进程pid
         std::cout << "father process pid: " << getpid() << ", son pid: " << pid << "\n";
         sleep(1);
     }
@@ -391,6 +392,28 @@
         return 0;
     }
 ```
+### 僵尸进程，子进程结束父进程没有通过wait/waitpid处理的进程
+* 僵尸进程无法使用kill -9 终止，只能终止正在运行的程序
+#### waitpid(pid_t pid, int &status, int option)
+* pid
+    * **-1, 等待所有子进程**
+    * **大于0，等待指定进程**
+    * 0，等待同组子进程
+    * 小于-1，等待以-pid为组长的子进程
+* status
+    * null，不关心返回状态
+    * 非null
+        * WIFEXITED(status) 检测
+            * 如果正常退出返回true
+            * WEXITSTATUS(status) 检测
+                * 返回状态码(return或exit中的数字)
+        * WIFSIGNALED(status) 检测
+            * 如果是被signal结束的，返回true
+            * 当返回true时，WTERMSIG(status) 进行检测
+* option
+    * 0，会阻塞等待子进程结束
+    * WNOHANG，不会阻塞等待子进程结束
+* [wait(&stat)==waitpid(-1, &stat, 0)](./linux/linux系统编程/进程/等待子进程.cpp)
 ### 会话 session
 #### 新建会话，并成为进程组组长(可以在关闭终端后进程仍能继续执行)
 * [新建会话，并成为进程组组长(可以在关闭终端后进程仍能继续执行)](./linux/linux系统编程/进程/新建会话.cpp)
