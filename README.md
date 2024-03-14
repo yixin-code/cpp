@@ -361,6 +361,14 @@
 ```
 ## 进程
 * ps -eo pid,ppid,sid,pgid,cmd,stat | grep -E 'PID|a.out|fish'
+### 实际用户ID可创建的最大进程数
+```cpp
+    #include <unistd.h>
+    std::cout << sysconf(_SC_CHILD_MAX) << "\n";
+```
+### 进程终止状态
+* bash 中 echo $?
+* fish 中 echo $status
 ### 创建子进程
 * [创建子进程](./linux/linux系统编程/进程/创建子进程.cpp)
 ```cpp
@@ -378,7 +386,8 @@
         sleep(1);
     }
 ```
-### 孤儿进程(父进程终止，由init进程接管的进程)
+### 父进程先终止孤儿进程，子进程先终止僵尸进程
+#### 孤儿进程(父进程终止，由init进程接管的进程)
 * [忽略sighub信号可以在终端关闭后，进程可以继续执行(孤儿进程)](./linux/linux系统编程/信号/孤儿进程.cpp)
 ```cpp
     #include <signal.h>
@@ -392,9 +401,12 @@
         return 0;
     }
 ```
-### 僵尸进程，子进程结束父进程没有通过wait/waitpid处理的进程
+#### 僵尸进程，子进程结束父进程没有通过wait/waitpid处理的进程
+* 进程结束会关闭所有文件描述符，释放分配的内存。
+    * PCB(进程控制块)还会存在，父进程调用wait/waitpid查看信息，并清除子进程
 * 僵尸进程无法使用kill -9 终止，只能终止正在运行的程序
-#### waitpid(pid_t pid, int &status, int option)
+##### waitpid(pid_t pid, int &status, int option)
+* [wait(&stat)==waitpid(-1, &stat, 0)](./linux/linux系统编程/进程/等待子进程.cpp)
 * pid
     * **-1, 等待所有子进程**
     * **大于0，等待指定进程**
@@ -413,7 +425,27 @@
 * option
     * 0，会阻塞等待子进程结束
     * WNOHANG，不会阻塞等待子进程结束
-* [wait(&stat)==waitpid(-1, &stat, 0)](./linux/linux系统编程/进程/等待子进程.cpp)
+### fork()写的时候会复制一份给该进程单独使用(其他进程不会受到影响)，读的时候所有进程共享
+* [写时复制](./linux/linux系统编程/进程/写时复制.cpp)
+```cpp
+    #include <unistd.h>
+    #include <sys/wait.h>
+        int g_num = 11;
+        pid_t pid = fork();
+        if (pid == 0) {
+            g_num = 22;
+            std::cout << "child g_num: " << g_num << ", &g_num: " << &g_num  << std::endl; // 22 0xb050
+            g_num = 33;
+            std::cout << "child g_num: " << g_num << ", &g_num: " << &g_num  << std::endl; // 33 0xb050
+            g_num = 44;
+            std::cout << "child g_num: " << g_num << ", &g_num: " << &g_num  << std::endl; // 44 0xb050
+        } else if (pid > 0) {
+            wait(nullptr);
+            std::cout << "parent g_num: " << g_num << ", &g_num: " << &g_num << std::endl; // 11 0xb050
+        }
+```
+* g_num的地址相同，只是在各自的地址空间中偏移量相同。
+    * 只是在映射的内存地址偏移量相同，物理内存中实际上是不同位置
 ### 会话 session
 #### 新建会话，并成为进程组组长(可以在关闭终端后进程仍能继续执行)
 * [新建会话，并成为进程组组长(可以在关闭终端后进程仍能继续执行)](./linux/linux系统编程/进程/新建会话.cpp)
