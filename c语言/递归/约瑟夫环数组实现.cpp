@@ -1,14 +1,14 @@
 #include <iostream>
 #include <vector>
 
-void joseph(std::vector<int> &vec, int peoples, int rule);
+void joseph(int peoples, int rule);
 
 int main() {
-    std::vector<int> vec;
+    joseph(30, 9);
 
     return 0;
 }
 
-void joseph(std::vector<int> &vec, int peoples, int rule) {
-    
+void joseph(int peoples, int rule) {
+    std::vector<int> vec(peoples);
 }

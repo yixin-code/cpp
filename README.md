@@ -317,6 +317,25 @@
         int num = rand() % 10 + 1; // 1 - 10
     }
 ```
+## STL
+### vector
+#### 大小，空间
+```cpp
+    std::vector<int> vec;
+    std::cout << vec.size() << "\n"; // 0
+    std::cout << vec.capacity() << "\n"; // 0
+    /////////////////////////////////////////
+    // 相当于 vector<int> vec2(11);
+    std::vector<int> vec2;
+    vec2.resize(11);
+    std::cout << vec2.size() << "\n"; // 11
+    std::cout << vec2.capacity() << "\n"; // 11
+    /////////////////////////////////////////
+    std::vector<int> vec3;
+    vec3.resize(11);
+    std::cout << vec3.size() << "\n"; // 0
+    std::cout << vec3.capacity() << "\n"; // 11
+```
 ---
 ---
 ---
