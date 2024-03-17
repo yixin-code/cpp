@@ -48,6 +48,16 @@
 * %g：根据实际情况选择%f或%e格式输出浮点数。
 * printf("%05.3f\n");
     * 宽度为5 填充0 显示点后3位小数
+### cout格式化输出
+* std::oct, 八进制
+* std::dec，十进制
+* std::hex，十六进制
+```cpp
+    int num = 11;
+    std::cout << std::oct << num << "\n"; // 13
+    std::cout << num << "\n"; // 13
+    std::cout << std::dec << num << "\n"; // 11
+```
 ### scanf匹配(行缓冲)
 * [当scanf中有空白字符时，可以匹配0个或多个](./语言基础/输入输出/scanf.cpp)
 ```cpp
@@ -408,46 +418,7 @@
         sleep(1);
     }
 ```
-### 父进程先终止孤儿进程，子进程先终止僵尸进程
-#### 孤儿进程(父进程终止，由init进程接管的进程)
-* [忽略sighub信号可以在终端关闭后，进程可以继续执行(孤儿进程)](./linux/linux系统编程/信号/孤儿进程.cpp)
-```cpp
-    #include <signal.h>
-    int main() {
-        signal(SIGHUP, SIG_IGN); // 忽略sighub信号
-        while (true) {
-            std::cout << "sleep\n";
-            sleep(1); // 秒
-        }
-        std::cout << "main end\n";
-        return 0;
-    }
-```
-#### 僵尸进程，子进程结束父进程没有通过wait/waitpid处理的进程
-* 进程结束会关闭所有文件描述符，释放分配的内存。
-    * PCB(进程控制块)还会存在，父进程调用wait/waitpid查看信息，并清除子进程
-* 僵尸进程无法使用kill -9 终止，只能终止正在运行的程序
-##### waitpid(pid_t pid, int &status, int option)
-* [wait(&stat)==waitpid(-1, &stat, 0)](./linux/linux系统编程/进程/等待子进程.cpp)
-* pid
-    * **-1, 等待所有子进程**
-    * **大于0，等待指定进程**
-    * 0，等待同组子进程
-    * 小于-1，等待以-pid为组长的子进程
-* status
-    * null，不关心返回状态
-    * 非null
-        * WIFEXITED(status) 检测
-            * 如果正常退出返回true
-            * WEXITSTATUS(status) 检测
-                * 返回状态码(return或exit中的数字)
-        * WIFSIGNALED(status) 检测
-            * 如果是被signal结束的，返回true
-            * 当返回true时，WTERMSIG(status) 进行检测
-* option
-    * 0，会阻塞等待子进程结束
-    * WNOHANG，不会阻塞等待子进程结束
-### fork()写的时候会复制一份给该进程单独使用(其他进程不会受到影响)，读的时候所有进程共享
+#### fork()写的时候会复制一份给该进程单独使用(其他进程不会受到影响)，读的时候所有进程共享
 * [写时复制](./linux/linux系统编程/进程/写时复制.cpp)
 ```cpp
     #include <unistd.h>
@@ -468,7 +439,67 @@
 ```
 * g_num的地址相同，只是在各自的地址空间中偏移量相同。
     * 只是在映射的内存地址偏移量相同，物理内存中实际上是不同位置
-### 会话 session
+### 孤儿进程(父进程先终止，由init进程接管的子进程)
+* [忽略sighub信号可以在终端关闭后，进程可以继续执行(孤儿进程)](./linux/linux系统编程/信号/孤儿进程.cpp)
+```cpp
+    #include <signal.h>
+    int main() {
+        signal(SIGHUP, SIG_IGN); // 忽略sighub信号
+        while (true) {
+            std::cout << "sleep\n";
+            sleep(1); // 秒
+        }
+        std::cout << "main end\n";
+        return 0;
+    }
+```
+### 僵尸进程(子进程先终止，父进程没有使用wait/waitpid等待回收资源，STAT为Z)
+* 进程结束会关闭所有文件描述符，释放分配的内存。
+    * PCB(进程控制块)还会存在，父进程调用wait/waitpid查看信息，并清除子进程
+* 僵尸进程无法使用kill -9 终止，只能终止正在运行的程序
+#### waitpid(pid_t pid, int &status, int option)
+* [wait(&stat)==waitpid(-1, &stat, 0)](./linux/linux系统编程/进程/等待子进程.cpp)
+* pid
+    * **-1, 等待所有子进程**
+    * **大于0，等待指定进程**
+    * 0，等待同组子进程
+    * 小于-1，等待以-pid为组长的子进程
+* status
+    * null，不关心返回状态
+    * 非null
+        * WIFEXITED(status) 检测
+            * 如果正常退出返回true
+            * WEXITSTATUS(status) 检测
+                * 返回状态码(return或exit中的数字)
+        * WIFSIGNALED(status) 检测
+            * 如果是被signal结束的，返回true
+            * 当返回true时，WTERMSIG(status) 进行检测
+* option
+    * 0，会阻塞等待子进程结束
+    * WNOHANG，不会阻塞等待子进程结束
+### 守护进程(一般后台长期运行，不和控制终端相关联)
+* ppid为0的进程是内核进程，跟随系统启动关闭
+* tty是?为守护进程
+    * 带中括号的为内核守护进程，不带中括号的为用户守护进程
+#### 守护进程创建
+1. **umask(0)表示不设置任何权限屏蔽，所设即所得**
+    1. 新文件权限和默认的umask进行按位与，得到最终新文件权限
+1. **fork后，父进程退出，则不会继续占用终端可以正常使用命令**
+    1. fork是为了在子进程中调用setsid()脱离终端
+        1. 创建新会话，并称为进程组组长，如果该进程本身就是组长创建失败
+1. **守护进程在后台执行，不需要键盘的输入和屏幕的显示，需要把输入输出重定向到/dev/null中**
+* dup2(fd, STDIN_FILENO); // 标准输入从键盘改为fd
+```cpp
+    #include <fcntl.h>
+    #include <unistd.h>
+    int fd = open("dev/null", O_RDWR); // 读写模式打开
+    dup2(fd, STDIN_FILENO); // 标准输入重定向到fd
+    dup2(fd, STDOUT_FILENO); // 标准输出重定向到fd
+    if (fd > STDERR_FILENO) { // fd先复制一份，复制的fd = STDIN_FILENO，fd本身不再需要了，关闭fd以免占用改文件描述符
+        close(fd);
+    }
+```
+* [守护进程](./linux/linux系统编程/进程/守护进程.cpp)
 #### 新建会话，并成为进程组组长(可以在关闭终端后进程仍能继续执行)
 * [新建会话，并成为进程组组长(可以在关闭终端后进程仍能继续执行)](./linux/linux系统编程/进程/新建会话.cpp)
 ```cpp
@@ -656,6 +687,52 @@
     std::ifstream fin;
     fin.open("a.txt");
     std::cout << "errno: " << errno << strerror(errno) << "\n";
+```
+## 文件读写
+* 文件描述符
+    * linux中有三个特殊的文件描述符(程序运行会被自动打开)
+        * 0(STDIN_FILENO)、1(STDOUT_FILENO)、2(STDERR_FILENO)
+        * 分别对应：标准输入、标准输出，标准错误
+* 输入输出重定向
+    * 输入重定向 <
+        * cat < test.txt
+    * 输出重定向 >
+        * ll > test.txt
+* /dev/null 写不满
+* /dev/zero 读不完
+* **umask(0)表示没有设置任何权限屏蔽，所设即所得**
+    * 新文件权限和默认的umask进行按位与，得到最终新文件权限
+### 打开文件open
+```cpp
+    #include <fcntl.h>
+    int fd = open("test.txt", O_RDONLY | O_CREAT, S_IRUSR | S_IWUSR);
+```
+* 参数2
+    * O_RDONLY: 只读打开文件。
+    * O_WRONLY: 只写打开文件。
+    * O_RDWR:   读写打开文件。
+    * O_TRUNC:  文件已存在并为写打开或创建，截断为0。
+    * O_APPEND: 追加。
+    * O_EXCL:   与O_CREAT一起使用时，文件存在，打开失败。
+    * O_CREAT:  文件不存在，创建。需要第三个参数指定新文件的权限。
+        * S_IRUSR: 用户读。
+        * S_IWUSR: 用户写。
+        * S_IXUSR: 用户执行。
+        * S_IRGRP: 组读。
+        * S_IWGRP: 组写。
+        * S_IXGRP: 组执行。
+        * S_IROTH: 其他人读。
+        * S_IWOTH: 其他人写。
+        * S_IXOTH: 其他人执行。
+    * O_NONBLOCK: 对于设备文件，此标志指示打开应该在非阻塞模式下进行。
+    * O_SYNC:     写入时同步数据。
+    * O_DSYNC:    类似 O_SYNC，但仅同步写入的数据。
+### 重定向dup2
+```cpp
+    #include <unistd.h>
+    // fd先复制一份，复制的fd = STDIN_FILENO，fd本身不再需要了，关闭fd以免占用改文件描述符
+    dup2(fd, STDIN_FILENO); // fd指向的文件变为标准输入
+    close(fd);
 ```
 ---
 ---
