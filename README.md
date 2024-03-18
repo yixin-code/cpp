@@ -305,6 +305,30 @@
 ### 约瑟夫环
 * 一群个物体，指定间隔，清除
 * [约瑟夫环数组实现](./c语言/递归/约瑟夫环数组实现.cpp)
+```cpp
+    #include <vector>
+    void joseph(int peoples, int rule, int num) // peoples 人数， rule 规则, num 剩余人数
+    {
+        std::vector<int> vec(peoples);
+        for (int i = 0; i < peoples; ++i) {
+            vec[i] = i + 1;
+        }
+        int index = 0;
+        while (vec.size() > num) {
+            for (int i = 0; i < rule - 1; ++i) {
+                index = (index + 1) % vec.size(); // 移动rule-1次，一次移动一个
+            }
+            std::cout << "清除的为：" << vec[index] << "\n";
+            vec.erase(vec.begin() + index);
+        }
+        std::cout << "剩余的人：\n";
+        for (const int &val : vec) {
+            std::cout << val << "\n";
+        }
+        std::cout << "\n";
+    }
+```
+* [约瑟夫环循环链表实现](./c语言/递归/约瑟夫环循环链表实现.cpp)
 ## 数组
 * 数组下标从0开始
     * 数组地址即是首元素地址，如果从1开始会浪费空间，或增加计算量(-1)
@@ -352,6 +376,45 @@
     #include <vector>
     vec.erase(vec.begin() + 2); // 删除第三元素
     //////////////////////////////////////////////////////////////////////////////////
+```
+### list
+#### 大小
+```cpp
+    std::list<int> l(3);
+    std::cout << l.size() << std::endl; // 3
+```
+#### 循环链表
+```cpp
+    #include <list>
+    std::list<int> l {1, 2, 3, 4, 5};
+    std::list<int>::iterator it = l.begin();
+    std::advance(it, 1);
+    std::cout << *it << std::endl; // 2
+    std::advance(it, 1);
+    std::cout << *it << std::endl; // 3
+    std::advance(it, 1);
+    std::cout << *it << std::endl; // 4
+    std::advance(it, 1);
+    std::cout << *it << std::endl; //5
+    std::advance(it, 1);
+    std::cout << *it << std::endl; // 5
+    std::advance(it, 1);
+    std::cout << *it << std::endl; // 1
+    std::advance(it, 1);
+    std::cout << *it << std::endl; // 2
+    std::cout << l.end() << std::endl; // 5
+```
+### 迭代器
+#### 迭代器移动advance, next
+```cpp
+    std::list<int> l {1, 2, 3, 4, 5};
+    std::list<int>::iterator it = l.end();
+    std::advance(it, 1);
+    std::cout << *it << std::endl; // 1
+    std::list<int>::iterator it2 = std::next(it, 1); // 返回新的迭代器，原迭代器不会改变
+    std::cout << *it2 << std::endl; // 2
+    std::advance(it2, -1);
+    std::cout << *it2 << std::endl; // 1
 ```
 ---
 ---

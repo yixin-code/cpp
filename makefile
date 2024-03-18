@@ -1,6 +1,7 @@
 TARGET=a.out
 
-TEMP=./linux/linux系统编程/进程/守护进程.cpp
+# TEMP=./linux/linux系统编程/进程/守护进程.cpp
+TEMP=./c语言/递归/约瑟夫环循环链表实现.cpp
 # TEMP=./c语言/递归/约瑟夫环数组实现.cpp
 
 # 将.cpp替换成.o

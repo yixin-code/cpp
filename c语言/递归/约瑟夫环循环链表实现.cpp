@@ -1,5 +1,5 @@
 #include <iostream>
-#include <vector>
+#include <list>
 
 void joseph(int peoples, int rule, int num = 0);
 
@@ -15,26 +15,31 @@ int main()
 // num 剩余人数
 void joseph(int peoples, int rule, int num)
 {
-    std::vector<int> vec(peoples);
-    for (int i = 0; i < peoples; ++i) {
-        vec[i] = i;
+    std::list<int> l(peoples);
+    std::list<int>::iterator it = l.begin();
+    int temp = 0;
+    for (std::list<int>::iterator it = l.begin(); it != l.end(); ++it, ++temp) {
+        *it = temp;
     }
-    int index = 0;
-    while (vec.size() > num) {
+
+    while (l.size() > num) {
         for (int i = 0; i < rule - 1; ++i) {
-            index = (index + 1) % vec.size(); // 移动rule-1次，一次移动一个
+            it = std::next(it);
+            if (it == l.end()) {
+                std::advance(it, 1);
+            }
         }
-        std::cout << "清除的为：" << vec[index] << "\n";
-        vec.erase(vec.begin() + index);
+        std::cout << "清除的为：" << *it << "\n";
+        it = l.erase(it);
         // index = index % peoples;
         // std::cout << "------------------------------\n";
-        // for (const int &val : vec) {
+        // for (const int &val : l) {
         //     std::cout << val << " ";
         // }
         // std::cout << "\n------------------------------\n";
     }
     std::cout << "剩余的人：\n";
-    for (const int &val : vec) {
+    for (const int &val : l) {
         std::cout << val << "\n";
     }
     std::cout << "\n";
