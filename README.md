@@ -413,8 +413,17 @@
     std::cout << *it << std::endl; // 1
     std::list<int>::iterator it2 = std::next(it, 1); // 返回新的迭代器，原迭代器不会改变
     std::cout << *it2 << std::endl; // 2
+    it = std::next(it);
+    std::cout << *it << std::endl; // 3
     std::advance(it2, -1);
-    std::cout << *it2 << std::endl; // 1
+    std::cout << *it2 << std::endl; // 2
+```
+#### 删除元素
+```cpp
+    std::list<int> l {1, 2, 3, 4, 5};
+    std::list<int>::iterator it = l.end();
+    it = l.erase(it);
+    std::cout << *it << std::endl; // 2
 ```
 ---
 ---
