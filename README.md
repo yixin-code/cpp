@@ -488,14 +488,21 @@
 * ppid为0的进程是内核进程，跟随系统启动关闭
 * tty是?为守护进程
     * 带中括号的为内核守护进程，不带中括号的为用户守护进程
-#### 守护进程创建
-1. **umask(0)表示不设置任何权限屏蔽，所设即所得**
-    1. 新文件权限和默认的umask进行按位与，得到最终新文件权限
+* 守护进程脱离终端，后台进程并没有脱离终端
+### 守护进程信号
+|信号名|信号值|发出信号原因|描述|
+|-----|-----|----------|---|
+|SIGHUP|1|关闭终端|不会收到来至内核发送，可以是其他进程发送的。很多守护进程使用该信号通知配置文件变动，守护进程需重新读入配置文件|
+|SIGINT|2|ctrl + c||
+|SIGWINCH|28|改变终端大小||
+### 守护进程创建
 1. **fork后，父进程退出，则不会继续占用终端可以正常使用命令**
     1. fork是为了在子进程中调用setsid()脱离终端
         1. 创建新会话，并称为进程组组长，如果该进程本身就是组长创建失败
+1. **umask(0)表示不设置任何权限屏蔽，所设即所得**
+    1. 新文件权限和默认的umask进行按位与，得到最终新文件权限
 1. **守护进程在后台执行，不需要键盘的输入和屏幕的显示，需要把输入输出重定向到/dev/null中**
-* dup2(fd, STDIN_FILENO); // 标准输入从键盘改为fd
+* dup2(fd, STDIN_FILENO); // 标准输入从键盘改为fd，dup2会先关闭STDIN_FILENO文件描述
 ```cpp
     #include <fcntl.h>
     #include <unistd.h>
@@ -507,6 +514,47 @@
     }
 ```
 * [守护进程](./linux/linux系统编程/进程/守护进程.cpp)
+```cpp
+    #include <sys/stat.h> // umask
+    #include <unistd.h>
+    #include <fcntl.h> // open
+    int daemon_process() {
+        switch (fork()) { // 创建子进程以便调用setsid()
+            case -1: {
+                perror("19, fork error");
+                return -1;
+            }
+            case 0: { // 子进程，脱离终端会话
+                if (setsid() == -1) { // 创建新会话进程成为改组组长，进程为当前进程组组长时创建失败
+                    perror("24, setsid error");
+                    exit(1);
+                }
+                umask(0); // 解除文件权限限制
+                int fd = open("/dev/null", O_RDWR);
+                if (fd == -1) {
+                    perror("31, open error");
+                    exit(1);
+                }
+                if (dup2(fd, STDIN_FILENO) == -1) { // 复制一份fd，将标准输入赋值给复制的fd
+                    perror("37, dup2 error");
+                    exit(1);
+                }
+                if (dup2(fd, STDOUT_FILENO) == -1) {
+                    perror("42, dup2 error");
+                    exit(1);
+                }
+                if (fd > STDERR_FILENO) {
+                    close(fd); // 关闭fd，释放文件描述符，避免造成资源浪费
+                }
+                break;
+            }
+            default: { // 父进程直接退出
+                exit(0);
+            }
+        }
+        return 0;
+    }
+```
 #### 新建会话，并成为进程组组长(可以在关闭终端后进程仍能继续执行)
 * [新建会话，并成为进程组组长(可以在关闭终端后进程仍能继续执行)](./linux/linux系统编程/进程/新建会话.cpp)
 ```cpp
