@@ -673,6 +673,8 @@
 |SIGALRM|14|终止程序|闹钟信号alarm|
 |SIGTERM|15|终止程序|杀死程序 kill 编号 killall 进程名|
 |SIGCHLD|17|忽略不做处理|子进程结束信号|
+|SIGUSR1|10|终止程序||
+|SIGUSR2|12|终止程序||
 ### 发送信号kill
 * [发送信号](./linux/linux系统编程/信号/发送信号.cpp)
 ```cpp
@@ -800,7 +802,7 @@
     if (sigismember(&new_make, SIGINT) == 1) { // 测试信号是否被阻塞
         std::cout << "sigint signal obstruct\n";
     }
-    if (sigprocmask(SIGINT, &old_make, nullptr) == -1) { // 恢复原始信号集
+    if (sigprocmask(SIG_SETMASK, &old_make, nullptr) == -1) { // 恢复原始信号集
         perror("31, if (sigprocmask(SIGINT, &old_make, nullptr) == -1) {");
         exit(1);
     }

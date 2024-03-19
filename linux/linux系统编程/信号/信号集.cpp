@@ -33,7 +33,7 @@ int main()
 
     sleep(11);
 
-    if (sigprocmask(SIGINT, &old_make, nullptr) == -1)
+    if (sigprocmask(SIG_SETMASK, &old_make, nullptr) == -1)
     { // 恢复原始信号集
         perror("31, if (sigprocmask(SIGINT, &old_make, nullptr) == -1) {");
         exit(1);
