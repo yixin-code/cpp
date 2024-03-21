@@ -351,6 +351,27 @@
         int num = rand() % 10 + 1; // 1 - 10
     }
 ```
+## 文件读写
+### c文件读写
+#### fopen/fclose 打开/关闭文件
+* fopen mode
+    * r 只读
+    * w 只写 创建新文件
+    * a 追加 创建文件，如果文件存在追加
+    * r+ w+ a+ 读写
+    * rb+ wb+ ab+ 二进制读写
+* fclose 会刷新缓冲区
+## 字符读写 fgetc/fputc
+[字符读写](./c语言/文件读写/字符读写.cpp)
+```cpp
+    #include <iostream>
+    int ch = 0;
+    while ((ch = fgetc(fp_src)) != EOF) // 读写换行符
+    {
+        fputc(ch, fp_dest);
+    }
+```
+### cpp文件读写
 ## STL
 ### vector
 #### 大小，空间
@@ -404,6 +425,13 @@
     std::cout << *it << std::endl; // 2
     std::cout << l.end() << std::endl; // 5
 ```
+#### 删除元素
+```cpp
+    std::list<int> l {1, 2, 3, 4, 5};
+    std::list<int>::iterator it = l.end();
+    it = l.erase(it);
+    std::cout << *it << std::endl; // 2
+```
 ### 迭代器
 #### 迭代器移动advance, next
 ```cpp
@@ -418,13 +446,6 @@
     std::advance(it2, -1);
     std::cout << *it2 << std::endl; // 2
 ```
-#### 删除元素
-```cpp
-    std::list<int> l {1, 2, 3, 4, 5};
-    std::list<int>::iterator it = l.end();
-    it = l.erase(it);
-    std::cout << *it << std::endl; // 2
-```
 ---
 ---
 ---
@@ -435,6 +456,7 @@
 ---
 ---
 ---
+## 算法数据结构
 ### 时间复杂度
 * O(log n)
 ```cpp
