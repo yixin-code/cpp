@@ -1,4 +1,4 @@
-# c语言 c++
+# 语言 c++
 ## 编译步骤
 * 预处理
     * 生成预处理文件
@@ -19,7 +19,7 @@
 ### 常量表达式
 * 编译期间可以直接求值的表达式
 ### 宏函数
-* [宏函数](./语言基础/宏/宏函数.cpp)
+* [宏函数](./语言/宏/宏函数.cpp)
 * 提高效率，普通函数调用会造成额外开销
 ```cpp
     #define func(x) ((x) * (x) + 11)
@@ -59,20 +59,20 @@
     std::cout << std::dec << num << "\n"; // 11
 ```
 ### scanf匹配(行缓冲)
-* [当scanf中有空白字符时，可以匹配0个或多个](./语言基础/输入输出/scanf.cpp)
+* [当scanf中有空白字符时，可以匹配0个或多个](./语言/输入输出/scanf.cpp)
 ```cpp
     // 输入 num    =   11  ,  num2   =   22
     // num2会匹配失败','前没有空格所以无法匹配后续
     scanf("num   = %d, num2 =   %d", &num, &num2);
     printf("num = %d, num2 = %d\n", num, num2);
 ```
-* [数值匹配时会忽略数值前面的空白字符](./c语言/输入输出/scanf2.cpp)
+* [数值匹配时会忽略数值前面的空白字符](./语言/输入输出/scanf2.cpp)
 ```cpp
     // 输入:    11    22     33
     scanf("%d%d%d", &num, &num2, &num3);
     printf("num = %d, num2 = %d, num3 = %d\n", num, num2, num3);
 ```
-* [%c不会忽略前面的空白字符](./c语言/输入输出/scanf3.cpp)
+* [%c不会忽略前面的空白字符](./语言/输入输出/scanf3.cpp)
 ```cpp
     char ch = 0;
 
@@ -104,7 +104,7 @@
 * %[^a-z] 不匹配a到z
 * 条件必须逐一匹配否则直接退出
 ## 整形运算默认是int
-* [整形运算默认是int](./c语言/基础类型/整型运算.cpp)
+* [整形运算默认是int](./语言/基础类型/整型运算.cpp)
 ```cpp
     // 0000 0000 0000 0000 0000 0000 1001 1001
     // 000 0000 0000 0000 0000 0000 1001 1001 0
@@ -266,7 +266,7 @@
 ### goto不能跨函数 不能跳过定义
 ## 递归
 ### 斐波那契数列
-* [斐波那契数列](./c语言/递归/斐波那契数列.cpp)
+* [斐波那契数列](./语言/递归/斐波那契数列.cpp)
 ```cpp
     long long fibonacci(int n) {
         if (n == 0) { return 0; }
@@ -274,7 +274,7 @@
         return fibonacci(n - 1) + fibonacci(n - 2);
     }
 ```
-* [斐波那契数列非递归](./c语言/递归/斐波那契数列非递归.cpp)
+* [斐波那契数列非递归](./语言/递归/斐波那契数列非递归.cpp)
 ```cpp
     long long fibonacci(int n) {
         if (n == 0) { return 0; }
@@ -290,7 +290,7 @@
     }
 ```
 ### 汉诺塔
-* [汉诺塔](./c语言/递归/汉诺塔.cpp)
+* [汉诺塔](./语言/递归/汉诺塔.cpp)
 ```cpp
     void hanoi(int n, char a, char b,char c) { // a b c 三个柱子
         if (n == 1) {
@@ -304,7 +304,7 @@
 ```
 ### 约瑟夫环
 * 一群个物体，指定间隔，清除
-* [约瑟夫环数组实现](./c语言/递归/约瑟夫环数组实现.cpp)
+* [约瑟夫环数组实现](./语言/递归/约瑟夫环数组实现.cpp)
 ```cpp
     #include <vector>
     void joseph(int peoples, int rule, int num) // peoples 人数， rule 规则, num 剩余人数
@@ -328,7 +328,7 @@
         std::cout << "\n";
     }
 ```
-* [约瑟夫环循环链表实现](./c语言/递归/约瑟夫环循环链表实现.cpp)
+* [约瑟夫环循环链表实现](./语言/递归/约瑟夫环循环链表实现.cpp)
 ## 数组
 * 数组下标从0开始
     * 数组地址即是首元素地址，如果从1开始会浪费空间，或增加计算量(-1)
@@ -361,17 +361,73 @@
     * r+ w+ a+ 读写
     * rb+ wb+ ab+ 二进制读写
 * fclose 会刷新缓冲区
-## 字符读写 fgetc/fputc
-[字符读写](./c语言/文件读写/字符读写.cpp)
+#### 字符读写 fgetc/fputc
+* [字符读写](./语言/文件读写/字符读写.cpp)
 ```cpp
     #include <iostream>
+    FILE *fp_read = fopen(argv[1], "r");
+    FILE *fp_write = fopen(argv[2], "w");
     int ch = 0;
-    while ((ch = fgetc(fp_src)) != EOF) // 读写换行符
+    while ((ch = fgetc(fp_src)) != EOF) // 正常读取换行符，返回读到的字符
     {
         fputc(ch, fp_dest);
     }
 ```
+#### 行读写 fgets/fputs
+* [行读写](./语言/文件读写/行读写.cpp)
+```cpp
+    #include <iostream>
+    FILE *fp_read = fopen(argv[1], "r");
+    FILE *fp_write = fopen(argv[2], "w");
+    char buf[1024] = {0};
+    while (fgets(buf, 1024, fp_read) != nullptr) { // 正常读取换行符，返回读到的字符串
+        fputs(buf, fp_write);
+    }
+```
+#### 格式化读写，文件定位 fprintf/fscanf/seek/ftell
+* [格式化读写](./语言/文件读写/格式化读写.cpp)
+```cpp
+    #include <iostream>
+    struct People {
+        char m_name[1024];
+        int m_age;
+    };
+    FILE *fp_rw = fopen(argv[1], "w+"); // 读写
+    People p {"yixin", 11};
+    fprintf(fp_rw, "%s %d", p.m_name, p.m_age);
+    // SEEK_SET 开始位置
+    // SEEK_CUR 当前位置
+    // SEEK_END 结束位置
+    // 正负数可以表示向前后移动
+    fseek(fp_rw, 0, SEEK_SET); // 文件指针恢复到开始位置
+    fscanf(fp_rw, "%s%d", p.m_name, &(p.m_age)); // 空白字符会停止读取
+```
+* 返回到文件开始位置的偏移量
+```cpp
+    #include <iostream>
+    fseek(fp, 0, SEEK_END);
+    int file_size = ftell(fp); // 文件大小
+```
+#### 二进制序列化读写 fread/fwrite
+* [二进制序列化读写](./语言/文件读写/二进制序列化读写.cpp)
+```cpp
+    #include <iostream>
+    #include <string.h>
+    FILE *fp_read = fopen(argv[1], "rb");
+    FILE *fp_write = fopen(argv[2], "wb");
+    char buf[1024] = {0};
+    while (fread(buf, 1, sizeof(buf), fp_read)) { // 返回读到的字符数
+        fwrite(buf, 1, strlen(buf), fp_write);
+        memset(buf, 0, sizeof(buf));
+    }
+```
 ### cpp文件读写
+### 打开关闭文件 fout.open/fout.close
+* 清空文件，默认值 std::ios::trunc
+* 读文件，默认值 std::ios::out
+* 写文件不存在创建，默认值 std::ios::in
+* 追加不存在创建 std::ios::app
+* 二进制读写 std::ios::binary
 ## STL
 ### vector
 #### 大小，空间

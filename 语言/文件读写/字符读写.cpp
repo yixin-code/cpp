@@ -15,7 +15,7 @@ void file_cp(char *argv[]) {
         exit(1);
     }
 
-    FILE *fp_write = fopen(argv[2], "r");
+    FILE *fp_write = fopen(argv[2], "w");
     if (fp_write == nullptr) {
         perror("20, fopen error");
         exit(1);
