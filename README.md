@@ -422,12 +422,102 @@
     }
 ```
 ### cpp文件读写
-### 打开关闭文件 fout.open/fout.close
+#### 打开关闭文件 fout.open/fout.close
 * 清空文件，默认值 std::ios::trunc
 * 读文件，默认值 std::ios::out
 * 写文件不存在创建，默认值 std::ios::in
 * 追加不存在创建 std::ios::app
 * 二进制读写 std::ios::binary
+#### 文件读写 fin.getline/fin >>/fout <<
+* [文件读写](./语言/文件读写/文件读写.cpp)
+```cpp
+    #include <iostream>
+    #include <fstream>
+    #include <assert.h>
+    std::ifstream fin(argv[1]);
+    std::ofstream fout(argv[2]);
+    char buf[1024] = {0};
+    while (fin >> buf) { // 不能读取空白字符
+        fout << buf << std::endl;
+    }
+
+    while (fin.getline(buf, sizeof(buf))) { // 不会读取换行符
+        fout << buf << std::endl;
+    }
+```
+#### 二进制文件读写 fin.read/fin.readsome/fin.write/
+* [二进制文件读写](./语言/文件读写/二进制文件读写.cpp)
+```cpp
+    #include <iostream>
+    #include <string.h>
+    #include <fstream>
+    #include <assert.h>
+    std::ifstream fin(argv[1]);
+    std::ofstream fout(argv[2]);
+    char buf[1024] = {0};
+    while (fin.readsome(buf, sizeof(buf))) {
+        std::cout << buf;
+        fout.write(buf, strlen(buf));
+    }
+
+    std::ofstream fout(argv[1], std::ios::binary);
+    char buf[] = R"(孤单听雨的猫
+往时间裂缝里看到了我
+雷电交加之外的另一些我
+乌云静止以后 跳进平行时空
+那些我 旅行中的你我
+回忆胡乱穿梭 坠落
+交换余生 是我 非我 苦与乐
+阴天之后总有续命的晴空
+如果我们几经转折 结局一样不动
+也才算无愧这分合
+定位心海的锚
+让时间停顿的像慢动作
+你说命运很坏吧幸好有我
+如果没有以后 如果平行失控
+那些我 不同人生的我
+会以什么方式 哭过
+交换余生 是我 非我 苦与乐
+阴天之后总有续命的晴空
+如果我们几经转折 结局一样不动
+也才算无愧这分合
+云等风 人等梦 爱辗过时光等什么
+记不住 认不出 泪眼中谁一样脸红
+等你说 等我说 一等就是一个宇宙
+日升换月落 真爱换寂寞
+交换余生 也许 忘了 第几梦
+那时我们身处第几号时空
+因为我们手心紧握 记忆也能紧扣
+可不怕前方的虫洞
+爱是时间的古董)";
+    fout.write(buf, strlen(buf));
+    std::ifstream fin(argv[1], std::ios::binary);
+    char buf2[1024] = {0};
+    fin.read(buf2, sizeof(buf));
+    std::cout << buf2;
+    fin.close();
+```
+#### 输入输出重定向
+```cpp
+    #include <iostream>
+    #include <fstream>
+    std::ofstream file("output.txt");
+    std::streambuf *orig_buf = std::cout.rdbuf(); // 保存cout的原缓冲区
+    std::cout.rdbuf(file.rdbuf()); // 将cout输出重定向到文件
+    std::cout << "Hello, World!" << std::endl; // 输出到文件
+    std::cout.rdbuf(orig_buf); // 恢复cout的原缓冲区
+    std::cout << "Back to console!" << std::endl; // 输出到控制台
+```
+#### 文件定位
+* seek(11) 移动到的字节数
+* seek(std::ios::end) 文件结尾
+* seek(std::ios::beg) 文件开始
+* std::ios::cur 文件当前位置
+* seek(10, std::ios::beg) 文件开始位置向后移动10个字节
+* seek(-10, std::ios::end) 文件结尾位置向前移动10个字节
+* tellp 获取文件大小
+    * ifstream.seek(0, std::ios::end) 将文件指针移动到尾部
+    * int size = ifstream.tell() 获取文件指针当前位置到文件开始的偏移量
 ## STL
 ### vector
 #### 大小，空间
