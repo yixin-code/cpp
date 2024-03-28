@@ -29,7 +29,7 @@ all:a.out
 $(TARGET):$(SRC)
 	$(G) $(SRC) $(FLAG) -o $(TARGET)
 
-%.o:%.c
+%.o:%.cpp
 	$(G) $< -c -o $@
 
 # make clean

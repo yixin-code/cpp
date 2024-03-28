@@ -164,13 +164,16 @@
     > int 运算注意 int 越界
 * 有符号, 无符号 运算会隐式转换成 无符号
     > 有无符号不要一起进行运算
-## typedef
+## 别名typedef/using
 * 基础类型
-    * typedef int_type int
+    * typedef int int_type;
+    * using int_type = int;
 * 数组
     * typedef int arr_type[11];
+    * using arr_type = int[11];
 * 函数指针
     * typedef void (*p_func_type)();
+    * using p_func_type = void(*)();
 ## sizeof 编译时期确定 得到的结果是一个常量表达式
 ## 运算符
 ### 算术运算符
@@ -351,6 +354,51 @@
         int num = rand() % 10 + 1; // 1 - 10
     }
 ```
+## 字符串
+### 查找字符 strchr, 拷贝 strncpy
+```cpp
+    char buf[] = "abcdefghijk";
+    char buf2[1024] = "243124324324";
+    char *p = strchr(buf, 'e');
+    if (p != nullptr) {
+        strncpy(buf2, buf, p - buf);
+        buf2[p - buf] = 0;
+    }
+    std::cout << buf2 << std::endl; // abcd
+```
+### 忽略大小写比较 strcasecmp
+```cpp
+    char str[] = "abcd";
+    char str2[] = "ABCD";
+    if (strcasecmp(str, str2) == 0) {
+        std::cout << "equal\n"; // 会输出
+    }
+```
+### 处理字符串后空白字符
+```cpp
+    void right_space(char *str) {
+        int temp_size = strlen(str);
+        while (isspace(str[temp_size - 1]) && temp_size > 0) {
+            str[--temp_size] = 0;
+        }
+    }
+```
+### 处理字符串前空白字符
+```cpp
+    void left_space(char *str) {
+        char *temp = str;
+        while (isspace(*temp)) {
+            ++temp;
+        }
+        while (*temp != '\0') {
+            *str = *temp;
+            ++str;
+            ++temp;
+        }
+        *str = '\0';
+    }
+```
+### 字符串转数字 atoi(str) std::stoi(str)
 ## 文件读写
 ### c文件读写
 #### fopen/fclose 打开/关闭文件
@@ -373,7 +421,7 @@
         fputc(ch, fp_dest);
     }
 ```
-#### 行读写 fgets/fputs
+#### 行读写 fgets(只有文件为空时buf[0] == 0)/fputs
 * [行读写](./语言/文件读写/行读写.cpp)
 ```cpp
     #include <iostream>
@@ -428,7 +476,7 @@
 * 写文件不存在创建，默认值 std::ios::in
 * 追加不存在创建 std::ios::app
 * 二进制读写 std::ios::binary
-#### 文件读写 fin.getline/fin >>/fout <<
+#### 文件读写 fin.getline(空行buf[0] == 0)/fin >>/fout <<
 * [文件读写](./语言/文件读写/文件读写.cpp)
 ```cpp
     #include <iostream>
@@ -538,11 +586,25 @@
     std::cout << vec3.size() << "\n"; // 0
     std::cout << vec3.capacity() << "\n"; // 11
 ```
+#### 添加元素
+```cpp
+    #include <vector>
+    vec.push_back(element);
+    //////////////////////////////////////////////////////////////////////////////////
+    class Student {
+    private:
+        std::string m_name;
+        int m_age;
+    public:
+        Student(const std::string &name, int age) : m_name(name), m_age(age) {}
+    };
+    std::vector<Student> vec;
+    vec.emplace_back("yixin", 11);
+```
 #### 删除元素
 ```cpp
     #include <vector>
     vec.erase(vec.begin() + 2); // 删除第三元素
-    //////////////////////////////////////////////////////////////////////////////////
 ```
 ### list
 #### 大小
@@ -1234,6 +1296,8 @@
 * proc: 进程相关的文件
 * signal: 信号相关的文件
 ### 配置文件读取
+* [配置文件读取 头文件 单例模式](./my_nignx/app/ngx_conf.h)
+* [配置文件读取](./my_nignx/app/ngx_conf.cpp)
 ---
 ---
 ---
@@ -1272,3 +1336,5 @@
 * sudo systemctl enable vboxweb.service
 * sudo systemctl start vboxweb.service
 * sudo /sbin/rcvboxdrv setup
+## 内存泄漏工具
+* sudo pacman -Sy valgrind
