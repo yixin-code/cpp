@@ -85,7 +85,7 @@
     scanf(" %c", &ch); // 输入：   a
     printf("[%c]", ch); // [a]
 ```
-### scanf输入返回值
+### scanf输入返回值，只有当返回值为空时scanf才会阻塞等待输入
 * 返回成功匹配的次数
 ### 读写字符getchar/putchar
 ```cpp
