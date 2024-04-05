@@ -332,6 +332,33 @@
     }
 ```
 * [约瑟夫环循环链表实现](./语言/递归/约瑟夫环循环链表实现.cpp)
+```cpp
+    #include <list>
+    void joseph(int peoples, int rule, int num)
+    {
+        std::list<int> l(peoples);
+        std::list<int>::iterator it = l.begin();
+        int temp = 0;
+        for (std::list<int>::iterator it = l.begin(); it != l.end(); ++it, ++temp) {
+            *it = temp;
+        }
+        while (l.size() > num) {
+            for (int i = 0; i < rule - 1; ++i) {
+                it = std::next(it);
+                if (it == l.end()) {
+                    std::advance(it, 1);
+                }
+            }
+            std::cout << "清除的为：" << *it << "\n";
+            it = l.erase(it);
+        }
+        std::cout << "剩余的人：\n";
+        for (const int &val : l) {
+            std::cout << val << "\n";
+        }
+        std::cout << "\n";
+    }
+```
 ## 数组
 * 数组下标从0开始
     * 数组地址即是首元素地址，如果从1开始会浪费空间，增加计算量(-1)
