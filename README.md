@@ -795,12 +795,12 @@
     * null，不关心返回状态
     * 非null
         * WIFEXITED(status) 检测
-            * 如果正常退出返回true
+                * 如果正常退出返回true
             * WEXITSTATUS(status) 检测
                 * 返回状态码(return或exit中的数字)
         * WIFSIGNALED(status) 检测
-            * 如果是被signal结束的，返回true
-            * 当返回true时，WTERMSIG(status) 进行检测
+                * 如果是被signal结束的，返回true
+            * 当返回true时，WTERMSIG(status) 返回信号编号
 * option
     * 0，会阻塞等待子进程结束
     * WNOHANG，不会阻塞等待子进程结束
