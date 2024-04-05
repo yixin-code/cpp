@@ -2,7 +2,7 @@ TARGET=a.out
 
 # TEMP=./linux/linux系统编程/信号/信号阻塞.cpp
 # TEMP=./c语言/递归/约瑟夫环循环链表实现.cpp
-TEMP=./练习/九九乘法表.cpp
+TEMP=./练习/空心菱形.cpp
 
 # 当前目录下所有.cpp文件
 # TEMP=$(wildcard *.cpp)
