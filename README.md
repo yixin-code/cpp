@@ -368,6 +368,9 @@
     const int arr[3] {1, 2, 3};
     arr[0] = 11; // error
 ```
+### 两个有序数组相同元素
+```cpp
+```
 ### 多维数组
 ```cpp
     // 3组 组元素为 int[4]
@@ -650,6 +653,11 @@
 ```cpp
     #include <vector>
     vec.erase(vec.begin() + 2); // 删除第三元素
+```
+#### 查找元素
+```cpp
+    #include <algorithm>
+    std::find(vec.begin(), vec.end(), element);
 ```
 ### list
 #### 大小
@@ -1400,3 +1408,4 @@
 * [菱形](./练习/菱形.cpp)
 * [空心菱形](./练习/空心菱形.cpp)
 * [心形](./练习/心形.cpp)
+* [两个有序数组相同元素](./练习/两个有序数组相同元素.cpp)
