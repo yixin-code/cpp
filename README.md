@@ -1353,6 +1353,7 @@
 * [配置文件读取](./my_nignx/app/ngx_conf.cpp)
 * [删除字符串前后控股](./my_nignx/app/ngx_func.cpp)
 * [设置进程标题](./my_nignx/app/ngx_set_process_title.cpp)
+* [日志文件](./my_nignx/app/ngx_log.cpp)
 ---
 ---
 ---
@@ -1391,8 +1392,12 @@
 * sudo systemctl enable vboxweb.service
 * sudo systemctl start vboxweb.service
 * sudo /sbin/rcvboxdrv setup
+## 解压 .rar
+* yay -Sy unrar
+    > unrar -x xxx.rar
 ## 内存泄漏工具
 * sudo pacman -Sy valgrind
+## 终端 mobaxterm
 ---
 ---
 ---
