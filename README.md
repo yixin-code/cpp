@@ -96,13 +96,6 @@
 ```cpp
     while (getchar() != '\n');
 ```
-## sscanf 通配符
-* 格式化从字符串中输入
-* %*s或%*d 跳过数据
-* %[width]s 读取指定宽度数据
-* %[a-z] 匹配a到z
-* %[^a-z] 不匹配a到z
-* 条件必须逐一匹配否则直接退出
 ## 整形运算默认是int
 * [整形运算默认是int](./语言/基础类型/整型运算.cpp)
 ```cpp
@@ -359,50 +352,14 @@
         std::cout << "\n";
     }
 ```
-## 数组
-* 数组下标从0开始
-    * 数组地址即是首元素地址，如果从1开始会浪费空间，增加计算量(-1)
-* arr[i] == *(arr + i)
-```cpp
-    // 数组元素不能发生改变
-    const int arr[3] {1, 2, 3};
-    arr[0] = 11; // error
-```
-### 两个有序数组相同元素
-```cpp
-```
-### 多维数组
-```cpp
-    // 3组 组元素为 int[4]
-    int arr[3][4] {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}};
-```
-## new/delete
-* c++11中可以对new出来的数组进行初始化
-```cpp
-    char *p = new char[11]{'1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', '\0'};
-    std::cout << p << '\n'; // 123456789a
-    for (int i = 0; i < 11; ++i) {
-        std::cout << '[' << p[i] << ']'; // [1][2][3][4][5][6][7][8][9][a][]
-    }
-```
-## 命令行参数
-![命令行参数](./资源/命令行参数.png)
-### 命令行参数后还有环境变量参数
-* evriron[] 无需声明，系统定义
-### 修改命令行参数，可改变进程标题
-* 可以通过strcpy(argv[0], "xxx")修改，但是命令行参数中并不会因为'\0'结束。还可能会影响后续的环境变量
-![修改进程标题](./资源/修改进程名.png)
-* 正确的做法
-1. [先保存环境变量]()
-## 随机数
-```cpp
-    #include <ctime>
-    srand((unsigned)time(nullpter));
-    for (int i = 0; i < 11; ++i) {
-        int num = rand() % 10 + 1; // 1 - 10
-    }
-```
 ## 字符串
+### sscanf 通配符
+* 格式化从字符串中输入
+* %*s或%*d 跳过数据
+* %[width]s 读取指定宽度数据
+* %[a-z] 匹配a到z
+* %[^a-z] 不匹配a到z
+* 条件必须逐一匹配否则直接退出
 ### 查找字符 strchr, 拷贝 strncpy
 ```cpp
     char buf[] = "abcdefghijk";
@@ -447,6 +404,106 @@
     }
 ```
 ### 字符串转数字 atoi(str) std::stoi(str)
+## 数组
+* 数组下标从0开始
+    * 数组地址即是首元素地址，如果从1开始会浪费空间，增加计算量(-1)
+* arr[i] == *(arr + i)
+```cpp
+    // 数组元素不能发生改变
+    const int arr[3] {1, 2, 3};
+    arr[0] = 11; // error
+```
+### 两个有序数组相同元素
+```cpp
+```
+### 多维数组
+```cpp
+    // 3组 组元素为 int[4]
+    int arr[3][4] {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}};
+```
+## new/delete
+* c++11中可以对new出来的数组进行初始化
+```cpp
+    char *p = new char[11]{'1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', '\0'};
+    std::cout << p << '\n'; // 123456789a
+    for (int i = 0; i < 11; ++i) {
+        std::cout << '[' << p[i] << ']'; // [1][2][3][4][5][6][7][8][9][a][]
+    }
+```
+## 命令行参数
+![命令行参数](./资源/命令行参数.png)
+### 命令行参数后还有环境变量参数
+* evriron[] 无需声明，系统定义
+### 修改命令行参数，可改变进程标题
+* 可以通过strcpy(argv[0], "xxx")修改，但是命令行参数中并不会因为'\0'结束。还可能会影响后续的环境变量
+![修改进程标题](./资源/修改进程名.png)
+* 正确的做法
+1. [先保存环境变量]()
+## 随机数
+```cpp
+    #include <ctime>
+    srand((unsigned)time(nullpter));
+    for (int i = 0; i < 11; ++i) {
+        int num = rand() % 10 + 1; // 1 - 10
+    }
+```
+## 可变参数
+### c语言可变参数
+* [c语言可变参数](./语言/可变参数/c语言可变参数.cpp)
+```cpp
+    #include <stdarg.h>
+    void func(int count, ...) {
+        va_list ap; // 参数列表
+        va_start(ap, count); // 初始化参数列表
+        for (int i = 0; i < count; ++i) {
+            std::cout << va_arg(ap, char*) << " ";
+        }
+        std::cout << "\n";
+        va_end(ap);
+    }
+    void func2(const char* format, ...) {
+        va_list ap;
+        va_start(ap, format);
+
+        const char *temp_p = format;
+
+        for (; *temp_p != 0; ++temp_p) {
+            if (*temp_p != '%') {
+                putchar(*temp_p);
+                continue;
+            } else {
+                switch (*(++temp_p)) {
+                case 'd' : {
+                    std::cout << va_arg(ap, int);
+                    break;
+                }
+                default : {
+                    vprintf(--temp_p, ap);
+                    ++temp_p; // 跳过占位符
+                    break;
+                }
+                }
+            }
+        }
+        std::cout << "\n";
+        va_end(ap);
+    }
+    func(3, "aaa", "bbb", "ccc");
+    func2("%d %s", 1, "aaa");
+```
+### c++可变参数
+* [c++可变参数](./语言/可变参数/cpp可变参数.cpp)
+```cpp
+    #include <iostream>
+    void func() {}
+    template <class T, class...Args>
+    void func(T element, Args...args) {
+        std::cout << sizeof...(args) << '\n';
+        std::cout << element << '\n';
+        func(args...);
+    }
+    func(1, "aaa");
+```
 ## 文件读写
 ### c文件读写
 #### fopen/fclose 打开/关闭文件
@@ -717,6 +774,48 @@
 ---
 ---
 ---
+## 说明符 限定符
+### constexpr 常量表达式
+```cpp
+    // 可以做为数组的大小
+    constexpr int arraySize = 10;  
+    int myArray[arraySize];
+```
+```cpp
+    // 编译时初始化，值必须是常量表达式
+    constexpr int num = 11;
+    constexpr int num2 = num * 2;
+    int num3 = 11;
+    constexpr int num4 = num3 * 2; // error num3不是常量表达式
+```
+```cpp
+    // 编译时产生结果，函数内不能包含运行行为(循环，内存分配等)
+    constexpr int func(int num) {  
+    return num * num;  
+    }  
+    constexpr int num = fun(5); 
+```
+```cpp
+    // 模板中可以，可以在编译时计算出值
+    template<int N>  
+    constexpr int func() {  
+        return N <= 1 ? 1 : N * func<N - 1>();  
+    }  
+    constexpr int num = func<5>();
+```
+```cpp
+    // 编译时if c++17
+    template<typename T>  
+    void foo() {  
+        if constexpr (std::is_integral_v<T>) {  
+            // 整型特定的代码  
+        } else if constexpr (std::is_floating_point_v<T>) {  
+            // 浮点型特定的代码  
+        } else {  
+            // 其他类型的代码  
+        }  
+    }
+```
 # 算法数据结构
 ## 时间复杂度
 * O(log n)

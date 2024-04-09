@@ -11,4 +11,9 @@ void save_environ();
 // 设置进程标题
 void set_process_title(const char* title_name);
 
+// 日志
+void log(int log_grade) {
+
+}
+
 #endif
