@@ -1331,6 +1331,13 @@
 * sudo debtap -u
 * debtap xxx.deb
 * sudo pacman -U xxx
+## yay
+* yay -R 软件名 卸载软件
+* yay -Rns cmatrix 卸载软件和依赖包
+* yay -Yc 清理掉系统中不需要的软件包
+## fish
+* alias c clear 别名
+    * funcsave c 保存
 ---
 ---
 ---
