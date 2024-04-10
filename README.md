@@ -1326,6 +1326,11 @@
 * 一个或多个进程的集合
     * 每个进程组有唯一的进程组ID
     * 可以调用系统函数创建 加入进程组
+## 安装deb软件
+* yay -Sy debtap
+* sudo debtap -u
+* debtap xxx.deb
+* sudo pacman -U xxx
 ---
 ---
 ---
@@ -1470,19 +1475,29 @@
 * yay -Sy linuxqq
 ## vscode
 * yay -Sy visual-studio-code-bin
+## 浏览器
+* yay -Sy microsoft-edge-stable-bin
 ## lazygit
 * yay -Sy lazygit
     * ssh-keygen -t rsa
+## 文件搜索
+* sudo pacman -S fzf
+## 文本搜索
+* sudo pacman -S the_silver_searcher
+## 视频音乐播放
+* sudo pacman -Sy mpv
+## 电子书
+* yay -Sy mupdf
+## U启盘 镜像
+* yay -Sy balena-etcher-electron-bin
+## github加速
+* yay -Sy watt-toolkit-bin
 ## onlyoffice 办公
 * yay -Sy onlyoffice-bin
 ## warpd 键盘控制鼠标
 * yay -Sy warpd
     > super + meat + x
     > v 选中拖拽
-## 文件搜索
-* sudo pacman -S fzf
-## 文本搜索
-* sudo pacman -S the_silver_searcher
 ## virtualbox 虚拟机
 * sudo pacman -S virtualbox virtualbox-guest-iso
 * sudo gpasswd -a yixin vboxusers
