@@ -1486,7 +1486,7 @@
 * yay -Sy microsoft-edge-stable-bin
 ## lazygit
 * yay -Sy lazygit
-    * ssh-keygen -t rsa
+    > ssh-keygen -t rsa
 ## 文件搜索
 * sudo pacman -S fzf
 ## 文本搜索
