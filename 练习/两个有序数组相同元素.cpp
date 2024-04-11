@@ -9,14 +9,22 @@ int main() {
     int i = 0;
     int j = 0;
 
-    while (i != vec.size() || j != vec2.size()) {
+    while (i != (vec.size() - 1) && j != (vec2.size() - 1)) {
         if (vec[i] == vec2[j]) {
             ++i;
             ++j;
+            v_res.push_back(vec[i]);
         } else if (vec[i] < vec2[j]) {
             ++i;
+        } else if (vec[i] > vec2[j]) {
+            ++j;
         }
     }
+
+    for (const int &val : v_res) {
+        std::cout << val << " ";
+    }
+    std::cout << "\n";
 
     return 0;
 }
