@@ -11,9 +11,9 @@ int main() {
 
     while (i != (vec.size() - 1) && j != (vec2.size() - 1)) {
         if (vec[i] == vec2[j]) {
+            v_res.push_back(vec[i]);
             ++i;
             ++j;
-            v_res.push_back(vec[i]);
         } else if (vec[i] < vec2[j]) {
             ++i;
         } else if (vec[i] > vec2[j]) {
