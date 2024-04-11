@@ -9,7 +9,7 @@ int main() {
     int i = 0;
     int j = 0;
 
-    while (i != (vec.size() - 1) && j != (vec2.size() - 1)) {
+    while (i != vec.size() && j != vec2.size()) {
         if (vec[i] == vec2[j]) {
             v_res.push_back(vec[i]);
             ++i;

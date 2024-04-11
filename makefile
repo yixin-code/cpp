@@ -2,7 +2,7 @@ TARGET=a.out
 
 # TEMP=./linux/linux系统编程/信号/信号阻塞.cpp
 # TEMP=./语言/可变参数/cpp可变参数.cpp
-TEMP=./练习/两个有序数组相同元素.cpp
+TEMP=./练习/三个有序数组相同元素.cpp
 
 # 当前目录下所有.cpp文件
 # TEMP=$(wildcard *.cpp)
