@@ -1527,6 +1527,10 @@
 * yay -Sy balena-etcher-electron-bin
 ## github加速
 * yay -Sy watt-toolkit-bin
+## 磁力连接
+* yay -Sy motrix
+## 视频剪辑
+* yay -Sy openshot
 ## onlyoffice 办公
 * yay -Sy onlyoffice-bin
 ## warpd 键盘控制鼠标
