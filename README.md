@@ -1293,6 +1293,11 @@
 ```cpp
     int num = 1;
     char *p = (char*)&num;
+    if ((int)*p == 1) {
+        std::cout << "小端\n";
+    } else {
+        std::cout << "大端\n";
+    }
 ```
 ---
 ---
