@@ -1296,7 +1296,7 @@
 ---
 ---
 # linux网络编程
-* tcp/ip协议规定网络数据采用大端字节序(低地址存高位)
+## tcp/ip协议规定网络数据采用大端字节序(低地址存高位)
 ```cpp
     int num = 1;
     char *p = (char*)&num;
@@ -1305,6 +1305,14 @@
     } else {
         std::cout << "大端\n";
     }
+```
+## 主机字节序转为网络字节序htonl
+```cpp
+    #include <arpa/inet.h>
+    int num = 0x12345678;
+    std::cout << std::hex << num << '\n'; // 12345678
+    num = htonl(num); // 
+    std::cout << std::hex << num << '\n'; // 78563421
 ```
 ---
 ---
