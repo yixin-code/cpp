@@ -353,14 +353,14 @@
     }
 ```
 ## 字符串
-### sscanf 通配符
+### 通配符sscanf
 * 格式化从字符串中输入
 * %*s或%*d 跳过数据
 * %[width]s 读取指定宽度数据
 * %[a-z] 匹配a到z
 * %[^a-z] 不匹配a到z
 * 条件必须逐一匹配否则直接退出
-### 查找字符 strchr, 拷贝 strncpy
+### 查找字符strchr, 拷贝strncpy
 ```cpp
     char buf[] = "abcdefghijk";
     char buf2[1024] = "243124324324";
@@ -371,7 +371,14 @@
     }
     std::cout << buf2 << std::endl; // abcd
 ```
-### 忽略大小写比较 strcasecmp
+### 内存拷贝memcpy
+```cpp
+    #include <cstring>
+    char buf[1024] = "abcdefghi";
+    char *p = (char*)memcpy(buf, "1234", strlen("1234"));
+    std::cout << p << '\n'; // 1234efghi
+```
+### 忽略大小写比较strcasecmp
 ```cpp
     char str[] = "abcd";
     char str2[] = "ABCD";

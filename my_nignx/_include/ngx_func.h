@@ -1,5 +1,6 @@
 #ifndef __NGX_FUNC_H__
 #define __NGX_FUNC_H__
+#include <iostream>
 
 // 清除字符串左边空格
 void left_space(char *str);
@@ -11,9 +12,9 @@ void save_environ();
 // 设置进程标题
 void set_process_title(const char* title_name);
 
-// 日志
-void log(int log_grade) {
-
-}
+// 紧急信息直接显示到屏幕
+void ngx_log_stderr(int log_grade, const char* format, ...);
+// 格式化输出
+u_char* format_printf(u_char* p_cur, u_char* p_end, const char* format, va_list ap);
 
 #endif
