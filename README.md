@@ -235,19 +235,25 @@
 ## 控制语句
 ### switch 语句
 ```cpp
-    switch (整型 字符型) {
-        case 常量表达式: {
-            statement
-            break;
-        }
-        // 多个 case 可以共用一条语句
-        case 常量表达式: case 常量表达式2: case 常量表达式3: {
-            statement
-            break;
-        }
-        default: {
-            statement
-            break;
+    while (true) {
+        switch (整型 字符型) {
+            case 常量表达式: {
+                statement
+                break;
+            }
+            case 常量表达式: {
+                statement
+                continue; // 会跳到while
+            }
+            // 多个 case 可以共用一条语句
+            case 常量表达式: case 常量表达式2: case 常量表达式3: {
+                statement
+                break;
+            }
+            default: {
+                statement
+                break;
+            }
         }
     }
 ```
