@@ -2,6 +2,7 @@
 #include "ngx_macro.h"
 #include <stdint.h>
 #include <stdarg.h>
+#include <string.h>
 
 // 显示数字
 static u_char* display_num(u_char* p_cur, u_char* p_end, uint64_t ui64, u_char zero, uintptr_t hex, uintptr_t width) {
@@ -48,7 +49,11 @@ static u_char* display_num(u_char* p_cur, u_char* p_end, uint64_t ui64, u_char z
 
     char_len = (temp_str + MAX_INT64_LEN) - p_temp_cur;
 
-    
+    if (p_cur + char_len > p_end) {
+        char_len = p_end - p_cur;
+    }
+
+    return NGX_MEMCPY_RET_CUR(p_cur, p_temp_cur, char_len);
 }
 
 // 格式化输出
@@ -163,8 +168,37 @@ u_char* format_printf(u_char* p_cur, u_char* p_end, const char* format, va_list 
                 }
 
                 p_cur = display_num(p_cur, p_end, ui64, zero, 0, width); // 显示数字
+
+                if (float_width) { // 处理小数点
+                    if (p_cur < p_end) {
+                        *(p_cur++) = '.';
+                    }
+                    p_cur = display_num(p_cur, p_end, fraction, '0', 0, float_width);
+                }
+                ++format;
+                continue;
             } // case 'f': {
-            } // switch (*format) {
-        } // if (*format == '%') {
-    } // while (*format && p_cur < p_end) {
+            default: {
+                *(p_cur++) = *(format++);
+                continue;
+            }
+            } // switch (*format)
+
+            if (sign) { // 处理整数正负
+                if (i64 < 0) {
+                    *(p_cur++) = '-';
+                    ui64 = (uint64_t)-i64;
+                } else {
+                    ui64 = (uint64_t)i64;
+                }
+            }
+
+            p_cur = display_num(p_cur, p_end, ui64, zero, 0, width);
+            ++format;
+        } else {
+            *(p_cur++) = *(format++);
+        } // if (*format == '%') 
+    } // while (*format && p_cur < p_end)
+
+    return p_cur;
 }

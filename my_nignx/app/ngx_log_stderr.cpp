@@ -18,4 +18,6 @@ void ngx_log_stderr(int log_grade, const char* format, ...) {
     p_cur = format_printf(p_cur, p_end, format, ap);
 
     va_end(ap);
+
+    
 }
