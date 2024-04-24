@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string.h>
 #include <stdarg.h>
+#include <unistd.h>
 #include "ngx_func.h"
 #include "ngx_macro.h"
 
@@ -19,5 +20,16 @@ void ngx_log_stderr(int log_grade, const char* format, ...) {
 
     va_end(ap);
 
-    
+    if (log_grade) { // 处理日志级别非最高0
+        p_cur = display_errno_info(p_cur, p_end, log_grade);
+    }
+
+    if (p_cur >= p_end) { // p_end \0
+        p_cur = p_end - 1;
+    }
+    *(p_cur++) = '\0';
+
+    write(STDERR_FILENO, err_str, p_cur - err_str);
+
+    return;
 }

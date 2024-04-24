@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdarg.h>
 #include <string.h>
+#include <errno.h>
 
 // 显示数字
 static u_char* display_num(u_char* p_cur, u_char* p_end, uint64_t ui64, u_char zero, uintptr_t hex, uintptr_t width) {
@@ -54,6 +55,27 @@ static u_char* display_num(u_char* p_cur, u_char* p_end, uint64_t ui64, u_char z
     }
 
     return NGX_MEMCPY_RET_CUR(p_cur, p_temp_cur, char_len);
+}
+
+// 显示错误编号和信息
+u_char* display_errno_info(u_char* p_cur, u_char* p_end, int err_num) {
+    char *p_error_info = strerror(err_num);
+    size_t error_info_len = strlen(p_error_info);
+
+    char temp_buf[10] = {0};
+    sprintf(temp_buf, " (%d: ", err_num);
+    size_t temp_buf_len = strlen(temp_buf);
+
+    char temp_buf2[] = ") ";
+    size_t temp_buf2_len = strlen(temp_buf2);
+
+    if ((p_cur + error_info_len + temp_buf_len + temp_buf2_len) < p_end) {
+        p_cur = NGX_MEMCPY_RET_CUR(p_cur, temp_buf, temp_buf_len);
+        p_cur = NGX_MEMCPY_RET_CUR(p_cur, p_error_info, error_info_len);
+        p_cur = NGX_MEMCPY_RET_CUR(p_cur, temp_buf2, temp_buf2_len);
+    }
+
+    return p_cur;
 }
 
 // 格式化输出

@@ -16,5 +16,7 @@ void set_process_title(const char* title_name);
 void ngx_log_stderr(int log_grade, const char* format, ...);
 // 格式化输出
 u_char* format_printf(u_char* p_cur, u_char* p_end, const char* format, va_list ap);
+// 显示错误代码和信息
+u_char* display_errno_info(u_char* p_cur, u_char* p_end, int err_num);
 
 #endif
