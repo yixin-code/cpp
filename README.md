@@ -1,4 +1,4 @@
-# 语言 c++
+# 语言
 ## 编译步骤
 * 预处理
     * 生成预处理文件
@@ -546,6 +546,10 @@
     func(1, "aaa");
 ```
 ## 文件读写
+### 缓冲分为三种
+* 全缓冲 缓冲区写满，写入文件(普通文件都是如此)
+* 行缓冲 缓冲区写满或遇到换行符，写入文件(stdout)
+* 无缓冲 直接写入文件(stderr)
 ### c文件读写
 #### fopen/fclose 打开/关闭文件
 * fopen mode
@@ -888,11 +892,69 @@
 ---
 # linux系统编程
 * 系统编程速度实际上并不快，用户态切换到内核态需要时间
+    * 需要实时操作时使用系统调用
 ## 睡眠
 ```cpp
     #include <unistd.h>
     sleep(1); // 秒
     usleep(1); // 微秒
+```
+## 文件读写
+* 文件描述符
+    * linux中有三个特殊的文件描述符(程序运行会被自动打开)
+        * 0(STDIN_FILENO)、1(STDOUT_FILENO)、2(STDERR_FILENO)
+        * 分别对应：标准输入、标准输出，标准错误
+* 输入输出重定向
+    * 输入重定向 <
+        * cat < test.txt
+    * 输出重定向 >
+        * ll > test.txt
+* /dev/null 写不满
+* /dev/zero 读不完
+* **umask(0)表示没有设置任何权限屏蔽，所设即所得**
+    * 新文件权限和默认的umask进行按位与，得到最终新文件权限
+### 打开文件open
+```cpp
+    #include <fcntl.h>
+    int fd = open("test.txt", O_RDONLY | O_CREAT, S_IRUSR | S_IWUSR);
+```
+```cpp
+    #include <fcntl.h> // open
+    #include <unistd.h> // write, close
+    int fd = open("62.txt", O_WRONLY | O_CREAT); // 用户读写执行
+    if (fd == -1) {
+        perror("7, open");
+        exit(1);
+    }
+    write(fd, "asd", 3);
+    close(fd);
+```
+* 参数2
+    * O_RDONLY: 只读打开文件。
+    * O_WRONLY: 只写打开文件。
+    * O_RDWR:   读写打开文件。
+    * O_TRUNC:  文件已存在并为写打开或创建，截断为0。
+    * O_APPEND: 追加。
+    * O_EXCL:   与O_CREAT一起使用时，文件存在，打开失败。
+    * O_CREAT:  文件不存在，创建。需要第三个参数指定新文件的权限。
+        * S_IRUSR: 用户读。
+        * S_IWUSR: 用户写。
+        * S_IXUSR: 用户执行。
+        * S_IRGRP: 组读。
+        * S_IWGRP: 组写。
+        * S_IXGRP: 组执行。
+        * S_IROTH: 其他人读。
+        * S_IWOTH: 其他人写。
+        * S_IXOTH: 其他人执行。
+    * O_NONBLOCK: 对于设备文件，此标志指示打开应该在非阻塞模式下进行。
+    * O_SYNC:     写入时同步数据。
+    * O_DSYNC:    类似 O_SYNC，但仅同步写入的数据。
+### 重定向dup2
+```cpp
+    #include <unistd.h>
+    // fd先复制一份，复制的fd = STDIN_FILENO，fd本身不再需要了，关闭fd以免占用改文件描述符
+    dup2(fd, STDIN_FILENO); // fd指向的文件变为标准输入
+    close(fd);
 ```
 ## 进程
 * ps -eo pid,ppid,sid,pgid,cmd,stat | grep -E 'PID|a.out|fish'
@@ -1245,52 +1307,6 @@
     fin.open("a.txt");
     std::cout << "errno: " << errno << strerror(errno) << "\n";
 ```
-## 文件读写
-* 文件描述符
-    * linux中有三个特殊的文件描述符(程序运行会被自动打开)
-        * 0(STDIN_FILENO)、1(STDOUT_FILENO)、2(STDERR_FILENO)
-        * 分别对应：标准输入、标准输出，标准错误
-* 输入输出重定向
-    * 输入重定向 <
-        * cat < test.txt
-    * 输出重定向 >
-        * ll > test.txt
-* /dev/null 写不满
-* /dev/zero 读不完
-* **umask(0)表示没有设置任何权限屏蔽，所设即所得**
-    * 新文件权限和默认的umask进行按位与，得到最终新文件权限
-### 打开文件open
-```cpp
-    #include <fcntl.h>
-    int fd = open("test.txt", O_RDONLY | O_CREAT, S_IRUSR | S_IWUSR);
-```
-* 参数2
-    * O_RDONLY: 只读打开文件。
-    * O_WRONLY: 只写打开文件。
-    * O_RDWR:   读写打开文件。
-    * O_TRUNC:  文件已存在并为写打开或创建，截断为0。
-    * O_APPEND: 追加。
-    * O_EXCL:   与O_CREAT一起使用时，文件存在，打开失败。
-    * O_CREAT:  文件不存在，创建。需要第三个参数指定新文件的权限。
-        * S_IRUSR: 用户读。
-        * S_IWUSR: 用户写。
-        * S_IXUSR: 用户执行。
-        * S_IRGRP: 组读。
-        * S_IWGRP: 组写。
-        * S_IXGRP: 组执行。
-        * S_IROTH: 其他人读。
-        * S_IWOTH: 其他人写。
-        * S_IXOTH: 其他人执行。
-    * O_NONBLOCK: 对于设备文件，此标志指示打开应该在非阻塞模式下进行。
-    * O_SYNC:     写入时同步数据。
-    * O_DSYNC:    类似 O_SYNC，但仅同步写入的数据。
-### 重定向dup2
-```cpp
-    #include <unistd.h>
-    // fd先复制一份，复制的fd = STDIN_FILENO，fd本身不再需要了，关闭fd以免占用改文件描述符
-    dup2(fd, STDIN_FILENO); // fd指向的文件变为标准输入
-    close(fd);
-```
 ---
 ---
 ---
@@ -1312,7 +1328,7 @@
         std::cout << "大端\n";
     }
 ```
-## 主机字节序转为网络字节序htonl
+## 主机字节序转为网络字节序 htonl
 ```cpp
     #include <arpa/inet.h>
     int num = 0x12345678;
@@ -1320,6 +1336,19 @@
     num = htonl(num); // 
     std::cout << std::hex << num << '\n'; // 78563421
 ```
+## 创建网络文件描述符号 socket
+* #include <sys/socket.h> int socket(int domain, int type, 0)
+    * domain
+        * AF_UNIX, AF_LOCAL   本地
+        * AF_INET             ipv4
+        * AF_INET6            ipv6
+    * type
+        * SOCK_STREAM         tcp协议
+        * SOCK_DGRAM          udp协议
+## 绑定ip到端口上 bind
+* #include <sys/socket.h> int bind(sockfd, const struct sockaddr *addr, sizeof(sockaddr));
+## 监听 listen
+* #include <sys/socket.h> int listen(sockfd, 最大排队个数(超过个数会被忽略));
 ---
 ---
 ---
