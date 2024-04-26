@@ -1494,7 +1494,7 @@
 * ptype num 显示类型
 ## 查看内存中的值
 * x/16xw 0x01 查看以0x01开始，16个单元每个单元4字节
-    * x 16进制，d 10进制，u 无符号，t2进制
+    * x 16进制，d 10进制，u 无符号，t2 进制
     * b 1字节，h 2字节，w 4字节，g 8字节
 ## 查看反汇编
 * disassemble /m 地址或函数名
@@ -1599,7 +1599,9 @@
 * [配置文件读取](./my_nignx/app/ngx_conf.cpp)
 * [删除字符串前后控股](./my_nignx/app/ngx_func.cpp)
 * [设置进程标题](./my_nignx/app/ngx_set_process_title.cpp)
-* [日志文件](./my_nignx/app/ngx_log.cpp)
+* 日志
+* [格式化读写](./my_nignx/app/ngx_log.cpp)
+* [显示时区]()
 ---
 ---
 ---

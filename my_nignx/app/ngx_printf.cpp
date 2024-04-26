@@ -101,7 +101,13 @@ u_char* format_printf(u_char* p_cur, u_char* p_end, const char* format, va_list 
         if (*format == '%') {
             zero = (u_char)(*(++format) == '0' ? '0' : ' '); // %后是0, zero = '0'否则zero = ' '
 
-            width = 0;
+            width       = 0;
+            sign        = 1;
+            hex         = 0;
+            float_width = 0;
+            i64         = 0;
+            ui64        = 0;
+
             while (*format >= '0' && *format <= '9') { // 循环一次加一位, 宽度只有一位不加，宽度前填充0不加
                 width = width * 10 + (*(format++) - '0'); // 需要先计算在自增，包含填充的0
             }
@@ -134,7 +140,7 @@ u_char* format_printf(u_char* p_cur, u_char* p_end, const char* format, va_list 
                 }
                 }
                 break;
-            }
+            } // while
 
             switch (*format) {
             case '%': { // %%拼接到字符串中
@@ -153,7 +159,7 @@ u_char* format_printf(u_char* p_cur, u_char* p_end, const char* format, va_list 
             case 's': { // 字符串
                 p_temp_str = (u_char*)va_arg(ap, u_char*);
                 while (*p_temp_str && p_end > p_cur) {
-                    *p_cur = *p_temp_str;
+                    *(p_cur++) = *(p_temp_str++);
                 }
                 ++format;
                 continue;
@@ -199,7 +205,7 @@ u_char* format_printf(u_char* p_cur, u_char* p_end, const char* format, va_list 
                 }
                 ++format;
                 continue;
-            } // case 'f': {
+            } // case 'f': 
             default: {
                 *(p_cur++) = *(format++);
                 continue;
@@ -215,11 +221,11 @@ u_char* format_printf(u_char* p_cur, u_char* p_end, const char* format, va_list 
                 }
             }
 
-            p_cur = display_num(p_cur, p_end, ui64, zero, 0, width);
+            p_cur = display_num(p_cur, p_end, ui64, zero, hex, width);
             ++format;
-        } else {
-            *(p_cur++) = *(format++);
-        } // if (*format == '%') 
+        }
+
+        *(p_cur++) = *(format++);
     } // while (*format && p_cur < p_end)
 
     return p_cur;

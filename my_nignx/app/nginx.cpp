@@ -1,4 +1,5 @@
 #include <iostream>
+#include <unistd.h>
 #include "ngx_conf.h"
 #include "ngx_func.h"
 #include "ngx_global.h"
@@ -8,6 +9,12 @@ int g_environ_len = 0; // 环境变量字节数
 char **g_p_argv = nullptr; // 命令行参数
 
 int main(int argc, char *argv[]) {
+    // ngx_log_stderr(0, "%10d\n", 22);
+    // ngx_log_stderr(0, "%.6f\n", 22.222);
+    // ngx_log_stderr(0, "%.2f\n", 22.999);
+    // ngx_log_stderr(0, "%xd\n", 22);
+    // ngx_log_stderr(0, "%Xd\n", 22);
+
     g_p_argv = argv;
 
     CConfig *p_config = CConfig::get_instance();
@@ -24,7 +31,11 @@ int main(int argc, char *argv[]) {
         g_p_environ = nullptr;
     }
 
-    while(true);
+    int num = 0;
+    while(true) {
+        std::cout << "sleep: " << ++num << '\n';
+        sleep(1);
+    }
 
     std::cout << "program exit\n";
 

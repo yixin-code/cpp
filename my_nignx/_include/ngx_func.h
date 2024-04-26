@@ -13,7 +13,7 @@ void save_environ();
 void set_process_title(const char* title_name);
 
 // 紧急信息直接显示到屏幕
-void ngx_log_stderr(int log_grade, const char* format, ...);
+void ngx_log_stderr(int error_num, const char* format, ...);
 // 格式化输出
 u_char* format_printf(u_char* p_cur, u_char* p_end, const char* format, va_list ap);
 // 显示错误代码和信息
