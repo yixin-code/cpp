@@ -1336,8 +1336,12 @@
     num = htonl(num); // 
     std::cout << std::hex << num << '\n'; // 78563421
 ```
-## 创建网络文件描述符号 socket
-* #include <sys/socket.h> int socket(int domain, int type, 0)
+## 服务端
+### 创建分配一个网络文件描述符号 socket
+```cpp
+    #include <sys/socket.h>
+    int listen_fd = socket(int domain, int type, 0);
+```
     * domain
         * AF_UNIX, AF_LOCAL   本地
         * AF_INET             ipv4
@@ -1345,10 +1349,41 @@
     * type
         * SOCK_STREAM         tcp协议
         * SOCK_DGRAM          udp协议
-## 绑定ip到端口上 bind
-* #include <sys/socket.h> int bind(sockfd, const struct sockaddr *addr, sizeof(sockaddr));
-## 监听 listen
-* #include <sys/socket.h> int listen(sockfd, 最大排队个数(超过个数会被忽略));
+### 绑定fd源地址 bind
+```cpp
+    #include <sys/socket.h>
+    int bind(listen_fd, const struct sockaddr *addr, sizeof(sockaddr));
+```
+### 使fd成为监听描述符号 listen
+```cpp
+    #include <sys/socket.h>
+    int listen(listen_fd, 最大排队个数(超过个数会被忽略));
+```
+### 阻塞等待客户端连接 accept
+* 只有到此才是读写套接字，以上都是监听套接字
+```cpp
+    #include <sys/socket.h>
+    // 不关心连接的方参数2、3可以为NULL
+    int connect_fd = accept(sockfd, struct sockaddr *addr, socklen_t *addrlen);
+``` 
+## 客户端
+### 创建分配一个网络文件描述符号 socket
+```cpp
+    #include <sys/socket.h>
+    int connect_fd = socket(int domain, int type, 0);
+```
+    * domain
+        * AF_UNIX, AF_LOCAL   本地
+        * AF_INET             ipv4
+        * AF_INET6            ipv6
+    * type
+        * SOCK_STREAM         tcp协议
+        * SOCK_DGRAM          udp协议
+### 发起连接，阻塞等待服务器应答
+```cpp
+    #include <sys/socket.h>
+    connect(connect_fd, struct sockaddr *addr, socklen_t *addrlen);
+```
 ---
 ---
 ---
