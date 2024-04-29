@@ -915,13 +915,11 @@
     * 新文件权限和默认的umask进行按位与，得到最终新文件权限
 ### 打开文件open
 ```cpp
-    #include <fcntl.h>
-    int fd = open("test.txt", O_RDONLY | O_CREAT, S_IRUSR | S_IWUSR);
-```
-```cpp
     #include <fcntl.h> // open
     #include <unistd.h> // write, close
-    int fd = open("62.txt", O_WRONLY | O_CREAT); // 用户读写执行
+    // int fd = open("test.txt", O_RDONLY | O_CREAT, S_IRUSR | S_IWUSR);
+    // int fd = open("test.txt", O_RDONLY | O_CREAT, 0644);
+    int fd = open("62.txt", O_WRONLY | O_CREAT); // 不会截断文件 文件指针会在文件开始处
     if (fd == -1) {
         perror("7, open");
         exit(1);
@@ -1302,7 +1300,7 @@
 ```cpp
     #include <cerrno>
     #include <fstream>
-    #include <cstring>
+    #include <cstring> // strerror
     std::ifstream fin;
     fin.open("a.txt");
     std::cout << "errno: " << errno << strerror(errno) << "\n";
@@ -1597,7 +1595,7 @@
 ### 代码
 * [头文件 单例模式](./my_nignx/_include/ngx_conf.h)
 * [配置文件读取](./my_nignx/app/ngx_conf.cpp)
-* [删除字符串前后控股](./my_nignx/app/ngx_func.cpp)
+* [删除字符串前后空格](./my_nignx/app/ngx_func.cpp)
 * [设置进程标题](./my_nignx/app/ngx_set_process_title.cpp)
 * 日志
 * [格式化读写](./my_nignx/app/ngx_log.cpp)
