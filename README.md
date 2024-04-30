@@ -384,6 +384,18 @@
     char *p = (char*)memcpy(buf, "1234", strlen("1234"));
     std::cout << p << '\n'; // 1234efghi
 ```
+### 内存置空memcpy bzero
+```cpp
+    #include <string.h>
+    char buf[1024];
+    memset(buf, 0, sizeof(buf));
+```
+等价于
+```cpp
+    #include <strings.h>
+    char buf[1024];
+    bzero(buf, sizeof(buf));
+```
 ### 忽略大小写比较strcasecmp
 ```cpp
     char str[] = "abcd";
@@ -1331,39 +1343,12 @@
     #include <arpa/inet.h>
     int num = 0x12345678;
     std::cout << std::hex << num << '\n'; // 12345678
-    num = htonl(num); // 
+    num = htonl(num);
+    num = htons(num);
     std::cout << std::hex << num << '\n'; // 78563421
 ```
 ## 服务端
-### 创建分配一个网络文件描述符号 socket
-```cpp
-    #include <sys/socket.h>
-    int listen_fd = socket(int domain, int type, 0);
-```
-    * domain
-        * AF_UNIX, AF_LOCAL   本地
-        * AF_INET             ipv4
-        * AF_INET6            ipv6
-    * type
-        * SOCK_STREAM         tcp协议
-        * SOCK_DGRAM          udp协议
-### 绑定fd源地址 bind
-```cpp
-    #include <sys/socket.h>
-    int bind(listen_fd, const struct sockaddr *addr, sizeof(sockaddr));
-```
-### 使fd成为监听描述符号 listen
-```cpp
-    #include <sys/socket.h>
-    int listen(listen_fd, 最大排队个数(超过个数会被忽略));
-```
-### 阻塞等待客户端连接 accept
-* 只有到此才是读写套接字，以上都是监听套接字
-```cpp
-    #include <sys/socket.h>
-    // 不关心连接的方参数2、3可以为NULL
-    int connect_fd = accept(sockfd, struct sockaddr *addr, socklen_t *addrlen);
-``` 
+* [服务端程序](./linux/linux网络编程/服务端.cpp)
 ## 客户端
 ### 创建分配一个网络文件描述符号 socket
 ```cpp
