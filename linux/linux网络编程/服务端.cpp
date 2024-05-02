@@ -2,7 +2,7 @@
 #include <sys/socket.h> // socket bind listen accept
 #include <netinet/ip.h> // sockaddr_in
 #include <string.h>
-#include <arpa/inet.h> // inet_ntop
+#include <arpa/inet.h> // inet_ntop htonl htons ntohs
 #include <unistd.h> // write read
 
 int main(int argc, char *argv[]) {
