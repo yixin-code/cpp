@@ -1663,7 +1663,7 @@
 * [设置进程标题](./my_nignx/app/ngx_set_process_title.cpp)
 * 日志
 * [格式化读写](./my_nignx/app/ngx_log.cpp)
-* [显示时区]()
+* [打开日志等级和路径给予初值](./my_nignx/app/ngx_log.cpp)
 ---
 ---
 ---

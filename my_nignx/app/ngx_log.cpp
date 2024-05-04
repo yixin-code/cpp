@@ -2,8 +2,13 @@
 #include <string.h>
 #include <stdarg.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include "ngx_func.h"
 #include "ngx_macro.h"
+#include "ngx_conf.h"
+#include "ngx_global.h"
+
+Log_t log_t; // 日志类型，文件描述后续关闭
 
 // 格式化读写
 void ngx_log_stderr(int error_num, const char* format, ...) {
@@ -53,4 +58,23 @@ u_char* display_errno_info(u_char* p_cur, u_char* p_end, int err_num) {
     }
 
     return p_cur;
+}
+
+// 打开日志文件
+    // 将日志等级和文件路径赋予默认值
+void ngx_log_init() {
+    CConfig *p_config = CConfig::get_instance();
+    u_char *p_log_name = (u_char*)p_config->get_string("Log");
+    if (p_log_name == nullptr) {
+        p_log_name = (u_char*)LOG_NAME_PATH; // 给初始路径
+    }
+    log_t.m_log_level = p_config->get_int_default("LogLevel", NGX_LOG_NOTICE); // 给初始日志等级
+
+    // log_t.m_fd = open((const char*)p_log_name, O_WRONLY | O_APPEND, 0644);
+    log_t.m_fd = open((const char*)p_log_name, O_WRONLY | O_APPEND | O_CREAT, 0644);
+    if (log_t.m_fd == -1) {
+        ngx_log_stderr(errno, "[alert] 73 open error %s", p_log_name);
+        log_t.m_fd = STDERR_FILENO; // 文件描述符定位到标准错误
+    }
+    return;
 }

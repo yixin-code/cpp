@@ -18,5 +18,9 @@ void ngx_log_stderr(int error_num, const char* format, ...);
 u_char* format_printf(u_char* p_cur, u_char* p_end, const char* format, va_list ap);
 // 显示错误代码和信息
 u_char* display_errno_info(u_char* p_cur, u_char* p_end, int err_num);
+// 打开日志文件
+    // 将日志等级和文件路径赋予默认值
+void ngx_log_init();
+
 
 #endif

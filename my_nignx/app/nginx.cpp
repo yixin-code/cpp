@@ -31,6 +31,8 @@ int main(int argc, char *argv[]) {
         g_p_environ = nullptr;
     }
 
+    ngx_log_init();
+
     int num = 0;
     while(true) {
         std::cout << "sleep: " << ++num << '\n';

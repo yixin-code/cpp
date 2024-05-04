@@ -9,6 +9,7 @@
 #define MAX_INT64_LEN (sizeof("-9223372036854775808") - 1) // 64位整数最长字符, -1除去\0
 #define MAX_UINT32 (u_int32_t)0xffffffff // 32位无符号最大整数
 
+#define LOG_NAME_PATH "./logs/ngx.log" // 日志路径名
 // 日志级别
 #define NGX_LOG_STDERR      0 //控制台错误【stderr】：最高级别日志，日志的内容不再写入log参数指定的文件，而是会直接将日志输出到标准错误设备比如控制台屏幕
 #define NGX_LOG_EMERG       1 //紧急 【emerg】
