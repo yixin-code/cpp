@@ -1356,7 +1356,7 @@
     #include <unistd.h> // write read
     constexpr uint32_t SERVER_PORT = 8354; // 端口号
     constexpr uint32_t MAX_RECV_DATA = 1024; // 最大接收数据
-    // 分配一个监听描述符
+    // 分配一个socket描述符
         // domain
             // AF_UNIX, AF_LOCAL   本地
             // AF_INET             ipv4
@@ -1379,7 +1379,7 @@
     std::cout << "wait connect...\n";
     int connect_fd = 0;
     sockaddr_in client_addr;
-    socklen_t client_addr_len = 0;
+    socklen_t client_addr_len    = 0;
     char temp_buf[MAX_RECV_DATA] = {0};
     while (true) {
         // 阻塞等待客户端连接, 返回连接套接字 用于传输数据
@@ -1390,32 +1390,61 @@
             perror("51 accept");
             exit(1);
         }
-        std::cout << "客户端: " << inet_ntoa(client_addr.sin_addr) // 返回字符串
+        std::cout << "客户端: " << inet_ntoa(client_addr.sin_addr) // 返回字符串，非线程安全inet_ntop线程安全
                   << ", 端口号: " << ntohs(client_addr.sin_port) << " 已连接" << '\n';
         memset(temp_buf, 0, MAX_RECV_DATA);
         read(connect_fd, temp_buf, MAX_RECV_DATA); // 返回读到的字节数
         std::cout << temp_buf << '\n';
-        write(connect_fd, "你好客户端", sizeof( "你好客户端"));
+        write(connect_fd, "你好客户端", sizeof( "你好客户端")); // 返回写入字节数
         close(connect_fd);
     }
 ```
 ## 客户端
-### 创建分配一个网络文件描述符号 socket
+* [客户端程序](./linux/linux网络编程/客户端.cpp)
 ```cpp
-    #include <sys/socket.h>
-    int connect_fd = socket(int domain, int type, 0);
-```
-    * domain
-        * AF_UNIX, AF_LOCAL   本地
-        * AF_INET             ipv4
-        * AF_INET6            ipv6
-    * type
-        * SOCK_STREAM         tcp协议
-        * SOCK_DGRAM          udp协议
-### 发起连接，阻塞等待服务器应答
-```cpp
-    #include <sys/socket.h>
-    connect(connect_fd, struct sockaddr *addr, socklen_t *addrlen);
+    #include <sys/socket.h> // socket bind listen accept
+    #include <netinet/ip.h> // sockaddr_in
+    #include <arpa/inet.h> // inet_ntoa htonl htons ntohs
+    #include <unistd.h> // write read close
+    constexpr uint32_t SERVER_PORT   = 8354;   // 端口号
+    constexpr uint32_t MAX_RECV_DATA = 1024; // 最大接收数据
+    // 获取套接字文件描述符
+        // domain
+        //     AF_UNIX, AF_LOCAL   本地
+        //     AF_INET             ipv4
+        //     AF_INET6            ipv6
+        // type
+        //     SOCK_STREAM         tcp协议
+        //     SOCK_DGRAM          udp协议
+    int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (socket_fd == -1) {
+        perror("20 socket");
+        exit(1);
+    }
+    // 客户端地址结构体
+    sockaddr_in client_addr;
+    memset(&client_addr, 0, sizeof(client_addr));
+    if (inet_aton("127.0.0.1", &client_addr.sin_addr) ==0) {
+        perror("26 inet_aton");
+        exit(1);
+    }
+    client_addr.sin_family = AF_INET;
+    client_addr.sin_port   = htons(SERVER_PORT);
+    // 阻塞等待发起连接
+    if (connect(socket_fd, (sockaddr*)&client_addr, sizeof(client_addr)) == -1) {
+        perror("34 connect");
+        exit(1);
+    }
+    char buf[MAX_RECV_DATA] = {0};
+    if (write(socket_fd, "你好服务端\n", strlen("你好服务端\n")) == -1) { // 返回写入字节数
+        perror("41 write");
+        exit(1);
+    }
+    if (read(socket_fd, buf, MAX_RECV_DATA) == -1) {
+        perror("46 read");
+        exit(1);
+    }
+    std::cout << buf;
 ```
 ---
 ---

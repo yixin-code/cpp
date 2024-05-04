@@ -60,6 +60,8 @@ int main(int argc, char *argv[]) {
             exit(1);
         }
 
+        // std::cout << "-----------------------------\n";
+
         // char temp_buf2[INET_ADDRSTRLEN] = {0}; // INET_ADDRSTRLEN 16
         // char temp_buf2[ADDR_LEN] = {0};
         // std::cout << "客户端: "
@@ -70,12 +72,14 @@ int main(int argc, char *argv[]) {
         
         memset(temp_buf, 0, MAX_RECV_DATA);
         read(connect_fd, temp_buf, MAX_RECV_DATA); // 返回读到的字节数
-        std::cout << temp_buf << '\n';
+        std::cout << temp_buf;
         
-        write(connect_fd, "你好客户端", sizeof( "你好客户端"));
+        write(connect_fd, "你好客户端\n", sizeof("你好客户端\n"));
 
         close(connect_fd);
     }
+
+    close(socket_fd);
 
     return 0;
 }
