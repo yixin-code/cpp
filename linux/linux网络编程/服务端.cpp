@@ -3,7 +3,8 @@
 #include <netinet/ip.h> // sockaddr_in
 #include <string.h>
 #include <arpa/inet.h> // inet_ntop htonl htons ntohs
-#include <unistd.h> // write read
+#include <unistd.h> // write read fork
+#include <sys/wait.h> // waitpid
 
 int main(int argc, char *argv[]) {
     constexpr uint32_t SERVER_PORT = 8354; // 端口号
@@ -48,7 +49,8 @@ int main(int argc, char *argv[]) {
     sockaddr_in client_addr;
     socklen_t client_addr_len = 0;
     // int temp_ret = 0;
-    char temp_buf[MAX_RECV_DATA] = {0};
+    char temp_buf[MAX_RECV_DATA] = {0}; // 临时存储信息
+    ssize_t count = 0; // 读到的字节数
 
     while (true) {
         // 阻塞等待客户端连接, 返回连接套接字 用于传输数据
@@ -59,27 +61,40 @@ int main(int argc, char *argv[]) {
             perror("51 accept");
             exit(1);
         }
-
         // std::cout << "-----------------------------\n";
-
-        // char temp_buf2[INET_ADDRSTRLEN] = {0}; // INET_ADDRSTRLEN 16
+        char temp_buf2[INET_ADDRSTRLEN] = {0}; // INET_ADDRSTRLEN 16
         // char temp_buf2[ADDR_LEN] = {0};
-        // std::cout << "客户端: "
-        //           << inet_ntop(AF_INET, &client_addr.sin_addr, temp_buf, INET_ADDRSTRLEN) // 返回字符串
-        //           << ", 端口号: " << ntohs(client_addr.sin_port) << " 已连接" << '\n';
-        std::cout << "客户端: " << inet_ntoa(client_addr.sin_addr) // 返回字符串
+        std::cout << "客户端: "
+                  << inet_ntop(AF_INET, &client_addr.sin_addr, temp_buf, INET_ADDRSTRLEN) // 返回字符串
                   << ", 端口号: " << ntohs(client_addr.sin_port) << " 已连接" << '\n';
+        // std::cout << "客户端: " << inet_ntoa(client_addr.sin_addr) // 返回字符串
+        //           << ", 端口号: " << ntohs(client_addr.sin_port) << " 已连接" << '\n';
         
-        memset(temp_buf, 0, MAX_RECV_DATA);
-        read(connect_fd, temp_buf, MAX_RECV_DATA); // 返回读到的字节数
-        std::cout << temp_buf;
-        
-        write(connect_fd, "你好客户端\n", sizeof("你好客户端\n"));
+        pid_t pid = fork();
+        if (pid == -1) {
+            perror("72 fork");
+            exit(1);
+        }
+
+        // 父进程 等待创建连接 回收资源
+        if (pid > 0) {
+            close(connect_fd);
+            while(waitpid(-1, nullptr, WNOHANG) > 0) {} // 不阻塞回收子进程
+            continue;
+        }
+
+        close(socket_fd);
+
+        while (true) {
+            count = read(connect_fd, temp_buf, MAX_RECV_DATA);
+            if (strncasecmp(temp_buf, "quit", 4) == 0) { // 忽略大小写比较
+                break;
+            }
+            write(STDOUT_FILENO, temp_buf, count);
+        }
 
         close(connect_fd);
     }
-
-    close(socket_fd);
 
     return 0;
 }

@@ -959,6 +959,18 @@
     * O_NONBLOCK: 对于设备文件，此标志指示打开应该在非阻塞模式下进行。
     * O_SYNC:     写入时同步数据。
     * O_DSYNC:    类似 O_SYNC，但仅同步写入的数据。
+### 文件读写read write
+#### read返回读到的字节数，失败返回-1
+* [read write](./linux/linux系统编程/文件读写/read.cpp)
+    * 读取标准输入时是行缓冲，并会将换行符读取
+    * 当读取字符数量大于实际字符时会截断
+```cpp
+    #include <unistd.h>
+    char buf[11] = {0};
+    ssize_t count = read(STDIN_FILENO, buf, 11); // 输入abcd
+    std::cout << "count: " << count << ", " << buf; // 输出5 abcd换行
+    write(STDOUT_FILENO, buf, count); // 输出abcd换行
+```
 ### 重定向dup2
 ```cpp
     #include <unistd.h>
@@ -976,7 +988,7 @@
 ### 进程终止状态
 * bash 中 echo $?
 * fish 中 echo $status
-### 创建子进程 父进程中返回子进程pid
+### 创建子进程 fork父进程中返回子进程pid
 * [创建子进程](./linux/linux系统编程/进程/创建子进程.cpp)
 ```cpp
     #include <iostream>
@@ -1032,7 +1044,7 @@
 * 进程结束会关闭所有文件描述符，释放分配的内存。
     * PCB(进程控制块)还会存在，父进程调用wait/waitpid查看信息，并清除子进程
 * 僵尸进程无法使用kill -9 终止，只能终止正在运行的程序
-#### waitpid(pid_t pid, int &status, int option)
+#### waitpid(pid_t pid, int &status, int option)返回0表示没有资源可回收，返回-1失败
 * [wait(&stat)==waitpid(-1, &stat, 0)](./linux/linux系统编程/进程/等待子进程.cpp)
 * pid
     * **-1, 等待所有子进程**
@@ -1074,7 +1086,7 @@
 ```cpp
     #include <fcntl.h>
     #include <unistd.h>
-    int fd = open("dev/null", O_RDWR); // 读写模式打开
+    int fd = open("/dev/null", O_RDWR); // 读写模式打开
     dup2(fd, STDIN_FILENO); // 标准输入重定向到fd
     dup2(fd, STDOUT_FILENO); // 标准输出重定向到fd
     if (fd > STDERR_FILENO) { // fd先复制一份，复制的fd = STDIN_FILENO，fd本身不再需要了，关闭fd以免占用改文件描述符
