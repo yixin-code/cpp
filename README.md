@@ -500,6 +500,19 @@
         int num = rand() % 10 + 1; // 1 - 10
     }
 ```
+```cpp
+    #include <random>  
+    // 创建一个随机数引擎  
+    std::random_device rd;  // 用于获取种子  
+    std::mt19937 mt(rd()); // 使用Mersenne Twister算法和随机种子  
+    // 创建一个整数分布  
+    std::uniform_int_distribution<> dis(1, 100); // 生成1到100之间的随机整数(包括1和100)
+    std::uniform_real_distribution<> dis(0.0, 1.0); // 生成0到1之间的随机浮点数
+    // 生成并输出10个随机数  
+    for (int n = 0; n < 10; ++n) {  
+        std::cout << dis(mt) << ' ';  
+    }  
+```
 ## 可变参数
 ### c语言可变参数
 * [c语言可变参数](./语言/可变参数/c语言可变参数.cpp)
