@@ -165,8 +165,11 @@
     * typedef int arr_type[11];
     * using arr_type = int[11];
 * 函数指针
-    * typedef void (*p_func_type)();
-    * using p_func_type = void(*)();
+    * typedef void (*p_func_type)(void);
+    * using p_func_type = void(*)(void);
+* 成员函数指针
+    * typedef void (A::*p_m_func_type)(void);
+    * using p_m_func_type = void(A::*)(void);
 ## sizeof 编译时期确定 得到的结果是一个常量表达式
 ## 运算符
 ### 算术运算符
@@ -489,9 +492,6 @@
 * evriron[] 无需声明，系统定义
 ### 修改命令行参数，可改变进程标题
 * 可以通过strcpy(argv[0], "xxx")修改，但是命令行参数中并不会因为'\0'结束。还可能会影响后续的环境变量
-![修改进程标题](./资源/修改进程名.png)
-* 正确的做法
-1. [先保存环境变量]()
 ## 随机数
 ```cpp
     #include <ctime>
@@ -938,6 +938,22 @@
 * /dev/zero 读不完
 * **umask(0)表示没有设置任何权限屏蔽，所设即所得**
     * 新文件权限和默认的umask进行按位与，得到最终新文件权限
+### 设置光标位置
+```cpp
+    #include <unistd.h>  
+    #include <string.h>
+    #include <iostream>
+    void set_cursor_position(int x, int y) {  
+        system("clear");
+        char buf[32] = {0};
+        snprintf(buf, sizeof(buf), "\033[%d;%dH", y, x); // \033[%d;%dH是一个ANSI转义序列，用于设置光标位置。%d;%d 会被替换为行号和列号，行号和列号的起始值通常是 1，不是 0。
+        // write(STDOUT_FILENO, buf, strlen(buf));  
+        std::cout << buf;
+    }  
+    // 将光标移动到第 10 行，第 20 列  
+    set_cursor_position(20, 10);  
+    printf("Hello, world!\n"); // 这行文本将在指定位置显示  
+```
 ### 打开文件open
 ```cpp
     #include <fcntl.h> // open
