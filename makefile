@@ -29,10 +29,11 @@ FLAG=-Wall -std=c++11 -g -fsanitize=address -Werror -O0
 all:a.out
 
 $(TARGET):$(SRC)
-	$(G) $(SRC) $(FLAG) -o $(TARGET)
+	$(G) $(SRC) -o $(TARGET)
+#	$(G) $(SRC) $(FLAG) -o $(TARGET)
 
 %.o:%.cpp
-	$(G) $< -c -o $@
+	$(G) $< $(FLAG) -c -o $@
 
 # make clean
 # clean:

@@ -974,8 +974,8 @@
     * O_RDWR:   读写打开文件。
     * O_TRUNC:  文件已存在并为写打开或创建，截断为0。
     * O_APPEND: 追加。
-    * O_EXCL:   与O_CREAT一起使用时，文件存在，打开失败。
     * O_CREAT:  文件不存在，创建。需要第三个参数指定新文件的权限。
+        * 0644
         * S_IRUSR: 用户读。
         * S_IWUSR: 用户写。
         * S_IXUSR: 用户执行。
@@ -986,6 +986,7 @@
         * S_IWOTH: 其他人写。
         * S_IXOTH: 其他人执行。
     * O_NONBLOCK: 对于设备文件，此标志指示打开应该在非阻塞模式下进行。
+    * O_EXCL:   与O_CREAT一起使用时，文件存在，打开失败。
     * O_SYNC:     写入时同步数据。
     * O_DSYNC:    类似 O_SYNC，但仅同步写入的数据。
 ### 文件读写read write
@@ -1000,6 +1001,7 @@
     std::cout << "count: " << count << ", " << buf; // 输出5 abcd换行
     write(STDOUT_FILENO, buf, count); // 输出abcd换行
 ```
+* [阻塞读](./linux/linux系统编程/文件读写/阻塞读.cpp)
 ### 重定向dup2
 ```cpp
     #include <unistd.h>
