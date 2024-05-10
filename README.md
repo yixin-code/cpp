@@ -936,8 +936,19 @@
         * ll > test.txt
 * /dev/null 写不满
 * /dev/zero 读不完
-* **umask(0)表示没有设置任何权限屏蔽，所设即所得**
+### **umask(0)表示没有设置任何权限屏蔽，所设即所得**
     * 新文件权限和默认的umask进行按位与，得到最终新文件权限
+* [umask](./linux/linux系统编程/文件读写/umask.cpp)
+```cpp
+    #include <fcntl.h> // open
+    #include <sys/stat.h> // umask
+    #include <iostream>
+    // 读写方式打开文件不存在创建文件存在截断
+        // 未umask权限为rwxr-xr-x
+    mode_t uk = umask(0); // 添加umask后会是rwxrwxrwx
+    int fd = open("./umask.txt", O_RDWR | O_CREAT | O_TRUNC, 0777);
+    umask(uk);
+```
 ### 设置光标位置
 ```cpp
     #include <unistd.h>  
@@ -1002,6 +1013,7 @@
     write(STDOUT_FILENO, buf, count); // 输出abcd换行
 ```
 * [阻塞读](./linux/linux系统编程/文件读写/阻塞读.cpp)
+* /dev/tty 终端(对其读写相当于标准输入输出)
 ### 重定向dup2
 ```cpp
     #include <unistd.h>
