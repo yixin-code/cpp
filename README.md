@@ -1013,7 +1013,6 @@
     write(STDOUT_FILENO, buf, count); // 输出abcd换行
 ```
 * [阻塞读](./linux/linux系统编程/文件读写/阻塞读.cpp)
-* /dev/tty 终端(对其读写相当于标准输入输出)
 ### 重定向dup2
 ```cpp
     #include <unistd.h>
