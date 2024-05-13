@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sys/time.h>
 #include <string.h>
 #include <stdarg.h>
 #include <unistd.h>
@@ -9,6 +10,18 @@
 #include "ngx_global.h"
 
 Log_t log_t; // 日志类型，文件描述后续关闭
+
+static u_char log_level[][20] {
+    "stderr", // 0 控制台错误
+    "emerg",  // 1 紧急
+    "alert",  // 2 警戒
+    "crit",   // 3 严重
+    "error",  // 4 错误
+    "warn",   // 5 警告
+    "notice", // 6 注意
+    "info",   // 7 信息
+    "debug",  // 8 调试
+};
 
 // 格式化读写
 void ngx_log_stderr(int error_num, const char* format, ...) {
@@ -82,5 +95,16 @@ void ngx_log_init() {
 // 日志核心文件
     // 日志写入文件
 void ngx_log_core(int level, int error_num, const char* format, ...) {
-    u_char log_buf[MAX_ERR_INFO_LEN] = {0};
+    u_char str_log_buf[MAX_ERR_INFO_LEN] = {0};
+    u_char *p_end = str_log_buf + MAX_ERR_INFO_LEN - 1; // 指向log_buf结尾
+    u_char *p_cur = str_log_buf;
+
+    timeval *p_tv = nullptr;
+    gettimeofday(p_tv, nullptr); // 得到当前时间距1970-1-1的秒数和过去的微妙数
+    tm t;
+    memset(&t, 0, sizeof(t));
+    localtime_r(&(p_tv->tv_sec), &t); // 返回本地时间 使用tm结构表示
+    u_char str_cur_time[20] = {0};
+    p_cur = format_sprintf(p_cur, p_end, "%4d-%02d-%02d %02d:%02d:%02d",
+        t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
 }

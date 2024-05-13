@@ -57,6 +57,17 @@ static u_char* display_num(u_char* p_cur, u_char* p_end, uint64_t ui64, u_char z
     return NGX_MEMCPY_RET_CUR(p_cur, p_temp_cur, char_len);
 }
 
+// 对格式化输出进行封装
+u_char* format_sprintf(u_char* p_cur, u_char* p_end, const char* format, ...) {
+    va_list ap;
+
+    va_start(ap, format);
+    u_char *p = format_printf(p_cur, p_end, format, ap);
+    va_end(ap);
+
+    return p;
+}
+
 // 格式化输出
 u_char* format_printf(u_char* p_cur, u_char* p_end, const char* format, va_list ap) {
     u_char      zero        = 0;        // 处理填充0或空格
@@ -117,7 +128,9 @@ u_char* format_printf(u_char* p_cur, u_char* p_end, const char* format, va_list 
                     }
                     break;
                 }
-                }
+                default :
+                    break;
+                } // switch
                 break;
             } // while
 
