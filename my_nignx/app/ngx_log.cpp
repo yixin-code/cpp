@@ -78,3 +78,9 @@ void ngx_log_init() {
     }
     return;
 }
+
+// 日志核心文件
+    // 日志写入文件
+void ngx_log_core(int level, int error_num, const char* format, ...) {
+    u_char log_buf[MAX_ERR_INFO_LEN] = {0};
+}

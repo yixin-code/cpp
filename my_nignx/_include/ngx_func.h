@@ -21,6 +21,8 @@ u_char* display_errno_info(u_char* p_cur, u_char* p_end, int err_num);
 // 打开日志文件
     // 将日志等级和文件路径赋予默认值
 void ngx_log_init();
-
+// 日志核心文件
+    // 日志写入文件
+void ngx_log_core(int level, int error_num, const char* format, ...);
 
 #endif
