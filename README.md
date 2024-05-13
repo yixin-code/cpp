@@ -918,11 +918,56 @@
 # linux系统编程
 * 系统编程速度实际上并不快，用户态切换到内核态需要时间
     * 需要实时操作时使用系统调用
-## 睡眠
+## 睡眠 时间
 ```cpp
     #include <unistd.h>
     sleep(1); // 秒
     usleep(1); // 微秒
+```
+* [显示当前时间](./linux/linux系统编程/时间/display_current_time.cpp)
+```cpp
+    #include <iostream>
+    #include <sys/time.h> // gettimeofday
+    #include <iomanip> // setw setfill
+    timeval tv;
+    tm t;
+    gettimeofday(&tv, nullptr); // 获取当前时间得到1970-01-01至今的秒和以过去的微妙
+    localtime_r(&tv.tv_sec, &t); // 线程安全函数
+    std::cout << t.tm_year + 1900 << "-"
+        << std::setw(2) << std::setfill('0') << t.tm_mon + 1 << "-"
+        << std::setw(2) << std::setfill('0') << t.tm_mday << " "
+        << std::setw(2) << std::setfill('0') << t.tm_hour << ":"
+        << std::setw(2) << std::setfill('0') << t.tm_min << ":"
+        << std::setw(2) << std::setfill('0') << t.tm_sec << '\n';
+```
+* [时间转为tm结构体在转为秒](./linux/linux系统编程/时间/time_to_tm_to_sec.cpp)
+```cpp
+    #include <iostream>
+    tm t;
+    t.tm_year = 2024 - 1900;
+    t.tm_mon  = 5 - 1;
+    t.tm_mday = 13;
+    t.tm_hour = 19;
+    t.tm_min  = 47;
+    t.tm_sec  = 0;
+    time_t tt = mktime(&t);
+    std::cout << tt << "\n";
+    tt = time(nullptr); // 获取当前时间秒数
+    std::cout << tt << "\n";
+```
+### tm结构体
+```cpp
+    struct tm 
+    { 　
+        int tm_sec;     // 秒 [0,59]
+        int tm_min; 	// 分 [0,59]
+        int tm_hour;    // 时 [0,23]
+        int tm_mday;    // 一个月中的日期 [1,31]
+        int tm_mon;     // 月份（0代表一月）[0,11] +1
+        int tm_year;    // 年份从1900开始 +1900
+        int tm_wday;    // 星期 (0代表星期天) [0,6]
+        int tm_yday;    // 一年中的第几天 (0代表1月1日) [0,365]
+    }; 
 ```
 ## 文件读写
 * 文件描述符
@@ -980,12 +1025,12 @@
     close(fd);
 ```
 * 参数2
-    * O_RDONLY: 只读打开文件。
-    * O_WRONLY: 只写打开文件。
-    * O_RDWR:   读写打开文件。
-    * O_TRUNC:  文件已存在并为写打开或创建，截断为0。
-    * O_APPEND: 追加。
-    * O_CREAT:  文件不存在，创建。需要第三个参数指定新文件的权限。
+    * O_RDONLY:   只读打开文件。
+    * O_WRONLY:   只写打开文件。
+    * O_RDWR:     读写打开文件。
+    * O_TRUNC:    文件已存在并为写打开或创建，截断为0。
+    * O_APPEND:   追加。
+    * O_CREAT:    文件不存在，创建。需要第三个参数指定新文件的权限。
         * 0644
         * S_IRUSR: 用户读。
         * S_IWUSR: 用户写。
@@ -997,11 +1042,11 @@
         * S_IWOTH: 其他人写。
         * S_IXOTH: 其他人执行。
     * O_NONBLOCK: 对于设备文件，此标志指示打开应该在非阻塞模式下进行。
-    * O_EXCL:   与O_CREAT一起使用时，文件存在，打开失败。
+    * O_EXCL:     与O_CREAT一起使用时，文件存在，打开失败。
     * O_SYNC:     写入时同步数据。
     * O_DSYNC:    类似 O_SYNC，但仅同步写入的数据。
 ### 文件读写read write
-#### read返回读到的字节数，失败返回-1。write返回写入字节数，失败返回-1
+#### read返回读到的字节数，失败返回-1。write返回写入字节数，失败返回-1，0读到文件结尾
 * [read write](./linux/linux系统编程/文件读写/read.cpp)
     * 读取标准输入时是行缓冲，并会将换行符读取
     * 当读取字符数量大于实际字符时会截断
@@ -1013,6 +1058,28 @@
     write(STDOUT_FILENO, buf, count); // 输出abcd换行
 ```
 * [阻塞读](./linux/linux系统编程/文件读写/阻塞读.cpp)
+```cpp
+    #include <fcntl.h> // open
+    #include <unistd.h> // read write
+    int fd = open("/dev/tty", O_RDONLY | O_NONBLOCK); // 终端 非阻塞读终端
+    char buf[1024] = {0};
+    int count = 0;
+    while (true) { // 不断的从终端读
+        count = read(fd, buf, sizeof(buf));
+        if (count != -1) {
+            std::cout << "读取成功:\n";
+            write(STDOUT_FILENO, buf, count);
+            break;
+        }
+        if (errno != EAGAIN) { //非阻塞错误返回-1 errno设置为 EAGAIN == EWOULDBLOCK == 11
+            perror("不是非阻塞错误 报错退出");
+            exit(1);
+        } else { // 是非阻塞错误导致的 开始循环
+            write(STDOUT_FILENO, "未读到信息\n", strlen("未读到信息\n"));
+        }
+        sleep(1);
+    }
+```
 ### 重定向dup2
 ```cpp
     #include <unistd.h>
@@ -1030,6 +1097,7 @@
 ### 进程终止状态
 * bash 中 echo $?
 * fish 中 echo $status
+* exit(num) 是num & 0377后的结果 0377 == 11111111 8个1
 ### 创建子进程 fork父进程中返回子进程pid
 * [创建子进程](./linux/linux系统编程/进程/创建子进程.cpp)
 ```cpp

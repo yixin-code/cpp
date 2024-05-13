@@ -1,6 +1,6 @@
 TARGET=a.out
 
-TEMP=./linux/linux系统编程/文件读写/umask.cpp
+TEMP=./linux/linux系统编程/时间/display_current_time.cpp
 # TEMP=./语言/可变参数/cpp可变参数.cpp
 # TEMP=./练习/贪吃蛇.cpp
 # TEMP=./linux/linux网络编程/服务端.cpp
