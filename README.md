@@ -1469,7 +1469,7 @@
     num = htons(num);
     std::cout << std::hex << num << '\n'; // 78563421
 ```
-## 服务端
+## 多进程服务端
 * [服务端程序](./linux/linux网络编程/服务端.cpp)
 ```cpp
     #include <sys/socket.h> // socket bind listen accept
@@ -1515,7 +1515,7 @@
         // 父进程 等待创建连接 回收资源
         if (pid > 0) {
             close(connect_fd);
-            while(waitpid(-1, nullptr, WNOHANG) > 0) {} // 不阻塞回收子进程
+            while(waitpid(-1, nullptr, WNOHANG) > 0); // 不阻塞回收子进程 -1所有子进程 大于0知道进程，0阻塞 WNOHANG不阻塞
             continue;
         }
         close(socket_fd);
