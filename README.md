@@ -1470,7 +1470,7 @@
     std::cout << std::hex << num << '\n'; // 78563421
 ```
 ## 多进程服务端
-* [服务端程序](./linux/linux网络编程/服务端.cpp)
+* [多进程服务端程序](./linux/linux网络编程/服务端.cpp)
 ```cpp
     #include <sys/socket.h> // socket bind listen accept
     #include <netinet/ip.h> // sockaddr_in
@@ -1529,6 +1529,7 @@
         close(connect_fd);
     }
 ```
+* [多线程服务端程序](./linux/linux网络编程/多线程服务端.cpp)
 ## 客户端
 * [客户端程序](./linux/linux网络编程/客户端.cpp)
 ```cpp
