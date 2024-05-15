@@ -235,6 +235,7 @@
         return num;
     }
 ```
+#### ~num 只有-1取反为0
 ## 控制语句
 ### switch 语句
 ```cpp
@@ -647,8 +648,8 @@
 ### cpp文件读写
 #### 打开关闭文件 fout.open/fout.close
 * 清空文件，默认值 std::ios::trunc
-* 读文件，默认值 std::ios::out
-* 写文件不存在创建，默认值 std::ios::in
+* 读文件，默认值 std::ios::in
+* 写文件不存在创建，默认值 std::ios::out
 * 追加不存在创建 std::ios::app
 * 二进制读写 std::ios::binary
 #### 文件读写 fin.getline(空行buf[0] == 0)/fin >>/fout <<
@@ -1919,3 +1920,4 @@
 * [心形](./练习/心形.cpp)
 * [两个有序数组相同元素](./练习/两个有序数组相同元素.cpp)
 * [三个有序数组相同元素](./练习/三个有序数组相同元素.cpp)
+* [mycat](./练习/mycat.cpp)
