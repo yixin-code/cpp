@@ -41,13 +41,13 @@ int main(int argc, char *argv[]) {
     while (true) {
         memset(buf, 0, MAX_RECV_DATA);
         std::cin.getline(buf, MAX_RECV_DATA);
-        if (strncasecmp(buf, "quit", 4) == 0) {
-            break;
-        }
         buf[strlen(buf)] = '\n';
         if (write(socket_fd, buf, strlen(buf)) == -1) { // 返回写入字节数
             perror("41 write");
             exit(1);
+        }
+        if (strncasecmp(buf, "quit", 4) == 0) {
+            break;
         }
     }
 
