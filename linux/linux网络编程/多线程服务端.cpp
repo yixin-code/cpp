@@ -18,7 +18,29 @@ int main(int argc, char *argv[]) {
     sock_addr.sin_family = AF_INET;
     sock_addr.sin_port = htons(SERVER_PORT);
     sock_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    if (bind(fd, )
+    if (bind(fd, (sockaddr*)&sock_addr, sizeof(sock_addr)) == -1) {
+        perror("21 bind");
+        exit(1);
+    }
+
+    if (listen(fd, 5) == -1) {
+        perror("26 listen");
+        exit(1);
+    }
+
+    int client_fd = 0;
+    sockaddr_in client_addr;
+    socklen_t client_addr_len = 0;
+    char buf[1024] = {0};
+    while (true) {
+        std::cout << "wait for connect...\n";
+        if ((client_fd = accept(client_fd, (sockaddr*)&client_addr, &client_addr_len)) == -1) {
+            perror("35 accept");
+            exit(1);
+        }
+        std::cout << inet_ntop(AF_INET, &client_addr, buf, sizeof(buf)) << " connect" << "\n";
+        memset(buf, 0, 1024);
+    }
 
     return 0;
 }
