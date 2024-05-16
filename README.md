@@ -656,6 +656,7 @@
 * 清空文件，默认值 std::ios::trunc
 * 读文件，默认值 std::ios::in
 * 写文件不存在创建，默认值 std::ios::out
+    * fstream(std::ios::in | std::ios::out)不会截断文件从头读写
 * 追加不存在创建 std::ios::app
 * 二进制读写 std::ios::binary
 #### 文件读写 fin.getline(空行buf[0] == 0)/fin >>/fout <<
