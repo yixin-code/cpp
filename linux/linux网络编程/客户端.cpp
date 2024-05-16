@@ -22,16 +22,16 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
     // 客户端地址结构体
-    sockaddr_in client_addr;
-    memset(&client_addr, 0, sizeof(client_addr));
-    if (inet_aton("127.0.0.1", &client_addr.sin_addr) ==0) {
+    sockaddr_in server_addr;
+    memset(&server_addr, 0, sizeof(server_addr));
+    if (inet_aton("127.0.0.1", &server_addr.sin_addr) ==0) {
         perror("26 inet_aton");
         exit(1);
     }
-    client_addr.sin_family = AF_INET;
-    client_addr.sin_port   = htons(SERVER_PORT);
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port   = htons(SERVER_PORT);
     // 阻塞等待发起连接
-    if (connect(socket_fd, (sockaddr*)&client_addr, sizeof(client_addr)) == -1) {
+    if (connect(socket_fd, (sockaddr*)&server_addr, sizeof(server_addr)) == -1) {
         perror("34 connect");
         exit(1);
     }

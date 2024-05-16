@@ -370,6 +370,12 @@
 * %[a-z] 匹配a到z
 * %[^a-z] 不匹配a到z
 * 条件必须逐一匹配否则直接退出
+### 字符串拼接strcat
+```cpp
+    char buf[20] = "abc";
+    char buf2[] = "def";
+    strcat(buf, buf2); // 必须已\0结尾的字符串
+```
 ### 查找字符strchr, 拷贝strncpy
 ```cpp
     char buf[] = "abcdefghijk";
@@ -1461,6 +1467,7 @@
         std::cout << "大端\n";
     }
 ```
+## UDP不需要建立连接，客户端和服务端关闭一方并不会有影响
 ## 主机字节序转为网络字节序 htonl
 ```cpp
     #include <arpa/inet.h>
@@ -1471,7 +1478,7 @@
     std::cout << std::hex << num << '\n'; // 78563421
 ```
 ## 服务端
-* [多进程服务端程序](./linux/linux网络编程/服务端.cpp)
+* [TCP多进程服务端程序](./linux/linux网络编程/服务端.cpp)
 ```cpp
     #include <sys/socket.h> // socket bind listen accept
     #include <netinet/ip.h> // sockaddr_in
@@ -1530,7 +1537,7 @@
         close(connect_fd);
     }
 ```
-* [多线程服务端程序](./linux/linux网络编程/多线程服务端.cpp)
+* [TCP多线程服务端程序](./linux/linux网络编程/多线程服务端.cpp)
 ```cpp
     #include <iostream>
     #include <string.h>     // memset
@@ -1580,8 +1587,36 @@
     } // while
     close(fd);
 ```
+* [UDP服务端](./linux/linux网络编程/UDP服务端.cpp)
+```cpp
+    #include <netinet/ip.h> // sockaddr_in
+    #include <sys/socket.h> // socket recvfrom sendto
+    #include <unistd.h>     // close
+    constexpr u_int16_t SERVER_PORT = 8973;
+    constexpr uint32_t DATA_MAX_LEN = 1024;
+    int socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
+    sockaddr_in server_addr;
+    memset(&server_addr, 0, sizeof(server_addr));
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = ntohs(SERVER_PORT);
+    server_addr.sin_addr.s_addr = ntohl(INADDR_ANY);
+    bind(socket_fd, (sockaddr*)&server_addr, sizeof(server_addr));
+    char buf[DATA_MAX_LEN] = {0};
+    sockaddr_in client_addr;
+    memset(&client_addr, 0, sizeof(client_addr));
+    socklen_t client_addr_len = sizeof(client_addr);
+    uint32_t count = 0;
+    while (true) {
+        count = recvfrom(socket_fd, buf, DATA_MAX_LEN, 0, (sockaddr*)&client_addr, &client_addr_len); // 默认会阻塞等待
+        memcpy(buf + count - 1, " processed", 10);
+        sendto(socket_fd, buf, count + 10, 0, (sockaddr*)&client_addr, sizeof(client_addr));
+        memset(&client_addr, 0, sizeof(client_addr));
+        memset(buf, 0, DATA_MAX_LEN);
+    }
+    close(socket_fd);
+```
 ## 客户端
-* [客户端程序](./linux/linux网络编程/客户端.cpp)
+* [TCP客户端程序](./linux/linux网络编程/客户端.cpp)
 ```cpp
     #include <sys/socket.h> // socket bind listen accept
     #include <netinet/ip.h> // sockaddr_in
@@ -1598,34 +1633,41 @@
         //     SOCK_STREAM         tcp协议
         //     SOCK_DGRAM          udp协议
     int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (socket_fd == -1) {
-        perror("20 socket");
-        exit(1);
-    }
     // 客户端地址结构体
-    sockaddr_in client_addr;
-    memset(&client_addr, 0, sizeof(client_addr));
-    if (inet_aton("127.0.0.1", &client_addr.sin_addr) ==0) {
-        perror("26 inet_aton");
-        exit(1);
-    }
-    client_addr.sin_family = AF_INET;
-    client_addr.sin_port   = htons(SERVER_PORT);
+    sockaddr_in server_addr;
+    memset(&server_addr, 0, sizeof(server_addr));
+    inet_aton("127.0.0.1", &server_addr.sin_addr);
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port   = htons(SERVER_PORT);
     // 阻塞等待发起连接
-    if (connect(socket_fd, (sockaddr*)&client_addr, sizeof(client_addr)) == -1) {
-        perror("34 connect");
-        exit(1);
-    }
+    connect(socket_fd, (sockaddr*)&server_addr, sizeof(server_addr));
     char buf[MAX_RECV_DATA] = {0};
-    if (write(socket_fd, "你好服务端\n", strlen("你好服务端\n")) == -1) { // 返回写入字节数
-        perror("41 write");
-        exit(1);
-    }
-    if (read(socket_fd, buf, MAX_RECV_DATA) == -1) {
-        perror("46 read");
-        exit(1);
-    }
+    write(socket_fd, "你好服务端\n", strlen("你好服务端\n")); // 返回写入字节数
+    read(socket_fd, buf, MAX_RECV_DATA);
     std::cout << buf;
+```
+* [UDP客户端程序](./linux/linux网络编程/UDP客户端.cpp)
+```cpp
+    #include <unistd.h> // close
+    #include <netinet/in.h> // sockaddr_in
+    #include <sys/socket.h> // socket sendto recvfrom
+    #include <arpa/inet.h> // inet_pton
+    constexpr u_int16_t SERVER_PORT = 8973;
+    constexpr uint32_t DATA_MAX_LEN = 1024;
+    int socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
+    ssize_t count = 0;
+    char buf[DATA_MAX_LEN] = {0};
+    sockaddr_in server_addr;
+    memset(&server_addr, 0, sizeof(server_addr));
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(SERVER_PORT);
+    inet_pton(AF_INET, "127.0.0.1", &server_addr.sin_addr);
+    while (count = read(STDIN_FILENO, buf, DATA_MAX_LEN)) {
+        sendto(socket_fd, buf, count, 0, (sockaddr*)&server_addr, sizeof(server_addr));
+        recvfrom(socket_fd, buf, DATA_MAX_LEN, 0, nullptr, nullptr);
+        std::cout << buf << "\n";
+    }
+    close(socket_fd);
 ```
 ---
 ---
