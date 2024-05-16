@@ -1470,7 +1470,7 @@
     num = htons(num);
     std::cout << std::hex << num << '\n'; // 78563421
 ```
-## 多进程服务端
+## 服务端
 * [多进程服务端程序](./linux/linux网络编程/服务端.cpp)
 ```cpp
     #include <sys/socket.h> // socket bind listen accept
