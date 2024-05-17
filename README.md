@@ -629,7 +629,7 @@
     // SEEK_CUR 当前位置
     // SEEK_END 结束位置
     // 正负数可以表示向前后移动
-    fseek(fp_rw, 0, SEEK_SET); // 文件指针恢复到开始位置
+    fseek(fp_rw, 0, SEEK_SET); // 文件指针恢复到开始位置 == rewind(fp_rw)
     fscanf(fp_rw, "%s%d", p.m_name, &(p.m_age)); // 空白字符会停止读取
 ```
 * 返回到文件开始位置的偏移量
@@ -652,7 +652,8 @@
     }
 ```
 ### cpp文件读写
-#### 打开关闭文件 fout.open/fout.close
+#### 读到的字节数fin.gcount()
+#### 打开关闭文件 fout.open/fout.close 
 * 清空文件，默认值 std::ios::trunc
 * 读文件，默认值 std::ios::in
 * 写文件不存在创建，默认值 std::ios::out

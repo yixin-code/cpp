@@ -107,4 +107,39 @@ void ngx_log_core(int level, int error_num, const char* format, ...) {
     u_char str_cur_time[20] = {0};
     p_cur = format_sprintf(p_cur, p_end, "%4d-%02d-%02d %02d:%02d:%02d",
         t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
+    p_cur = format_sprintf(p_cur, p_end, " [%s] ", log_level[level]);
+    p_cur = format_sprintf(p_cur, p_end, "%P: ", ngx_pid);
+
+    va_list ap;
+    va_start(ap, format);
+    p_cur = format_printf(p_cur, p_end, format, ap);
+    va_end(ap);
+
+    if (error_num) {
+        p_cur = display_errno_info(p_cur, p_end, error_num);
+    }
+
+    // 位置不够 强行插入换行符
+    if (p_cur >= p_end) {
+        p_cur = p_end - 1; // 最后一个位置需要存\0
+    }
+    *(p_cur++) = '\n';
+
+    while (true) {
+        if (level > log_t.m_log_level) { // 如果level大于配置文件中的设置不进行处理
+            break;
+        }
+
+        ssize_t count = write(log_t.m_fd, str_log_buf, p_cur - str_log_buf); // 不写\0
+        if (count == -1) {
+            if (errno == ENOSPC) { // 磁盘空间不足
+                perror("磁盘空间不足");
+                exit(1);
+            } else {
+                write(STDERR_FILENO, str_log_buf, p_cur - str_log_buf);
+            } // if else
+        } // if
+        break;
+    } // while
+    return;
 }

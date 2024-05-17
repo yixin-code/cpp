@@ -4,48 +4,44 @@
 #include "ngx_func.h"
 #include "ngx_global.h"
 
+static void free_resource();
+
 char *g_p_environ = nullptr; // 环境变量
 int g_environ_len = 0; // 环境变量字节数
-char **g_p_argv = nullptr; // 命令行参数
+char **g_p_argv   = nullptr; // 命令行参数
+pid_t ngx_pid     = 0;
 
 int main(int argc, char *argv[]) {
+    int ret_code = 0; // 退出代码0表示正常退出
+    ngx_pid = getpid();
     g_p_argv = argv;
 
     CConfig *p_config = CConfig::get_instance();
     if (p_config->load_config("./nginx.conf") == false) {
-        perror("7, load error");
-        exit(1);
+        ngx_log_stderr(0, "配置文件[%s]载入失败", "nginx.conf");
+        ret_code = 2;
+        goto fly;
     }
+
+    ngx_log_init(); // 打开初始化日志
 
     save_environ();
     set_process_title("nginx: master process");
 
+fly:
+    free_resource();
+    std::cout << "program exit\n";
+    return ret_code;
+}
+
+void free_resource() {
     if (g_p_environ != nullptr) {
         delete[] g_p_environ;
         g_p_environ = nullptr;
     }
 
-    ngx_log_init();
-
-    int num = 0;
-    while(true) {
-        std::cout << "sleep: " << ++num << '\n';
-        sleep(1);
+    if (log_t.m_fd != STDERR_FILENO && log_t.m_fd != -1) {
+        close(log_t.m_fd);
+        log_t.m_fd = -1; // 防止重复释放
     }
-
-    std::cout << "program exit\n";
-
-    // if (const char *p_temp = p_config->get_string("dbinfo")) {
-    //     std::cout << p_temp << '\n';
-    // }
-
-    // if (int temp = p_config->get_int_default("listenport", 1111)) {
-    //     std::cout << temp << '\n';
-    // }
-
-    // for (auto it = p->m_config_item_list.begin(); it != p->m_config_item_list.end(); ++it) {
-    //     std::cout << (*it)->m_item_name << " " << (*it)->m_item_content << "\n";
-    // }
-
-    return 0;
 }

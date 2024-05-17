@@ -23,4 +23,7 @@ extern char *g_p_environ; // 环境变量
 extern int g_environ_len; // 环境变量字节数
 extern char **g_p_argv; // 命令行参数
 
+extern Log_t log_t;
+extern pid_t ngx_pid;
+
 #endif

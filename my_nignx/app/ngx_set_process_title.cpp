@@ -20,6 +20,8 @@ void save_environ() {
         environ[i] = p_temp; // 改变原环境变量指向
         p_temp += temp_len; // 指针移动到下一个环境变量位置
     }
+
+    return;
 }
 
 // 设置进程标题
