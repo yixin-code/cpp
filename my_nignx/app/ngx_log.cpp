@@ -86,7 +86,8 @@ void ngx_log_init() {
     // log_t.m_fd = open((const char*)p_log_name, O_WRONLY | O_APPEND, 0644);
     log_t.m_fd = open((const char*)p_log_name, O_WRONLY | O_APPEND | O_CREAT, 0644);
     if (log_t.m_fd == -1) {
-        ngx_log_stderr(errno, "[alert] 73 open error %s", p_log_name);
+        // std::cout << p_log_name << std::endl;
+        ngx_log_stderr(errno, "[alert] open error %s", p_log_name);
         log_t.m_fd = STDERR_FILENO; // 文件描述符定位到标准错误
     }
     return;

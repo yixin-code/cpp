@@ -1,8 +1,8 @@
 TARGET=a.out
 
-# TEMP=./linux/linux系统编程/时间/display_current_time.cpp
+TEMP=./linux/linux系统编程/信号/sigaction.cpp
 # TEMP=./语言/可变参数/cpp可变参数.cpp
-TEMP=./练习/mycp.cpp
+# TEMP=./练习/mycp.cpp
 # TEMP=./linux/linux网络编程/多线程服务端.cpp
 # TEMP=./linux/linux网络编程/客户端.cpp
 

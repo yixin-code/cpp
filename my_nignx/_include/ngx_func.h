@@ -27,4 +27,7 @@ void ngx_log_init();
     // 日志写入文件
 void ngx_log_core(int level, int error_num, const char* format, ...);
 
+// 注册捕捉函数
+int ngx_init_signal();
+
 #endif

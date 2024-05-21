@@ -19,11 +19,15 @@ int main(int argc, char *argv[]) {
     CConfig *p_config = CConfig::get_instance();
     if (p_config->load_config("./nginx.conf") == false) {
         ngx_log_stderr(0, "配置文件[%s]载入失败", "nginx.conf");
-        ret_code = 2;
+        ret_code = 2; // No such file or directory 文件不存在
         goto fly;
     }
 
     ngx_log_init(); // 打开初始化日志
+    if (ngx_init_signal() == -1) {
+        ret_code = 1;
+        goto fly;
+    }
 
     save_environ();
     set_process_title("nginx: master process");

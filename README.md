@@ -1296,13 +1296,16 @@
 |-----|-----|----------|----------|
 |SIGHUP|1|终止当前shell中的进程|关闭终端|
 |SIGINT|2|终止程序|按下ctrl+c|
+|SIGQUIT|3|终止程序|按下ctrl+\ 会生成核心转储文件以便后续调试|
 |SIGKILL|9|终止程序，不能捕获忽略|强制杀死程序|
+|SIGUSR1|10|终止程序||
 |SIGSEGV|11|段错误，不能捕获忽略|无效内存引用（数组越界，错误指针操作）|
+|SIGUSR2|12|终止程序||
 |SIGALRM|14|终止程序|闹钟信号alarm|
 |SIGTERM|15|终止程序|杀死程序 kill 编号 killall 进程名|
 |SIGCHLD|17|忽略不做处理|子进程结束信号|
-|SIGUSR1|10|终止程序||
-|SIGUSR2|12|终止程序||
+|SIGIO|29|终止进程或忽略|异步通知I/O事件|
+|SIGSYS|31|终止进程|收到无效的系统调用|
 ### 发送信号kill
 * [发送信号](./linux/linux系统编程/信号/发送信号.cpp)
 ```cpp
@@ -1330,6 +1333,7 @@
 
 ```
 ### 信号处理
+#### signal
 * 信号处理采用系统的默认操作，大部分信号默认操作都是终止进程
 * signal 返回信号编号
 ```cpp
@@ -1351,6 +1355,29 @@
 ```cpp
     #include <signal.h>
     signal(信号, SIG_IGN); // 信号忽略
+```
+#### 注册捕捉函数sigaction
+* [sigaction](./linux/linux系统编程/信号/sigaction.cpp)
+```cpp
+    #include <iostream>
+    #include <signal.h>
+    #include <unistd.h>
+    void catch_sig(int signo) {
+        std::cout << "receive " << signo << std::endl;
+    }
+    struct sigaction sa;
+    // sa.__sigaction_handler.sa_handler -> void(*)(int) -> sa.sa_flags = 0
+        // 还可以赋值SIG_DFL默认处理 SIG_IGN忽略
+    // sa.__sigaction_handler.sa_sigaction -> void(*)(int, siginfo_t*, void*) -> sa.sa_flags = SA_SIGINFO
+    // sa.sa_mask 临时信号集 sigemptyset(&sa.sa_mask);
+    sa.sa_handler = catch_sig;
+    sa.sa_flags = 0;
+    sigemptyset(&sa.sa_mask);
+    sigaction(SIGINT, &sa, nullptr); // 信号 新动作 原动作
+    while (true) {
+        std::cout << "sleep ..." << std::endl;
+        sleep(1);
+    }
 ```
 ### 闹钟信号(定时任务)
 * [定时任务](./linux/linux系统编程/信号/闹钟.cpp)
