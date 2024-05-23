@@ -1290,6 +1290,43 @@
 ```cpp
     setpgid(0, getpgid(getppid())); // 0该进程pid
 ```
+## 线程
+### 创建线程pthread_create 退出线程pthread_exit 阻塞等待线程结束回收资源pthread_join 线程分离自动释放资源pthread_detach
+* [创建退出回收资源](./linux/linux系统编程/线程/创建退出回收资源.cpp)
+```cpp
+    #include <iostream>
+    #include <pthread.h>
+    void* func(void *arg) {
+        int64_t *p = (int64_t*)arg;
+        std::cout << "func: " << *p << std::endl;
+        ++(*p);
+        pthread_exit((void*)p); // pthread_join可接收返回值 不关心可以nullpter
+    }
+    pthread_t tid = 0;
+    int64_t num = 11;
+    // 成功返回0 失败返回errno
+        // 参数2设置线程属性，nullptr为默认
+    pthread_create(&tid, nullptr, func, (void*)&num);
+    void *p_exit = nullptr;
+    pthread_join(tid, &p_exit); // 阻塞等待线程结束回收资源
+    std::cout << "main: " << *(int64_t*)p_exit << std::endl;
+```
+* 不关心线程返回结果，也无需等待线程结束可以使用pthread_detach
+* [线程分离，pthread_self得到线程id](./linux/linux系统编程/线程/pthread_detach.cpp)
+```cpp
+    #include <iostream>
+    #include <unistd.h>
+    #include <pthread.h>
+    void* func(void *arg) {
+        pthread_detach(pthread_self());
+        std::cout << "func...\n";
+        pthread_exit(nullptr);
+    }
+    std::cout << "main...\n";
+    pthread_t tid = 0;
+    pthread_create(&tid, nullptr, func, nullptr);
+    sleep(1);
+```
 ## 信号
 ### 常用信号
 |信号名|信号值|默认处理动作|发出信号原因|
