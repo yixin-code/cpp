@@ -752,7 +752,7 @@
     * ifstream.seek(0, std::ios::end) 将文件指针移动到尾部
     * int size = ifstream.tell() 获取文件指针当前位置到文件开始的偏移量
 ## STL
-### vector
+### vector动态数组
 #### 大小，空间
 ```cpp
     #include <vector>
@@ -796,7 +796,7 @@
     #include <algorithm>
     std::find(vec.begin(), vec.end(), element);
 ```
-### list
+### list双向链表
 #### 大小
 ```cpp
     std::list<int> l(3);
@@ -804,34 +804,42 @@
 ```
 #### 循环链表
 ```cpp
+    #include <iostream>
     #include <list>
-    std::list<int> l {1, 2, 3, 4, 5};
-    std::list<int>::iterator it = l.begin();
-    std::advance(it, 1);
-    std::cout << *it << std::endl; // 2
-    std::advance(it, 1);
-    std::cout << *it << std::endl; // 3
-    std::advance(it, 1);
-    std::cout << *it << std::endl; // 4
-    std::advance(it, 1);
-    std::cout << *it << std::endl; //5
-    std::advance(it, 1);
+    std::list<int> l{1, 2, 3, 4, 5};
+    std::list<int>::iterator it = l.end();
     std::cout << *it << std::endl; // 5
-    std::advance(it, 1);
-    std::cout << *it << std::endl; // 1
-    std::advance(it, 1);
-    std::cout << *it << std::endl; // 2
-    std::cout << l.end() << std::endl; // 5
+    std::advance(it, 1); // 1
+    it = l.end();
+    std::advance(it, -1);
+    std::cout << *it << std::endl; // 5
 ```
 #### 删除元素
 ```cpp
     std::list<int> l {1, 2, 3, 4, 5};
-    std::list<int>::iterator it = l.end();
+    std::list<int>::iterator it = l.begin();
     it = l.erase(it);
-    std::cout << *it << std::endl; // 2
+    std::cout << *it << std::endl; // 2 删除位置的下一位置
+```
+### queue队列
+* [queue](./语言/STL/queue.cpp)
+```cpp
+    #include <iostream>
+    #include <queue>
+    // std::queue<int> q{1, 2, 3, 4, 5}; // error
+    std::queue<int> q;
+    q.push(1);  // 队尾插入元素
+    q.emplace(2); // 队尾插入元素
+    std::cout << q.front() << '\n'; // 1队头元素
+    std::cout << q.back() << '\n'; // 2队尾元素
+    std::cout << q.size() << '\n'; // 2元素个数
+    q.pop(); // 删除对头元素
+    if (!q.empty()) { // 空返回真
+        std::cout << "no empty\n";
+    }
 ```
 ### 迭代器
-#### 迭代器移动advance, next
+#### 迭代器移动advance, next返回新的迭代器原迭代器不会改变
 ```cpp
     std::list<int> l {1, 2, 3, 4, 5};
     std::list<int>::iterator it = l.end();
@@ -844,16 +852,6 @@
     std::advance(it2, -1);
     std::cout << *it2 << std::endl; // 2
 ```
----
----
----
----
----
----
----
----
----
----
 ## 说明符 限定符
 ### constexpr 常量表达式
 ```cpp
@@ -896,6 +894,16 @@
         }  
     }
 ```
+---
+---
+---
+---
+---
+---
+---
+---
+---
+---
 # 算法数据结构
 ## 时间复杂度
 * O(log n)
@@ -1327,6 +1335,9 @@
     pthread_create(&tid, nullptr, func, nullptr);
     sleep(1);
 ```
+### 锁
+* 数据的一致性(保证共享资源数据的一致型)，防止竞态条件(执行顺序不当)
+
 ## 信号
 ### 常用信号
 |信号名|信号值|默认处理动作|发出信号原因|
