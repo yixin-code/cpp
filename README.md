@@ -1105,7 +1105,7 @@
     dup2(fd, STDIN_FILENO); // fd指向的文件变为标准输入
     close(fd);
 ```
-## 进程
+## 进程(资源管理的最小单位，有自己的数据段、代码段、堆栈段)
 * ps -eo pid,ppid,sid,pgid,cmd,stat | grep -E 'PID|a.out|fish'
 ### 实际用户ID可创建的最大进程数
 ```cpp
@@ -1298,7 +1298,7 @@
 ```cpp
     setpgid(0, getpgid(getppid())); // 0该进程pid
 ```
-## 线程
+## 线程(程序执行的最小单位，共享所属进程的资源)
 ### 创建线程pthread_create 退出线程pthread_exit 阻塞等待线程结束回收资源pthread_join 线程分离自动释放资源pthread_detach
 * [创建退出回收资源](./linux/linux系统编程/线程/创建退出回收资源.cpp)
 ```cpp
@@ -1336,7 +1336,7 @@
     sleep(1);
 ```
 ### 锁
-* 数据的一致性(保证共享资源数据的一致型)，防止竞态条件(执行顺序不当)
+* 保证数据的一致性(保证共享资源数据的一致型)，防止竞态条件(执行顺序不当)
 
 ## 信号
 ### 常用信号
