@@ -507,6 +507,7 @@
         int num = rand() % 10 + 1; // 1 - 10
     }
 ```
+* c++随机数
 ```cpp
     #include <random>  
     // 创建一个随机数引擎  
@@ -1105,7 +1106,7 @@
     dup2(fd, STDIN_FILENO); // fd指向的文件变为标准输入
     close(fd);
 ```
-## 进程(资源管理的最小单位，有自己的数据段、代码段、堆栈段)
+## 进程(资源管理的最小单位，有自己的数据段、代码段、堆栈段) 不能保证新进程和调用进程的执行顺序
 * ps -eo pid,ppid,sid,pgid,cmd,stat | grep -E 'PID|a.out|fish'
 ### 实际用户ID可创建的最大进程数
 ```cpp
@@ -1298,8 +1299,28 @@
 ```cpp
     setpgid(0, getpgid(getppid())); // 0该进程pid
 ```
-## 线程(程序执行的最小单位，共享所属进程的资源)
-### 创建线程pthread_create 退出线程pthread_exit 阻塞等待线程结束回收资源pthread_join 线程分离自动释放资源pthread_detach
+#### atexit在main函数执行后执行 可作进程清理函数
+* [atexit](./linux/linux系统编程/进程/atexit.cpp)
+```cpp
+    #include <iostream>
+    #include <unistd.h> // fork
+    void func() {
+        std::cout << "clean\n";
+    }
+    pid_t pid = fork();
+    if (pid > 0) {
+        std::cout << "father process exit\n";
+        exit(1);
+    }
+    if (pid == 0) {
+        atexit(func);
+        std::cout << "son process start\n";
+        std::cout << "son process exit\n";
+    }
+```
+## 线程(程序执行的最小单位，共享所属进程的资源) 不能保证新线程和调用线程的执行顺序
+![线程栈区分配](./资源/线程栈区分配.png)
+### 创建线程pthread_create 退出线程pthread_exit 阻塞等待线程结束回收资源pthread_join 线程分离自动释放资源pthread_detach 比较两个线程id pthread_equal(相等返回0)
 * [创建退出回收资源](./linux/linux系统编程/线程/创建退出回收资源.cpp)
 ```cpp
     #include <iostream>
@@ -1335,9 +1356,34 @@
     pthread_create(&tid, nullptr, func, nullptr);
     sleep(1);
 ```
+### 取消同进程中的线程pthread_cancel pthread_cleanup_push pthread_cleanup_pop可做线程清理函数类似atexit
+* [取消同进程中的线程](./linux/linux系统编程/线程/pthread_cancel.cpp)
+```cpp
+    #include <iostream>
+    #include <unistd.h>
+    #include <pthread.h>
+    void cleanup_func(void *arg) {
+        std::cout << "cleanup func\n";
+        return;
+    }
+    void *thread_func(void *arg) {
+        pthread_cleanup_push(cleanup_func, nullptr); // 取消时会调用cleanup_func
+        while (1) {
+            pthread_testcancel(); // 测试是否为其他线程取消
+            std::cout << "thread_func\n";
+            sleep(1);
+        }
+        pthread_cleanup_pop(0); // 非零调用cleanup_func
+        pthread_exit(nullptr);
+    }
+    pthread_t tid = 0;
+    if (pthread_create(&tid, nullptr, thread_func, nullptr) != 0);
+    sleep(3);
+    if (pthread_cancel(tid) != 0);
+    pthread_join(tid, nullptr);
+```
 ### 锁
 * 保证数据的一致性(保证共享资源数据的一致型)，防止竞态条件(执行顺序不当)
-
 ## 信号
 ### 常用信号
 |信号名|信号值|默认处理动作|发出信号原因|

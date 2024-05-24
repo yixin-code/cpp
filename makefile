@@ -1,7 +1,7 @@
 TARGET=a.out
 
-# TEMP=./linux/linux系统编程/线程/pthread_detach.cpp
-TEMP=./语言/STL/queue.cpp
+TEMP=./linux/linux系统编程/进程/atexit.cpp
+# TEMP=./语言/STL/queue.cpp
 # TEMP=./练习/mycp.cpp
 # TEMP=./linux/linux网络编程/多线程服务端.cpp
 # TEMP=./linux/linux网络编程/客户端.cpp
@@ -33,7 +33,7 @@ $(TARGET):$(SRC)
 #	$(G) $(SRC) $(FLAG) -o $(TARGET)
 
 %.o:%.cpp
-	$(G) $< -c -o $@
+	$(G) $< -c $(FLAG) -o $@
 
 # make clean
 # clean:
