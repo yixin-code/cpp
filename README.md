@@ -1330,7 +1330,7 @@
 ![线程栈区分配](./资源/线程栈区分配.png)
 ### 线程状态转换
 ![线程状态转换](./资源/线程状态转换.png)
-### 创建线程pthread_create 退出线程pthread_exit 阻塞等待线程结束回收资源pthread_join 线程分离自动释放资源pthread_detach 比较两个线程id pthread_equal(相等返回0)
+### 创建线程pthread_create 退出线程pthread_exit 阻塞等待线程结束回收资源pthread_join 线程分离自动释放资源pthread_detach(并不会阻塞等待子线程) 比较两个线程id pthread_equal(相等返回0)
 * [创建退出回收资源](./linux/linux系统编程/线程/创建退出回收资源.cpp)
 ```cpp
     #include <iostream>
@@ -1365,6 +1365,45 @@
     pthread_t tid = 0;
     pthread_create(&tid, nullptr, func, nullptr);
     sleep(1);
+```
+#### 线程属性设置pthread_attr_t
+* [线程属性设置](./linux/linux系统编程/线程/pthread_attribute.cpp)
+```cpp
+    #include <iostream>
+    #include <unistd.h>
+    #include <pthread.h>
+    void print_state(pthread_attr_t *attribute) {
+        int state = 0;
+        if (pthread_attr_getdetachstate(attribute, &state) != 0) {
+            perror("pthread_attr_getdetachstate");
+            exit(1);
+        } else { 
+            if (state == PTHREAD_CREATE_DETACHED) {
+                std::cout << "thread detached\n";
+            } else if (state == PTHREAD_CREATE_JOINABLE) {
+                std::cout << "thread joinable\n";
+            }
+        }
+    }
+    void *thread_func(void *arg) {
+        int64_t num = (int64_t)arg;
+        for (int i = 0; i < num; ++i) {
+            std::cout << i << "\n";
+        }
+        pthread_exit(nullptr);
+    }
+    pthread_attr_t attribute;
+    pthread_attr_init(&attribute); // 初始化
+    pthread_attr_setdetachstate(&attribute, PTHREAD_CREATE_DETACHED); // 设置分离
+    print_state(&attribute);
+    pthread_t tid = 0;
+    int64_t num = 11;
+    if (pthread_create(&tid, &attribute, thread_func, (void*)num) != 0) {
+        perror("pthread_create thread_func");
+        exit(1);
+    }
+    sleep(1);
+    std::cout << "main end\n";
 ```
 ### 取消同进程中的线程pthread_cancel pthread_cleanup_push pthread_cleanup_pop可做线程清理函数类似atexit
 * [取消同进程中的线程](./linux/linux系统编程/线程/pthread_cancel.cpp)
