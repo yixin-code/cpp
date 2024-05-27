@@ -1404,6 +1404,7 @@
     }
     sleep(1);
     std::cout << "main end\n";
+    pthread_attr_destroy(&attribute);
 ```
 ### 取消同进程中的线程pthread_cancel pthread_cleanup_push pthread_cleanup_pop可做线程清理函数类似atexit
 * [取消同进程中的线程](./linux/linux系统编程/线程/pthread_cancel.cpp)
@@ -1431,8 +1432,7 @@
     if (pthread_cancel(tid) != 0);
     pthread_join(tid, nullptr);
 ```
-### 锁
-* 保证数据的一致性(保证共享资源数据的一致型)，防止竞态条件(执行顺序不当)
+### 线程同步互斥 防止竞态条件(执行顺序不当)，保证数据的一致性
 ## 信号
 ### 常用信号
 |信号名|信号值|默认处理动作|发出信号原因|
