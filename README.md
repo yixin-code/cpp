@@ -1433,8 +1433,179 @@
     pthread_join(tid, nullptr);
 ```
 ### 线程同步防止竞态条件(执行顺序不当)，线程互斥保证数据的一致性
-#### 互斥锁 保护共享资源 一致性
-* [互斥锁](./linux/linux系统编程/线程/pthread_mutex_lock.cpp)
+#### 互斥锁 pthread_mutex_lock阻塞 pthread_mutex_trylock非阻塞 保护共享资源 一致性
+* [互斥锁阻塞pthread_mutex_lock](./linux/linux系统编程/线程/pthread_mutex_lock.cpp)
+```cpp
+    #include <iostream>
+    #include <unistd.h>
+    #include <pthread.h>
+    class Account {
+    public:
+        Account(int number, double balance);
+        ~Account();
+    public:
+        double  withdraw_money(const double money);    // 取钱
+        double  get_balance(void);                     // 余额
+    private:
+        int             m_number;   // 编号
+        double          m_balance;  // 余额
+        pthread_mutex_t m_mutex;    // 互斥锁
+    };
+    struct User {
+        std::string m_name;
+        Account*    m_p_account;
+    };
+    void *thread_func(void *arg) {
+        if (arg == nullptr) {
+            perror("arg is nullptr");
+            exit(1);
+        }
+        User* p = (User*)arg;
+        p->m_p_account->withdraw_money(1111.1111);
+        std::cout << p->m_name << " balance: " << p->m_p_account->get_balance() << std::endl;
+        pthread_exit(nullptr);
+    }
+    Account account{1234, 1111.1111};
+    User user;
+    user.m_name         = "aaa";
+    user.m_p_account    = &account;
+    User    user2;
+    user2.m_name        = "bbb";
+    user2.m_p_account   = &account;
+    pthread_t tid   = 0;
+    pthread_t tid2  = 0;
+    if (pthread_create(&tid, nullptr, thread_func, (void*)&user) != 0) {
+        perror("pthread_create tid");
+        exit(1);
+    }
+    if (pthread_create(&tid2, nullptr, thread_func, (void*)&user2) != 0) {
+        perror("pthread_create tid2");
+        exit(1);
+    }
+    pthread_join(tid, nullptr);
+    pthread_join(tid2, nullptr);
+    Account::Account(int number, double balance) : m_number(number), m_balance(balance) {
+        // 参数二 创建锁的方式
+            // PTHREAD_MUTEX_INITIALIZER                快速互斥锁
+            // PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP   递归互斥锁
+            // PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP  检错互斥锁
+        pthread_mutex_init(&this->m_mutex, nullptr);
+    }
+    Account::~Account() {
+        pthread_mutex_destroy(&this->m_mutex);
+    }
+    double Account::withdraw_money(const double money) {
+        pthread_mutex_lock(&this->m_mutex);
+        if (this->m_balance < money) {
+            std::cout << "balance greater money\n";
+            pthread_mutex_unlock(&this->m_mutex);
+            return 0.0;
+        }
+        // 模拟存储操作
+        double temp_balance = this->m_balance;
+        sleep(1);
+        temp_balance -= money;
+        this->m_balance = temp_balance;
+        pthread_mutex_unlock(&this->m_mutex);
+        return money;
+    }
+    double Account::get_balance(void) {
+        pthread_mutex_lock(&this->m_mutex);
+        double temp_balance = this->m_balance;
+        pthread_mutex_unlock(&this->m_mutex);
+        return temp_balance;
+    }
+```
+* [互斥锁非阻塞pthread_mutex_trylock](./linux/linux系统编程/线程/pthread_mutex_trylock.cpp)
+```cpp
+    #include <iostream>
+    #include <string>
+    #include <pthread.h>
+    #include <assert.h>
+    class Account {
+    public:
+        Account(int number, double balance);
+        ~Account();
+    public:
+        const double deposit(double money);
+        const double get_balance(void);
+    private:
+        int             m_number;
+        double          m_balance;
+        pthread_mutex_t m_mutex;
+    };
+    struct User {
+        std::string m_name;
+        Account*    m_p_account;
+    };
+    void *thread_func(void *arg) {
+        assert(arg != nullptr);
+
+        User *p = (User*)arg;
+        std::cout << p->m_name << " deposit " << p->m_p_account->deposit(1111.1111) << ", balance "
+                    << p->m_p_account->get_balance() << "\n";
+        pthread_exit(nullptr);
+    }
+    Account account(1234, 1111.1111);
+    pthread_t tid = 0;
+    User user;
+    user.m_name         = "aaa";
+    user.m_p_account    = &account;
+    if (pthread_create(&tid, nullptr, thread_func, (void*)&user) != 0) {
+        perror("tid pthread_create fail");
+        exit(1);
+    }
+    pthread_t tid2 = 0;
+    User user2;
+    user2.m_name         = "bbb";
+    user2.m_p_account    = &account;
+    if (pthread_create(&tid2, nullptr, thread_func, (void*)&user2) != 0) {
+        perror("tid2 pthread_create fail");
+        exit(1);
+    }
+    pthread_join(tid, nullptr);
+    pthread_join(tid2, nullptr);
+    Account::Account(int number, double balance) : m_number(number), m_balance(balance) {
+        pthread_mutex_init(&this->m_mutex, nullptr);
+    }
+    Account::~Account() {
+        pthread_mutex_destroy(&this->m_mutex);
+    }
+    const double Account::deposit(double money) {
+        int ret = pthread_mutex_trylock(&this->m_mutex);
+        if (ret == 0) {
+            if (this->m_balance < money) {
+                std::cout << "balance greater money\n";
+                return this->m_balance;
+            }
+            this->m_balance -= money;
+            pthread_mutex_unlock(&this->m_mutex);
+            return money;
+        } else if (ret == EBUSY) { // 锁被其他线程占用
+            std::cout << "deposit wait lock\n";
+        } else {
+            perror("pthread mutex trylock fail");
+            exit(1);
+        }
+        return 0.0;
+    }
+    const double Account::get_balance(void) {
+        int ret = pthread_mutex_trylock(&this->m_mutex);
+        if (ret == 0) {
+            double temp_balance = this->m_balance;
+            pthread_mutex_unlock(&this->m_mutex);
+            return temp_balance;
+        } else if (ret == EBUSY) { // 锁被其他线程占用
+            std::cout << "get balance wait lock\n";
+        } else {
+            perror("pthread mutex trylock fail");
+            exit(1);
+        }
+        return 0.0;
+    }
+```
+##### 互斥锁属性设置
+* [互斥锁属性](./linux/linux系统编程/线程/mutex_attribute.cpp)
 ## 信号
 ### 常用信号
 |信号名|信号值|默认处理动作|发出信号原因|

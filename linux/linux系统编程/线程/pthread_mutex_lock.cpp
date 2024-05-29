@@ -7,9 +7,8 @@ public:
     Account(int number, double balance);
     ~Account();
 public:
-    void    deposit_money(const double money);     // 存钱
-    void    withdraw_money(const double money);    // 取钱
-    double  get_balance(void) const;                 // 余额
+    double  withdraw_money(const double money);    // 取钱
+    double  get_balance(void);                     // 余额
 private:
     int             m_number;   // 编号
     double          m_balance;  // 余额
@@ -65,10 +64,6 @@ int main(int argc, char *argv[]) {
 }
 
 Account::Account(int number, double balance) : m_number(number), m_balance(balance) {
-    // 参数二 创建锁的方式
-        // PTHREAD_MUTEX_INITIALIZER                快速互斥锁
-        // PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP   递归互斥锁
-        // PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP  检错互斥锁
     pthread_mutex_init(&this->m_mutex, nullptr);
 }
 
@@ -76,16 +71,13 @@ Account::~Account() {
     pthread_mutex_destroy(&this->m_mutex);
 }
 
-void Account::deposit_money(const double money) {
-    return;
-}
-
-void Account::withdraw_money(const double money) {
+double Account::withdraw_money(const double money) {
     pthread_mutex_lock(&this->m_mutex);
 
     if (this->m_balance < money) {
         std::cout << "balance greater money\n";
-        return;
+        pthread_mutex_unlock(&this->m_mutex);
+        return 0.0;
     }
     // 模拟存储操作
     double temp_balance = this->m_balance;
@@ -95,9 +87,15 @@ void Account::withdraw_money(const double money) {
 
     pthread_mutex_unlock(&this->m_mutex);
 
-    return;
+    return money;
 }
 
-double Account::get_balance(void) const {
-    return this->m_balance;
+double Account::get_balance(void) {
+    pthread_mutex_lock(&this->m_mutex);
+
+    double temp_balance = this->m_balance;
+
+    pthread_mutex_unlock(&this->m_mutex);
+
+    return temp_balance;
 }
