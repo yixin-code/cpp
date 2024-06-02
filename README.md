@@ -1635,6 +1635,55 @@
     pthread_mutexattr_destroy(&mutexattr); // 销毁互斥锁属性 成功0 失败errno
 ```
 #### 读写锁(读多写少)(当一个线程有写锁的时候其他获取读锁写锁都会阻塞) 保护共享资源一致性 pthread_rwlock_init_destroy初始化销毁 pthread_rwlock_rdlock_wrlock(读锁写锁)
+* [读写锁](./linux/linux系统编程/线程/pthread_rwlock.cpp)
+```cpp
+    #include <iostream>
+    #include <pthread.h>
+    #include <string.h>
+    // r r两次都可以成功拿到锁
+    // r w拿写锁的时候会阻塞
+    // w r拿读锁的时候会失败
+    // w w第二次拿写锁的时候会失败
+    if (argc < 3) {
+        perror("example: ./a.out r w");
+        exit(1);
+    }
+    pthread_rwlock_t rwlock;
+    pthread_rwlock_init(&rwlock, nullptr);
+    if (strcmp(argv[1], "r") == 0) {
+        if (pthread_rwlock_rdlock(&rwlock) == 0) {
+            std::cout << "first rdlock success\n";
+        } else {
+            std::cout << "first rdlock fail\n";
+        }
+    }
+    if (strcmp(argv[1], "w") == 0) {
+        if (pthread_rwlock_wrlock(&rwlock) == 0) {
+            std::cout << "first wrlock success\n";
+        } else {
+            std::cout << "first wrlock fail\n";
+        }
+    }
+    if (strcmp(argv[2], "r") == 0) {
+        if (pthread_rwlock_rdlock(&rwlock) == 0) {
+            std::cout << "second rdlock success\n";
+        } else {
+            std::cout << "second rdlock fail\n";
+        }
+    }
+    if (strcmp(argv[2], "w") == 0) {
+        if (pthread_rwlock_wrlock(&rwlock) == 0) {
+            std::cout << "second wrlock success\n";
+        } else {
+            std::cout << "second wrlock fail\n";
+        }
+    }
+    pthread_rwlock_unlock(&rwlock);
+    pthread_rwlock_unlock(&rwlock);
+    pthread_rwlock_destroy(&rwlock);
+```
+#### 条件变量(防止竟态条件(执行顺序不当)) pthread_cond_init_destroy初始化销毁 pthread_cond_wait_timewait等待超时等待(会先释放拿到的锁，等待被唤醒后会在加锁) pthread_cond_signal_broadcast唤醒一个所有
+* [条件变量](./linux/linux系统编程/线程/pthread_cond.cpp)
 ## 信号
 ### 常用信号
 |信号名|信号值|默认处理动作|发出信号原因|
