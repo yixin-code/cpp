@@ -1761,8 +1761,146 @@
         return;
     }
 ```
-### 读者写者问题
+#### 读者写者问题
 * [单读者单写者](./linux/linux系统编程/线程/read_write.cpp)
+```cpp
+    #include <iostream>
+    #include <pthread.h>
+    class CReadWrite {
+    public:
+        CReadWrite();
+        ~CReadWrite();
+    public:
+        void write(void);
+        void read(void);
+    public:
+        bool            m_flag_r;
+        bool            m_flag_w;
+        int             m_data;
+        pthread_mutex_t m_mutex_r;
+        pthread_mutex_t m_mutex_w;
+        pthread_cond_t  m_cond_r;
+        pthread_cond_t  m_cond_w;
+    };
+    void *thread_write(void *arg) {
+        CReadWrite *p = (CReadWrite*)arg;
+        p->write();
+        pthread_exit(nullptr);
+    }
+    void *thread_read(void *arg) {
+        CReadWrite *p = (CReadWrite*)arg;
+        p->read();
+        pthread_exit(nullptr);
+    }
+    CReadWrite  read_write;
+    pthread_t   tid_w;
+    if (pthread_create(&tid_w, nullptr, thread_write, (void*)&read_write) != 0) {
+        perror("pthread create tid w fail");
+        exit(1);
+    }
+    pthread_t   tid_r;
+    if (pthread_create(&tid_r, nullptr, thread_read, (void*)&read_write) != 0) {
+        perror("pthread create tid r fail");
+        exit(1);
+    }
+    pthread_join(tid_w, nullptr);
+    pthread_join(tid_r, nullptr);
+    return 0;
+    CReadWrite::CReadWrite() : m_flag_r(false), m_flag_w(false), m_data(0) {
+        pthread_mutex_init(&this->m_mutex_r, nullptr);
+        pthread_mutex_init(&this->m_mutex_w, nullptr);
+        pthread_cond_init(&this->m_cond_r, nullptr);
+        pthread_cond_init(&this->m_cond_w, nullptr);
+    }
+    CReadWrite::~CReadWrite() {
+        pthread_mutex_destroy(&this->m_mutex_r);
+        pthread_mutex_destroy(&this->m_mutex_w);
+        pthread_cond_destroy(&this->m_cond_r);
+        pthread_cond_destroy(&this->m_cond_w);
+    }
+    void CReadWrite::write(void) {
+        for (int i = 1; i <= 11; ++i) {
+            pthread_mutex_lock(&this->m_mutex_r);
+            this->m_data    = i;
+            this->m_flag_r  = true;
+            std::cout << "make data: " << this->m_data << std::endl;
+            pthread_cond_broadcast(&this->m_cond_r);
+            pthread_mutex_unlock(&this->m_mutex_r);
+
+            pthread_mutex_lock(&this->m_mutex_w);
+            while (this->m_flag_w == false) {
+                pthread_cond_wait(&this->m_cond_w, &this->m_mutex_w);
+            }
+            this->m_flag_w  = false;
+            pthread_mutex_unlock(&this->m_mutex_w);
+        }
+        return;
+    }
+    void CReadWrite::read(void) {
+        for (int i = 1; i <= 11; ++i) {
+            pthread_mutex_lock(&this->m_mutex_r);
+            while (this->m_flag_r == false) {
+                pthread_cond_wait(&this->m_cond_r, &this->m_mutex_r);
+            }
+            this->m_flag_r = false;
+            std::cout << "process data: " << this->m_data << std::endl;
+            pthread_mutex_unlock(&this->m_mutex_r);
+
+            pthread_mutex_lock(&this->m_mutex_w);
+            this->m_flag_w = true;
+            pthread_cond_broadcast(&this->m_cond_w);
+            pthread_mutex_unlock(&this->m_mutex_w);
+        }
+        return;
+    }
+```
+#### 线程信号量(无符号整数计数器) 信号量加1sem_post 信号量减1sem_wait(信号量为0时，再次调用会阻塞等待) 非阻塞sem_trywait sem_destroy_init销毁初始化(参数2 0进程间不共享 1进程间共享，参数3 信号量初值)
+* [信号量控制线程执行顺序](./linux/linux系统编程/线程/sem.cpp)
+```cpp
+    #include <iostream>
+    #include <semaphore.h>
+    #include <pthread.h>
+    sem_t   sem;
+    sem_t   sem2;
+    void *thread_func(void* arg) {
+        std::cout << pthread_self() << " thread func\n";
+        sem_post(&sem);
+        pthread_exit(nullptr);
+    }
+    void *thread_func2(void* arg) {
+        sem_wait(&sem);
+        std::cout << pthread_self() << " thread func2\n";
+        sem_post(&sem2);
+        pthread_exit(nullptr);
+    }
+    void *thread_func3(void* arg) {
+        sem_wait(&sem2);
+        std::cout << pthread_self() << " thread func3\n";
+        pthread_exit(nullptr);
+    }
+    // 参数2 0 其他进程不共享 1 其他进程共享
+    sem_init(&sem, 0, 0);
+    sem_init(&sem2, 0, 0);
+    pthread_t   pthread;
+    pthread_t   pthread2;
+    pthread_t   pthread3;
+    if (pthread_create(&pthread, nullptr, thread_func, nullptr) != 0) {
+        perror("pthread create pthread fail");
+        exit(1);
+    }
+    if (pthread_create(&pthread2, nullptr, thread_func2, nullptr) != 0) {
+        perror("pthread create pthread fail");
+        exit(1);
+    }
+    if (pthread_create(&pthread3, nullptr, thread_func3, nullptr) != 0) {
+        perror("pthread create pthread fail");
+        exit(1);
+    }
+    pthread_join(pthread, nullptr);
+    sem_destroy(&sem);
+    sem_destroy(&sem2);
+```
+* [pv操作 p减法操作 v加法操作, sem_wait == p(1) sem_post == v(1)](./linux/linux系统编程/线程/取款操作.cpp)
 ## 信号
 ### 常用信号
 |信号名|信号值|默认处理动作|发出信号原因|
