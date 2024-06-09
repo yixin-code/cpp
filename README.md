@@ -1432,7 +1432,7 @@
     if (pthread_cancel(tid) != 0);
     pthread_join(tid, nullptr);
 ```
-### 保证数据的一致性 防止竞态条件(执行顺序不当)
+### 保证数据的一致性 防止竞态条件(执行顺序不当) 死锁(一个线程拿a锁要b锁，一个线程拿b锁要a锁，pthread_mutex_trylock可以解决)
 #### 互斥锁(独占访问) 保护共享资源一致性 pthread_mutex_init_destroy初始化销毁 pthread_mutex_lock_trylock阻塞非阻塞(EBUSY(没有拿到锁))
 * [互斥锁阻塞pthread_mutex_lock](./linux/linux系统编程/线程/pthread_mutex_lock.cpp)
 ```cpp
@@ -1901,6 +1901,74 @@
     sem_destroy(&sem2);
 ```
 * [pv操作 p减法操作 v加法操作, sem_wait == p(1) sem_post == v(1)](./linux/linux系统编程/线程/取款操作.cpp)
+```cpp
+    #include <iostream>
+    #include <semaphore.h>
+    #include <pthread.h>
+    class CBank {
+    public:
+        CBank(double deposit);  // 存款
+        ~CBank();
+    public:
+        double get_withdrawal_total();      // 返回取款总数
+        double withdrawal(double money);    // 取款 返回余额
+    private:
+        double  m_balance;          // 余额
+        double  m_withdrawal_total; // 取款总数
+        sem_t   sem;
+    };
+    void *thread_func(void *arg) {
+        CBank *p = (CBank*)arg;
+        p->withdrawal(9999);
+        pthread_exit(nullptr);
+    }
+    CBank bank(11111);
+    pthread_t   pthread;
+    if (pthread_create(&pthread, nullptr, thread_func, (void*)&bank) != 0) {
+        perror("pthread create pthread fail");
+        exit(1);
+    }
+    pthread_t   pthread2;
+    if (pthread_create(&pthread2, nullptr, thread_func, (void*)&bank) != 0) {
+        perror("pthread create pthread2 fail");
+        exit(1);
+    }
+    pthread_join(pthread, nullptr);
+    pthread_join(pthread2, nullptr);
+    std::cout << "withdrawal: " << bank.get_withdrawal_total() << "\n";
+    CBank::CBank(double deposit) : m_balance(deposit), m_withdrawal_total(0) {
+        sem_init(&sem, 0, 1);
+    }
+    CBank::~CBank() {
+        sem_destroy(&sem);
+    }
+    double CBank::get_withdrawal_total() {
+        return this->m_withdrawal_total;
+    }
+    double CBank::withdrawal(double money) {
+        sem_wait(&sem);
+        double  temp = 0;
+        if (this->m_balance == 0 || this->m_balance < money) {
+            this->m_withdrawal_total += this->m_balance;
+            std::cout << pthread_self() << " balance: " << temp << ", withdrawal: " << this->m_balance << "\n";
+            this->m_balance = 0;
+            temp = this->m_balance;
+        } else {
+            this->m_withdrawal_total += money;
+            this->m_balance -= money;
+            temp = this->m_balance;
+            std::cout << pthread_self() << " balance: " << temp << ", withdrawal: " << money << "\n";
+        }
+        sem_post(&sem);
+        return temp;
+    }
+```
+### 线程和信号
+* 每个线程都会有自己的信号屏蔽字(控制哪些信号应该被阻塞)和信号未决字(信号已经产生未被接收)
+* 信号只会传递到单一线程中，定时器是进程资源(子线程调用alarm产生的信号仍然会发给主控线程)
+* [子线程产生SIGALRM信号](./linux/linux系统编程/线程/alarm.cpp)
+```cpp
+```
 ## 信号
 ### 常用信号
 |信号名|信号值|默认处理动作|发出信号原因|
