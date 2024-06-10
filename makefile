@@ -1,6 +1,6 @@
 TARGET=a.out
 
-TEMP=./linux/linux系统编程/线程/取款操作.cpp
+TEMP=./linux/linux系统编程/线程/alarm.cpp
 # TEMP=./语言/STL/queue.cpp
 # TEMP=./练习/mycp.cpp
 # TEMP=./linux/linux网络编程/多线程服务端.cpp
