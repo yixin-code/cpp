@@ -1966,7 +1966,7 @@
 ### 线程和信号
 * 每个线程都会有自己的信号屏蔽字(控制哪些信号应该被阻塞)和信号未决字(信号已经产生未被接收)
 * 信号只会传递到单一线程中，定时器是进程资源(子线程调用alarm产生的信号仍然会发给主控线程)
-* [子线程产生SIGALRM信号，sleep会被SIGALRM终止](./linux/linux系统编程/线程/alarm.cpp)
+* [任何线程产生SIGALRM信号都会被主控线程接收，sleep会被SIGALRM终止](./linux/linux系统编程/线程/alarm.cpp)
 ```cpp
     #include <iostream>
     #include <signal.h>
@@ -2003,8 +2003,13 @@
         std::cout << "main: " << pthread_self() << "wait...\n";
         sleep(10);
     }
-    std::cout << "main end\n";
 ```
+#### pthread_sigmask可以屏蔽线程中的信号
+* 参数1
+    * SIG_BLOCK 设置阻塞信号
+    * SIG_UNBLOCK 移除阻塞信号
+    * SIG_SETMASK 设置当前信号集为第二参数指向
+* [pthread_sigmask屏蔽主线信号，让子线程接收信号](./linux/linux系统编程/线程/pthread_sigmask.cpp)
 ## 信号
 ### 常用信号
 |信号名|信号值|默认处理动作|发出信号原因|
@@ -2690,6 +2695,15 @@
 ## 内存泄漏工具
 * sudo pacman -Sy valgrind
 ## 终端 mobaxterm
+## docker
+### 安装
+* sudo pacman -S doecker
+* 启动开机自启
+    * sudo systemctl start docker.service
+    * sudo systemctl enable docker.service
+* 用户添加到docker组
+    * sudo usermod -aG docker yixin
+    * newgrp docker
 ---
 ---
 ---
