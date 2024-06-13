@@ -2753,6 +2753,11 @@
 * 用户添加到docker组
     * sudo usermod -aG docker yixin
     * newgrp docker
+## iwctl
+    * 查看网卡  device list
+    * 扫描无线网    station wlan0 scan
+    * 查看所有网络  station wlan0 get-networks
+    * 连接无线网  station wlan0 connect name
 ---
 ---
 ---
