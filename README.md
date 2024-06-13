@@ -2010,6 +2010,8 @@
     * SIG_UNBLOCK 移除阻塞信号
     * SIG_SETMASK 设置当前信号集为第二参数指向
 * [pthread_sigmask屏蔽主线信号，让子线程接收信号](./linux/linux系统编程/线程/pthread_sigmask.cpp)
+```cpp
+```
 ## 信号
 ### 常用信号
 |信号名|信号值|默认处理动作|发出信号原因|
