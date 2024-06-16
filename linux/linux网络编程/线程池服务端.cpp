@@ -31,17 +31,19 @@ int main(int argc, char *argv[]) {
     }
 
     struct sockaddr_in  client_addr;
-    int         connect_fd      = 0;
-    socklen_t   client_addr_len = 0;
+    int                 connect_fd      = 0;
+    socklen_t           client_addr_len = 0;
+    char                buf[20]         = {0};
 
     while (true) {
         memset(&client_addr, 0, sizeof(client_addr));
+        memset(buf, 0, sizeof(buf));
         // 阻塞等待客户端连接 返回连接套接字 用于传输数据
         if ((connect_fd = accept(socket_fd, (sockaddr*)&client_addr, &client_addr_len)) == -1) {
             perror("accept fail");
             exit(1);
         }
-        std::cout << inet_ntop(AF_INET, &client_addr.sin_addr, buf,, )
+        std::cout << inet_ntop(AF_INET, &client_addr.sin_addr, buf, INET_ADDRSTRLEN) << ", connected\n";
     }
 
 
