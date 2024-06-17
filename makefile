@@ -1,9 +1,10 @@
 TARGET=a.out
 
-TEMP=./linux/linux系统编程/线程/pthread_sigmask.cpp
+# TEMP=./linux/linux系统编程/线程/pthread_sigmask.cpp
+TEMP=./linux/linux系统编程/文件读写/lseek.cpp
 # TEMP=./语言/STL/queue.cpp
 # TEMP=./练习/mycp.cpp
-# TEMP=./linux/linux网络编程/多线程服务端.cpp
+# TEMP=./linux/linux网络编程/线程池服务端.cpp
 # TEMP=./linux/linux网络编程/客户端.cpp
 
 # 当前目录下所有.cpp文件
