@@ -1,4 +1,5 @@
-// 队列
+// 创建多个线程，争抢处理任务
+    // 队列，入队添加任务，出队处理任务
 #include <iostream>
 #include <string.h>
 #include <sys/socket.h>
@@ -46,6 +47,7 @@ int main(int argc, char *argv[]) {
             perror("pthread_create fail");
             exit(1);
         }
+        std::cout << "create thread: " << thread[i] << "\n";
     }
 
     int socket_fd   = socket(AF_INET, SOCK_STREAM, 0);    // socket文件描述符
