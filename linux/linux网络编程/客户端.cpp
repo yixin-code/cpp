@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
         std::cin.getline(buf, MAX_RECV_DATA);
         buf[strlen(buf)] = '\n';
         if (write(socket_fd, buf, strlen(buf)) == -1) { // 返回写入字节数
-            perror("41 write");
+            perror("write fail");
             exit(1);
         }
         if (strncasecmp(buf, "quit", 4) == 0) {

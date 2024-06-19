@@ -3,11 +3,12 @@
 #include <iostream>
 #include <string.h>
 #include <sys/socket.h>
+#include <unistd.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <pthread.h>
 
-constexpr int POST  = 8435;
+constexpr int POST  = 8354;
 
 struct Node {
     Node(void) : m_fd(0), m_next(nullptr) {}
@@ -33,7 +34,24 @@ private:
 void* thread_func(void *arg) {
     pthread_detach(pthread_self());
 
-    CThreadPool* p = (CThreadPool*)arg;
+    CThreadPool*    p           = (CThreadPool*)arg;
+    char            buf[1024]   = {0};
+
+    while (true) {
+        Node temp = p->pop();
+        std::cout << temp.m_fd << " reach\n";
+        while (true) {
+            read(temp.m_fd, buf, sizeof(buf));
+            if (strncasecmp(buf, "quit", 4) == 0) {
+                break;
+            }
+            // buf[strlen(buf)] = 0;
+            std::cout << "receive: " << buf;
+            memset(buf, 0, sizeof(buf));
+        }
+        std::cout << temp.m_fd << " quit\n";
+        close(temp.m_fd);
+    }
 
     pthread_exit(nullptr);
 }
@@ -57,9 +75,10 @@ int main(int argc, char *argv[]) {
     }
 
     struct sockaddr_in server_addr;
+    memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_addr.s_addr   = htonl(INADDR_ANY);
     server_addr.sin_family        = AF_INET;
-    server_addr.sin_port          = htonl(POST);
+    server_addr.sin_port          = htons(POST);
 
     // 绑定套接字
     if (bind(socket_fd, (sockaddr*)&server_addr, sizeof(server_addr)) == -1) {
@@ -75,8 +94,10 @@ int main(int argc, char *argv[]) {
     }
 
     struct sockaddr_in  client_addr;
+    memset(&client_addr, 0, sizeof(client_addr));
+
     int                 connect_fd      = 0;
-    socklen_t           client_addr_len = 0;
+    socklen_t           client_addr_len = sizeof(client_addr);
     char                buf[20]         = {0};
 
     while (true) {
@@ -90,6 +111,8 @@ int main(int argc, char *argv[]) {
         std::cout << inet_ntop(AF_INET, &client_addr.sin_addr, buf, INET_ADDRSTRLEN) << ", connected\n";
         thread_pool.push(connect_fd);
     }
+
+    close(socket_fd);
 
     return 0;
 }
@@ -137,7 +160,8 @@ Node CThreadPool::pop(void) {
         pthread_cond_wait(&this->m_cond, &this->m_mutex);
     }
 
-    Node*   p_temp = this->m_p_head;
+    Node*   p_temp  = this->m_p_head;
+    Node    p_ret   = *p_temp;
 
     this->m_p_head = this->m_p_head->m_next;
 
@@ -149,5 +173,5 @@ Node CThreadPool::pop(void) {
 
     delete p_temp;
 
-    return *p_temp;
+    return p_ret;
 }
