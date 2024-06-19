@@ -1132,6 +1132,11 @@
     pos = lseek(fd, 0, SEEK_END);
     std::cout << "pos: " << pos << "\n"; // 9
 ```
+### fcntl对文件描述符进行操作
+#### 修改为非阻塞
+* [修改非阻塞](./linux/linux系统编程/文件读写/修改非阻塞.cpp)
+```cpp
+```
 ## 进程(资源管理的最小单位，有自己的数据段、代码段、堆栈段) 不能保证新进程和调用进程的执行顺序
 * ps -eo pid,ppid,sid,pgid,cmd,stat | grep -E 'PID|a.out|fish'
 ### 进程状态模型
