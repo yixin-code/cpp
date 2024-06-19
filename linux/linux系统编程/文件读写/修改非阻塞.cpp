@@ -19,9 +19,12 @@ int main(int argc, char* argv[]) {
 
     while (true) {
         count = read(STDIN_FILENO, buf, sizeof(buf));
+
         if (errno != EAGAIN) {
-            std::cout << "非阻塞错误\n";
+            perror("非阻塞错误");
+            exit(1);
         }
+        
         if (count > 0) {
             std::cout << buf << "\n";
             break;

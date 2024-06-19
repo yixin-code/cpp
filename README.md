@@ -1136,6 +1136,33 @@
 #### 修改为非阻塞
 * [修改非阻塞](./linux/linux系统编程/文件读写/修改非阻塞.cpp)
 ```cpp
+    #include <iostream>
+    #include <unistd.h>
+    #include <fcntl.h>
+    int flag = fcntl(STDIN_FILENO, F_GETFL); // 拿到原标志位
+    if (flag == -1) {
+        perror("fcntl f_getfl");
+        exit(1);
+    }
+    if (fcntl(STDIN_FILENO, F_SETFL, flag | O_NONBLOCK) == -1) { // 设置新的标志位
+        perror("fcntl f_setfl");
+        exit(1);
+    }
+    ssize_t count   = 0;
+    char    buf[20] = {0};
+    while (true) {
+        count = read(STDIN_FILENO, buf, sizeof(buf));
+        if (errno != EAGAIN) {
+            perror("非阻塞错误");
+            exit(1);
+        }
+        if (count > 0) {
+            std::cout << buf << "\n";
+            break;
+        }
+        std::cout << "wait input\n";
+        sleep(1);
+    }
 ```
 ## 进程(资源管理的最小单位，有自己的数据段、代码段、堆栈段) 不能保证新进程和调用进程的执行顺序
 * ps -eo pid,ppid,sid,pgid,cmd,stat | grep -E 'PID|a.out|fish'
