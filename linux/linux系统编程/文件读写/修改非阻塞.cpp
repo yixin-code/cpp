@@ -9,10 +9,20 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
+    std::cout << flag << "\n";
+
     if (fcntl(STDIN_FILENO, F_SETFL, flag | O_NONBLOCK) == -1) { // 设置新的标志位
         perror("fcntl f_setfl");
         exit(1);
     }
+
+    flag = fcntl(STDIN_FILENO, F_GETFL);
+    if (flag == -1) {
+        perror("fcntl f_getfl");
+        exit(1);
+    }
+
+    std::cout << flag << "\n";
 
     ssize_t count   = 0;
     char    buf[20] = {0};

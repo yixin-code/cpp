@@ -19,8 +19,10 @@ void file_cp(char *argv[]) {
     std::ofstream fout(argv[2]);
     assert(fout.is_open());
 
-    char buf[1024] = {0};
-    while (fin.readsome(buf, sizeof(buf))) {
+    char            buf[1024]   = {0};
+    std::streamsize count       = 0;
+    while (count = fin.readsome(buf, sizeof(buf))) {
+        std::cout << "count: " << count << "\n";
         std::cout << buf;
         fout.write(buf, strlen(buf));
     }

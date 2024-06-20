@@ -688,12 +688,13 @@
     #include <assert.h>
     std::ifstream fin(argv[1]);
     std::ofstream fout(argv[2]);
-    char buf[1024] = {0};
-    while (fin.readsome(buf, sizeof(buf))) {
+    char            buf[1024]   = {0};
+    std::streamsize count       = 0; // long
+    while (count = fin.readsome(buf, sizeof(buf))) {
+        std::cout << "count: " << count << "\n";
         std::cout << buf;
         fout.write(buf, strlen(buf));
     }
-
     std::ofstream fout(argv[1], std::ios::binary);
     char buf[] = R"(孤单听雨的猫
 往时间裂缝里看到了我
@@ -1133,6 +1134,37 @@
     std::cout << "pos: " << pos << "\n"; // 9
 ```
 ### fcntl对文件描述符进行操作
+#### 文件描述符权限
+* [文件描述符权限](./linux/linux系统编程/文件读写/文件描述符权限.cpp)
+```cpp
+    #include <iostream>
+    #include <fcntl.h>
+    #include <unistd.h>
+
+    //  O_ACCMODE->0x3->0011(表示读写执行) o_rdonly->0x0->0000 O_WRONLY->0x1->0001 O_RDWR->0x2->0010
+    if (argc < 2) {
+        perror("eg: ./a.out 1");
+        exit(1);
+    }
+    int flag = 0;
+    // if ((flag = fcntl(std::stoi(argv[1]), F_GETFL)) == -1) {
+    if ((flag = fcntl(atoi(argv[1]), F_GETFL)) == -1) {
+        perror("fcntl f_getfl");
+        exit(1);
+    }
+    std::cout << std::hex << "hex: " << flag << "\n"; // 402->0100 0000 0010
+    std::cout << std::dec << "dec: " << flag << "\n"; // 1024
+    if (flag & O_WRONLY) {
+        std::cout << "exist O_WRONLY: " << O_WRONLY << "\n"; // 1
+    }
+    if (flag & O_RDWR) {
+        std::cout << "exist O_RDWR: " << O_RDWR << "\n"; // 2
+    }
+    if (flag & O_APPEND) {
+        std::cout << "exist O_APPEND: " << O_APPEND << "\n"; // 1024
+    }
+    std::cout << "O_ACCMODE: " << O_ACCMODE << "\n"; // 3
+```
 #### 修改为非阻塞
 * [修改非阻塞](./linux/linux系统编程/文件读写/修改非阻塞.cpp)
 ```cpp
