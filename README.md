@@ -2530,7 +2530,6 @@
     }
     CThreadPool thread_pool;
     pthread_t   thread[4];
-
     for (int i = 0; i < 4; ++i) {
         if (pthread_create(&thread[i], nullptr, thread_func, (void*)&thread_pool) == -1) {
             perror("pthread_create fail");
