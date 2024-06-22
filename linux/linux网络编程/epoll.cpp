@@ -67,15 +67,23 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in  client_addr;
     socklen_t           client_addr_len = sizeof(sockaddr_in);
     char                buf[20]         = {0};
+    struct epoll_event  ets[256];
 
     while (true) {
+        // -1阻塞 等待准备好的文件描述符 ets事件数组
+            // 返回准备好的文件描述符数量
+        int count_fd = epoll_wait(epoll_fd, ets, 256, -1);
+        for (int i = 0; i < count_fd; ++i) { // 处理事件
+            if (ets[i].data.fd == sock_fd) { // 事件fd是sock_fd 等待接受连接
+                memset(&client_addr, 0, sizeof(client_addr));
+                memset(buf, 0, sizeof(buf));
+                connect_fd = accept(connect_fd, (sockaddr*)&client_addr, &client_addr_len);
+                std::cout << inet_ntop(AF_INET, &client_addr.sin_addr, buf, 16) << " connected\n"; // 线程安全
 
-        memset(&client_addr, 0, sizeof(client_addr));
-        memset(buf, 0, sizeof(buf));
+                epoll_wait(epoll_fd, &et, 256, -1);
+            }
+        }
 
-        connect_fd = accept(connect_fd, (sockaddr*)&client_addr, &client_addr_len);
-
-        std::cout << inet_ntop(AF_INET, &client_addr.sin_addr, buf, 16) << " connected\n";
 
         thread_pool.increace(connect_fd);
     }
