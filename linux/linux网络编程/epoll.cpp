@@ -24,9 +24,24 @@ public:
 void* thread_func(void *arg) {
     ThreadPool* temp        = (ThreadPool*)arg;
     int         connect_fd  = 0;
+    char        buf[1024]   = {0};
+    int         count       = 0;
 
     while (true) {
         connect_fd = temp->remove();
+
+        std::cout << connect_fd << " reach\n";
+
+        count = read(connect_fd, buf, sizeof(buf));
+
+        if (strncasecmp("quit", buf, 4) == 0) {
+            std::cout << connect_fd << " quit\n";
+            close(connect_fd);
+        } else {
+            write(connect_fd, buf, count);
+        }
+
+        memset(buf, 0, sizeof(buf));
     }
 
     pthread_exit(nullptr);
@@ -46,6 +61,7 @@ int main(int argc, char *argv[]) {
     server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     server_addr.sin_family      = AF_INET;
     server_addr.sin_port        = htons(POST);
+
     if (bind(sock_fd, (sockaddr*)&server_addr, sizeof(server_addr)) == -1) {
         perror("bind fail");
         exit(1);
@@ -55,7 +71,7 @@ int main(int argc, char *argv[]) {
     pthread_t thread[4] = {0};
     for (int i = 0; i < 4; ++i) {
         pthread_create(&thread[i], nullptr, thread_func, (void*)&thread_pool);
-        std::cout << pthread_self() << " create\n";
+        std::cout << thread[i] << " create\n";
     }
 
     int epoll_fd = epoll_create(256); // 监听多个文件描述符上的读写事件
@@ -71,7 +87,7 @@ int main(int argc, char *argv[]) {
 
     int                 connect_fd      = 0;
     struct sockaddr_in  client_addr;
-    socklen_t           client_addr_len = sizeof(sockaddr_in);
+    socklen_t           client_addr_len = sizeof(client_addr);
     char                buf[20]         = {0};
     struct epoll_event  ets[256];
     int                 count_fd        = 0;
@@ -84,7 +100,7 @@ int main(int argc, char *argv[]) {
             if (ets[i].data.fd == sock_fd) { // 事件fd是sock_fd 等待接受连接
                 memset(&client_addr, 0, sizeof(client_addr));
                 memset(buf, 0, sizeof(buf));
-                connect_fd = accept(connect_fd, (sockaddr*)&client_addr, &client_addr_len);
+                connect_fd = accept(sock_fd, (sockaddr*)&client_addr, &client_addr_len);
                 std::cout << inet_ntop(AF_INET, &client_addr.sin_addr, buf, 16) << " connected\n"; // 线程安全
 
                 et.data.fd  = connect_fd;
