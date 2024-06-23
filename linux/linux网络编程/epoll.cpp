@@ -1,4 +1,5 @@
 #include <iostream>
+#include <unistd.h>
 #include <string.h>
 #include <arpa/inet.h>
 #include <sys/epoll.h>
@@ -21,7 +22,12 @@ public:
 };
 
 void* thread_func(void *arg) {
+    ThreadPool* temp        = (ThreadPool*)arg;
+    int         connect_fd  = 0;
 
+    while (true) {
+        connect_fd = temp->remove();
+    }
 
     pthread_exit(nullptr);
 }
@@ -56,7 +62,7 @@ int main(int argc, char *argv[]) {
     struct epoll_event et;
     et.events   = EPOLLIN | EPOLLET; // 文件描述符上有可读数据时通知，并使用边缘触发模式
     et.data.fd  = sock_fd;
-    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, sock_fd, &et); // 添加相关事件
+    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, sock_fd, &et); // 添加sock_fd相关事件
 
     if (listen(sock_fd, 5) == -1) {
         perror("listen fail");
@@ -68,11 +74,12 @@ int main(int argc, char *argv[]) {
     socklen_t           client_addr_len = sizeof(sockaddr_in);
     char                buf[20]         = {0};
     struct epoll_event  ets[256];
+    int                 count_fd        = 0;
 
     while (true) {
         // -1阻塞 等待准备好的文件描述符 ets事件数组
             // 返回准备好的文件描述符数量
-        int count_fd = epoll_wait(epoll_fd, ets, 256, -1);
+        count_fd = epoll_wait(epoll_fd, ets, 256, -1);
         for (int i = 0; i < count_fd; ++i) { // 处理事件
             if (ets[i].data.fd == sock_fd) { // 事件fd是sock_fd 等待接受连接
                 memset(&client_addr, 0, sizeof(client_addr));
@@ -80,13 +87,21 @@ int main(int argc, char *argv[]) {
                 connect_fd = accept(connect_fd, (sockaddr*)&client_addr, &client_addr_len);
                 std::cout << inet_ntop(AF_INET, &client_addr.sin_addr, buf, 16) << " connected\n"; // 线程安全
 
-                epoll_wait(epoll_fd, &et, 256, -1);
+                et.data.fd  = connect_fd;
+                et.events   = EPOLLIN | EPOLLET;
+                epoll_ctl(epoll_fd, EPOLL_CTL_ADD, connect_fd, &et); // 添加connect_fd相关事件
+            } else if (ets[i].events & EPOLLIN) { // 如果有可读数据
+                if (ets[i].data.fd < 3) {
+                    continue;
+                }
+
+                thread_pool.increace(ets[i].data.fd);
             }
         }
-
-
-        thread_pool.increace(connect_fd);
     }
+
+    close(epoll_fd);
+    close(sock_fd);
 
     return 0;
 }

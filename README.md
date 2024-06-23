@@ -2620,7 +2620,9 @@
     }
 ```
 * [epoll模型(epoll模型可以提高网络编程的性能和并发能力，特别适用于需要处理大量并发连接的服务器端程序)和线程池](./linux/linux网络编程/epoll.cpp)
-* 不断的轮询突破
+* 不断的轮询对客户端只服务一次，可以突破线程数限制
+```cpp
+```
 * [UDP服务端](./linux/linux网络编程/UDP服务端.cpp)
 ```cpp
     #include <netinet/ip.h> // sockaddr_in
