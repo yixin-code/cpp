@@ -8,7 +8,7 @@ void left_space(char *str);
 void right_space(char *str);
 
 // 保存全局变量
-void save_environ();
+void save_environ_arg();
 // 设置进程标题
 void set_process_title(const char* title_name);
 
@@ -29,5 +29,7 @@ void ngx_log_core(int level, int error_num, const char* format, ...);
 
 // 注册捕捉函数
 int ngx_init_signal();
+// 创建worker子进程
+void ngx_master_process();
 
 #endif

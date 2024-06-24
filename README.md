@@ -2296,9 +2296,9 @@
 #### 将某个信号值0, sigdelset(&sig, SIGHUP)
 #### sigprocmask 可以设置进程中信号集的内容
 * 参数1
-    * SIG_BLOCK 设置阻塞信号
+    * SIG_BLOCK 设置阻塞信号(会在当前信号屏蔽字上增加信号)
     * SIG_UNBLOCK 移除阻塞信号
-    * SIG_SETMASK 设置当前信号集为第二参数指向
+    * SIG_SETMASK 设置当前信号集为第二参数指向(会将信号屏蔽字完全替换)
 * 参数2
     * 信号集指针，要添加删除或添加的信号，null为不设置
 * 参数3
@@ -3047,6 +3047,8 @@
 * 日志
 * [格式化读写](./my_nignx/app/ngx_log.cpp)
 * [打开日志等级和路径给予初值](./my_nignx/app/ngx_log.cpp)
+* 信号
+* [信号捕捉](./my_nignx/signal/ngx_signal.cpp)
 ---
 ---
 ---

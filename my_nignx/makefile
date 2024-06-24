@@ -17,7 +17,7 @@ $(TARGET):$(OBJ)
 	$(G) $(OBJ) $(FLAG) -o $(TARGET)
 
 %.o:%.cpp
-	$(G) $< $(INCLUDE) -c -g -o $@
+	$(G) $< $(FLAG) $(INCLUDE) -c -g -o $@
 
 clean:
-	rm -rf ./app/*.o
+	rm -rf ./app/*.o ./signal/*.o

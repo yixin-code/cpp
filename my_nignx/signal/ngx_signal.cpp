@@ -39,7 +39,7 @@ int ngx_init_signal() {
             sa.sa_handler = SIG_IGN; // 忽略
         }
 
-        sigemptyset(&(sa.sa_mask));
+        sigemptyset(&sa.sa_mask);
 
         if (sigaction(p_sig_t->m_signo, &sa, nullptr) == -1) {
             ngx_log_core(NGX_LOG_EMERG, errno, "sigaction[%s] failed", p_sig_t->m_sig_name);
