@@ -661,7 +661,6 @@
     * fstream(std::ios::in | std::ios::out)同时存在不会截断文件
 * 追加不存在创建 std::ios::app
 * 二进制读写 std::ios::binary
-* 截断文件 std::ios::trunc
 #### 文件读写 fin.getline(空行buf[0] == 0)/fin >>/fout <<
 * [文件读写](./语言/文件读写/文件读写.cpp)
 ```cpp
@@ -1197,7 +1196,7 @@
     }
 ```
 ## 进程(资源管理的最小单位，有自己的数据段、代码段、堆栈段) 不能保证新进程和调用进程的执行顺序
-* ps -eo pid,ppid,sid,pgid,cmd,stat | grep -E 'PID|a.out|fish'
+* ps -eo pid,ppid,sid,pgrp,cmd,stat | grep -E 'PID|a.out'
 ### 进程状态模型
 #### 三态
 ![进程状态转换-三态](./资源/进程状态转换-三态.png)
@@ -2325,6 +2324,11 @@
         exit(1);
     }
 ```
+#### 临时改变信号屏蔽字 sigsuspend(&sigset) 会临时替换当前的信号屏蔽，使进程在此挂起。待接收到信号后，恢复原信号屏蔽，进程继续执行
+* 需要暂停进程并等待一个信号时
+    * 创建子进程，父进程调用 sigsuspend 等待子进程发送一个表示它已经初始化完成的信号。
+* 需要临时改变信号屏蔽字，执行一些操作，然后恢复原来的屏蔽字时。
+    * 调用 sigsuspend，可以无需手动保存和恢复信号屏蔽字。
 ## 系统错误 errno
 * [系统错误errno](./linux/linux系统编程/系统错误/系统错误.cpp)
 ```cpp

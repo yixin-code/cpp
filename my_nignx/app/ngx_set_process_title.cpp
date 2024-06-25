@@ -30,7 +30,7 @@ void save_environ_arg() {
 
 // 设置进程标题
 void set_process_title(const char* title_name) {
-    int temp_total_len = g_argv_len + g_environ_len; // 命令行参数和环境变量总长度
+    size_t temp_total_len = g_argv_len + g_environ_len; // 命令行参数和环境变量总长度
     if (strlen(title_name) >= temp_total_len) {
         perror("title name set fail");
         exit(1);

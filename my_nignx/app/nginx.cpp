@@ -11,13 +11,15 @@ int g_environ_len   = 0; // 环境变量字节数
 int g_argv_len      = 0; // 命令行参数字节数
 int g_argc          = 0; // 命令行参数个
 char **g_p_argv     = nullptr; // 命令行参数
-pid_t ngx_pid       = 0;
+pid_t ngx_pid       = 0; // 当前进程pid
+pid_t ngx_ppid      = 0; // 当前父进程pid
 
 int main(int argc, char *argv[]) {
-    int ret_code = 0; // 退出代码0表示正常退出
-    ngx_pid     = getpid();
-    g_p_argv    = argv;
-    g_argc      = argc;
+    int ret_code    = 0; // 退出代码0表示正常退出
+    ngx_pid         = getpid();
+    ngx_ppid        = getppid();
+    g_p_argv        = argv;
+    g_argc          = argc;
 
     CConfig *p_config = CConfig::get_instance();
     if (p_config->load_config("./nginx.conf") == false) {

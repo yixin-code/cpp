@@ -1,10 +1,10 @@
-all:a.out
+all:nginx
 
-TARGET=./a.out
+TARGET=./nginx
 
 INCLUDE=-I ./_include
 
-SRC=./app/nginx.cpp ./app/ngx_conf.cpp ./app/ngx_func.cpp ./app/ngx_log.cpp ./app/ngx_printf.cpp ./app/ngx_set_process_title.cpp ./signal/ngx_signal.cpp
+SRC=./app/nginx.cpp ./app/ngx_conf.cpp ./app/ngx_func.cpp ./app/ngx_log.cpp ./app/ngx_printf.cpp ./app/ngx_set_process_title.cpp ./signal/ngx_signal.cpp ./proc/ngx_process.cpp
 
 OBJ=$(SRC:.cpp=.o)
 
@@ -20,4 +20,4 @@ $(TARGET):$(OBJ)
 	$(G) $< $(FLAG) $(INCLUDE) -c -g -o $@
 
 clean:
-	rm -rf ./app/*.o ./signal/*.o
+	rm -rf ./app/*.o ./signal/*.o ./proc/*.o

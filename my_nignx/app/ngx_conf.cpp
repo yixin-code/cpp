@@ -17,7 +17,7 @@ CConfig::~CConfig() {
 bool CConfig::load_config(const char *p_path_name) {
     FILE *fp = fopen(p_path_name, "r");
     if (fp == nullptr) {
-        perror("13, fopen error");
+        perror("fopen config file fail");
         return false;
     }
 

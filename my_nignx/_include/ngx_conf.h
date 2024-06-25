@@ -43,7 +43,7 @@ public:
     bool load_config(const char* p_path_name);
     // 得到配置文件中的字符串
     const char* get_string(const char* p_item_name);
-    // 得到配置文件中的数字
+    // 得到配置文件中的数字 如未配置def为缺省值
     int get_int_default(const char* p_item_name, const int def);
 
 public:

@@ -27,5 +27,6 @@ extern char **g_p_argv; // 命令行参数
 
 extern Log_t log_t;
 extern pid_t ngx_pid;
+extern pid_t ngx_ppid;
 
 #endif

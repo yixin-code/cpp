@@ -105,7 +105,7 @@ void ngx_log_core(int level, int error_num, const char* format, ...) {
     tm t;
     memset(&t, 0, sizeof(t));
     localtime_r(&(p_tv->tv_sec), &t); // 返回本地时间 使用tm结构表示
-    u_char str_cur_time[20] = {0};
+    // u_char str_cur_time[20] = {0};
     p_cur = format_sprintf(p_cur, p_end, "%4d-%02d-%02d %02d:%02d:%02d",
         t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
     p_cur = format_sprintf(p_cur, p_end, " [%s] ", log_level[level]);
