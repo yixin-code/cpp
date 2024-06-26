@@ -1,10 +1,10 @@
 TARGET=a.out
 
 # TEMP=./linux/linux系统编程/线程/pthread_sigmask.cpp
-# TEMP=./linux/linux系统编程/文件读写/文件描述符权限.cpp
+TEMP=./linux/linux系统编程/文件读写/ioctl_winsize.cpp
 # TEMP=./语言/STL/queue.cpp
 # TEMP=./练习/mycp.cpp
-TEMP=./linux/linux网络编程/epoll.cpp
+# TEMP=./linux/linux网络编程/文件描述符定位到标准输出.cpp
 # TEMP=./linux/linux网络编程/客户端.cpp
 
 # 当前目录下所有.cpp文件

@@ -993,11 +993,22 @@
     * linux中有三个特殊的文件描述符(程序运行会被自动打开)
         * 0(STDIN_FILENO)、1(STDOUT_FILENO)、2(STDERR_FILENO)
         * 分别对应：标准输入、标准输出，标准错误
-* 输入输出重定向
+* 输入输出重定向(shell是在程序运行之前改变重定向的)
     * 输入重定向 <
         * cat < test.txt
     * 输出重定向 >
         * ll > test.txt
+    * 将标准输出重定向
+        * ./a.out 1 1 > test.txt
+    * 将输入重定向
+        * ./a.out 3 3 <> test.txt
+    * [将文件描述符3重定向到标准输出](./linux/linux系统编程/文件读写/文件描述符定位到标准输出.cpp)
+    ```cpp
+        #include <unistd.h>
+        write(3, "yixin\n", 6);
+    ```
+        * ./a.out 3>&1 == ./a.out 3<&1
+        * ./a.out 1>test.txt 3>&1 将标准输出定位到test.txt 将文件描述符3定位到标准输出
 * /dev/null 写不满
 * /dev/zero 读不完
 ### **umask(0)表示没有设置任何权限屏蔽，所设即所得**
@@ -1194,6 +1205,24 @@
         std::cout << "wait input\n";
         sleep(1);
     }
+```
+### ioctl向设备发送控制和配置命令
+#### 查看窗口大小
+* [查看窗口大小](./linux/linux系统编程/文件读写/ioctl_winsize.cpp)
+```cpp
+    #include <iostream>
+    #include <unistd.h>
+    #include <sys/ioctl.h>
+    struct winsize ws; // 窗口大小
+    if (isatty(STDIN_FILENO) == false) { // 是否为终端
+        perror("STDIN_FILENO not tty");
+        exit(1);
+    }
+    if (ioctl(STDIN_FILENO, TIOCGWINSZ, &ws) == -1) {
+        perror("ioctl fail");
+        exit(1);
+    }
+    std::cout << "row: " << ws.ws_row << ", col: " << ws.ws_col << "\n";
 ```
 ## 进程(资源管理的最小单位，有自己的数据段、代码段、堆栈段) 不能保证新进程和调用进程的执行顺序
 * ps -eo pid,ppid,sid,pgrp,cmd,stat | grep -E 'PID|a.out'
@@ -2360,7 +2389,6 @@
         std::cout << "大端\n";
     }
 ```
-## UDP不需要建立连接，客户端和服务端关闭一方并不会有影响
 ## 主机字节序转为网络字节序 htonl
 ```cpp
     #include <arpa/inet.h>
@@ -2370,7 +2398,8 @@
     num = htons(num);
     std::cout << std::hex << num << '\n'; // 78563421
 ```
-## 服务端
+## TCP
+### 服务端
 * [TCP多进程服务端程序](./linux/linux网络编程/服务端.cpp)
 ```cpp
     #include <sys/socket.h> // socket bind listen accept
@@ -2751,35 +2780,7 @@
     }
 
 ```
-* [UDP服务端](./linux/linux网络编程/UDP服务端.cpp)
-```cpp
-    #include <netinet/ip.h> // sockaddr_in
-    #include <sys/socket.h> // socket recvfrom sendto
-    #include <unistd.h>     // close
-    constexpr u_int16_t SERVER_PORT = 8973;
-    constexpr uint32_t DATA_MAX_LEN = 1024;
-    int socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
-    sockaddr_in server_addr;
-    memset(&server_addr, 0, sizeof(server_addr));
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = ntohs(SERVER_PORT);
-    server_addr.sin_addr.s_addr = ntohl(INADDR_ANY);
-    bind(socket_fd, (sockaddr*)&server_addr, sizeof(server_addr));
-    char buf[DATA_MAX_LEN] = {0};
-    sockaddr_in client_addr;
-    memset(&client_addr, 0, sizeof(client_addr));
-    socklen_t client_addr_len = sizeof(client_addr);
-    uint32_t count = 0;
-    while (true) {
-        count = recvfrom(socket_fd, buf, DATA_MAX_LEN, 0, (sockaddr*)&client_addr, &client_addr_len); // 默认会阻塞等待
-        memcpy(buf + count - 1, " processed", 10);
-        sendto(socket_fd, buf, count + 10, 0, (sockaddr*)&client_addr, sizeof(client_addr));
-        memset(&client_addr, 0, sizeof(client_addr));
-        memset(buf, 0, DATA_MAX_LEN);
-    }
-    close(socket_fd);
-```
-## 客户端
+### 客户端
 * [TCP客户端程序](./linux/linux网络编程/客户端.cpp)
 ```cpp
     #include <sys/socket.h> // socket bind listen accept
@@ -2810,6 +2811,35 @@
     read(socket_fd, buf, MAX_RECV_DATA);
     std::cout << buf;
 ```
+## UDP不需要建立连接，客户端和服务端关闭一方并不会有影响
+* [UDP服务端](./linux/linux网络编程/UDP服务端.cpp)
+```cpp
+    #include <netinet/ip.h> // sockaddr_in
+    #include <sys/socket.h> // socket recvfrom sendto
+    #include <unistd.h>     // close
+    constexpr u_int16_t SERVER_PORT = 8973;
+    constexpr uint32_t DATA_MAX_LEN = 1024;
+    int socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
+    sockaddr_in server_addr;
+    memset(&server_addr, 0, sizeof(server_addr));
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = ntohs(SERVER_PORT);
+    server_addr.sin_addr.s_addr = ntohl(INADDR_ANY);
+    bind(socket_fd, (sockaddr*)&server_addr, sizeof(server_addr));
+    char buf[DATA_MAX_LEN] = {0};
+    sockaddr_in client_addr;
+    memset(&client_addr, 0, sizeof(client_addr));
+    socklen_t client_addr_len = sizeof(client_addr);
+    uint32_t count = 0;
+    while (true) {
+        count = recvfrom(socket_fd, buf, DATA_MAX_LEN, 0, (sockaddr*)&client_addr, &client_addr_len); // 默认会阻塞等待
+        memcpy(buf + count - 1, " processed", 10);
+        sendto(socket_fd, buf, count + 10, 0, (sockaddr*)&client_addr, sizeof(client_addr));
+        memset(&client_addr, 0, sizeof(client_addr));
+        memset(buf, 0, DATA_MAX_LEN);
+    }
+    close(socket_fd);
+```
 * [UDP客户端程序](./linux/linux网络编程/UDP客户端.cpp)
 ```cpp
     #include <unistd.h> // close
@@ -2833,6 +2863,19 @@
     }
     close(socket_fd);
 ```
+## HTTP 客户端请求服务端应答后主动断开 无状态保留(不会保存历史信息) 无连接(每个连接只处理一次请求，应答后服务端主动断开)
+|状态码|类别|原因|
+|-----|---|---|
+|1xx|informational(信息性状态码)|接收的请求正在处理|
+|2xx|sucess(成功状态码)|请求正常处理完毕|
+|3xx|redirection(重定向状态码)|需要进行附加操作以完成请求|
+|4xx|client error(客户端错误状态码)|服务器无法处理请求|
+|5xx|server error(服务器错误状态码)|服务器处理请求错误|
+## HTTP请求协议
+![HTTP请求协议](./资源/HTTP请求协议.png)
+## HTTP响应协议
+![HTTP响应协议](./资源/HTTP响应协议.png)
+* [HTTP服务端](./linux/linux网络编程/http.cpp)
 ---
 ---
 ---
@@ -3121,10 +3164,10 @@
     * sudo usermod -aG docker yixin
     * newgrp docker
 ## iwctl
-    * 查看网卡  device list
-    * 扫描无线网    station wlan0 scan
-    * 查看所有网络  station wlan0 get-networks
-    * 连接无线网  station wlan0 connect name
+    * 查看网卡 device list
+    * 扫描无线网 station wlan0 scan
+    * 查看所有网络 station wlan0 get-networks
+    * 连接无线网 station wlan0 connect name
 ---
 ---
 ---
