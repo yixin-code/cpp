@@ -3127,7 +3127,7 @@
 ## 电子书
 * yay -Sy mupdf
 ## U启盘 镜像
-* yay -Sy balena-etcher-electron-bin
+* yay -Sy woeusb
 ## github加速
 * yay -Sy watt-toolkit-bin
 ## 磁力连接
