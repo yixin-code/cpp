@@ -26,14 +26,17 @@ private:
 void* thread_func(void *arg) {
     CPoolQueue* p           = (CPoolQueue*)arg;
     int         conncet_fd  = 0;
-    char        buf[1024]   = {0};
-    u_int32_t   count       = 0;
+    char        buf[10240]  = {0};
+    int         count       = 0;
 
     while (true) {
         conncet_fd = p->pop();
         std::cout << "conncet_fd: " << conncet_fd << ", thread id: " << pthread_self() << "\n";
 
         count = read(conncet_fd, buf, sizeof(buf));
+        if (count == -1) {
+            perror("read fail");
+        }
 
         write(STDOUT_FILENO, buf, count);
         // std::cout << buf << "\n";
