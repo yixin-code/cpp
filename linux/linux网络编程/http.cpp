@@ -35,7 +35,7 @@ void* thread_func(void *arg) {
 
         count = read(conncet_fd, buf, sizeof(buf));
 
-        write(conncet_fd, buf, count);
+        write(STDOUT_FILENO, buf, count);
         // std::cout << buf << "\n";
 
         std::cout << "conncet_fd: " << conncet_fd << ", thread id: " << pthread_self() << " quit" << "\n";
