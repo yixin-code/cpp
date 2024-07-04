@@ -40,7 +40,11 @@ void* thread_func(void *arg) {
         }
 
         write(STDOUT_FILENO, buf, count);
-        // std::cout << buf << "\n";
+
+        memset(buf, 0, sizeof(buf));
+        strcpy(buf, "HTTP/1.1 200 OK\r\nContent-Type:text/html\r\n\r\n<html><boby><H1>hello world</H1></boby></html>");
+
+        write(conncet_fd, buf, strlen(buf));
 
         std::cout << "conncet_fd: " << conncet_fd << ", thread id: " << pthread_self() << " quit" << "\n";
         memset(buf, 0, sizeof(buf));

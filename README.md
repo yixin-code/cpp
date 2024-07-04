@@ -2958,7 +2958,7 @@
         // 阻塞等待事件发生
         ready_event_number = epoll_wait(epoll_fd, ets, 256, -1);
         for (int i = 0; i < ready_event_number; ++i) {
-            if (ets[ready_event_number].data.fd == listen_fd) { // 如果是监听套接字上的事件 则等待接受连接
+            if (ets[i].data.fd == listen_fd) { // 如果是监听套接字上的事件 则等待接受连接
                 memset(&client_addr, 0, sizeof(client_addr));
                 if ((connect_fd = accept(listen_fd, (sockaddr*)&client_addr, &client_addr_len)) == -1) {
                     perror("accept fail");
