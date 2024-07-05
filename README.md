@@ -583,6 +583,13 @@
 * 全缓冲 缓冲区写满，写入文件(普通文件都是如此)
 * 行缓冲 缓冲区写满或遇到换行符，写入文件(stdout)
 * 无缓冲 直接写入文件(stderr)
+#### 刷新缓冲区
+* fclose 会刷新缓冲区
+* fflush(fd) 会刷新缓冲区
+* 设置缓冲方式setvbuf(stdout, NULL, _IONBF, 0) 会禁用缓冲区
+    * _IONBF：无缓冲，即不使用缓冲区。
+    * _IOLBF：行缓冲，即每次输出操作后会刷新缓冲区，或者在换行符 \n 出现时也会刷新缓冲区。
+    * _IOFBF：全缓冲，即整个缓冲区满时才会刷新。
 ### c文件读写
 #### fopen/fclose 打开/关闭文件
 * fopen mode
@@ -1011,6 +1018,10 @@
         * ./a.out 1>test.txt 3>&1 将标准输出定位到test.txt 将文件描述符3定位到标准输出
 * /dev/null 写不满
 * /dev/zero 读不完
+### 缓存同步
+* sync(void)    将缓冲区内容同步到磁盘，但不会等待写入完成就会返回(不保证写入完成)
+* fsync(fd)     将文件数据和元素据(文件属性)同步到磁盘，待数据写入完成返回
+* fdatasync(fd) 将文件数据同步到磁盘，待数据写入完成返回
 ### **umask(0)表示没有设置任何权限屏蔽，所设即所得**
     * 新文件权限和默认的umask进行按位与，得到最终新文件权限
 * [umask](./linux/linux系统编程/文件读写/umask.cpp)
@@ -1073,10 +1084,13 @@
         * S_IXOTH: 其他人执行。
     * O_NONBLOCK: 对于设备文件，此标志指示打开应该在非阻塞模式下进行。
     * O_EXCL:     与O_CREAT一起使用时，文件存在，打开失败。
-    * O_SYNC:     写入时同步数据。
+    * O_SYNC:     写入时同步数据，直接将内核缓冲区的数据写入到磁盘
     * O_DSYNC:    类似 O_SYNC，但仅同步写入的数据。
+    * O_DIRECT:   绕过内核缓冲区直接从应用缓冲区写入磁盘
 ### 文件读写read write
 #### read返回读到的字节数，失败返回-1。write返回写入字节数，失败返回-1，0读到文件结尾
+* write写入的时候是原子操作
+* write调用返回时，内核已将应用缓冲区中的数据放入了内核缓冲区
 * [read write](./linux/linux系统编程/文件读写/read.cpp)
     * 读取标准输入时是行缓冲，并会将换行符读取
     * 当读取字符数量大于实际字符时会截断
@@ -2367,6 +2381,74 @@
     std::ifstream fin;
     fin.open("a.txt");
     std::cout << "errno: " << errno << strerror(errno) << "\n";
+```
+## 目录操作
+### 获取当前目录名getcwd(buf, sizeof(buf))
+* [获取当前目录名](./linux/linux系统编程/目录/getcwd.cpp)
+```cpp
+    #include <iostream>
+    #include <unistd.h>
+    char buf[256] = {0}; // 目录名最大长度255
+    getcwd(buf, sizeof(buf));
+    std::cout << buf << "\n";
+```
+### 切换目录chdir("/home/yixin")
+* [切换目录](./linux/linux系统编程/目录/chdir.cpp)
+```cpp
+    #include <iostream>
+    #include <unistd.h>
+    char buf[256] = {0};
+    getcwd(buf, sizeof(buf));
+    std::cout << "change before: " << buf << '\n';
+    chdir("/home/yixin/Temp");
+    getcwd(buf, sizeof(buf));
+    std::cout << "change after: " << buf << '\n';
+```
+### 创建目录mkdir("/home/yixin/Temp/aaa", 0755)
+* [创建目录](./linux/linux系统编程/目录/mkdir.cpp)
+```cpp
+    #include <iostream>
+    #include <sys/stat.h>
+    // system("cd /home/yixin/Temp"); // system会创建一个新的shell环境，这条语句执行完毕就会关闭该shell
+    mkdir("/home/yixin/Temp/aaa", 0755);
+```
+### 删除目录rmdir("/home/yixin/Temp/aaa")
+* [删除目录](./linux/linux系统编程/目录/rmdir.cpp)
+```cpp
+    #include <iostream>
+    #include <unistd.h>
+    rmdir("/home/yixin/Temp/aaa");
+```
+### 打开文件DIR* p_dir = opendir(/home/yixin/Temp)
+* [打开文件](./linux/linux系统编程/目录/opendir.cpp)
+```cpp
+    #include <iostream>
+    #include <dirent.h>
+    DIR* p_dir = opendir("/home/yixin/Code");
+    closedir(p_dir);
+```
+### 读取目录中的文件readdir(DIR*)
+* [读取目录中的文件](./linux/linux系统编程/目录/readdir.cpp)
+```cpp
+    #include <iostream>
+    #include <dirent.h>
+    DIR*    p_dir       = opendir("/home/yixin/Code/cpp");
+    dirent* p_dirent    = nullptr;
+    while ((p_dirent = readdir(p_dir)) != nullptr) {
+    // while (true) {
+        // p_dirent = readdir(p_dir);
+        // if (p_dirent == nullptr) {
+        //     break;
+        // }
+        if (p_dirent->d_type == DT_DIR) {
+            std::cout << p_dirent->d_name << " ";
+        }
+        if (p_dirent->d_type == DT_REG) {
+            std::cout << p_dirent->d_name << " ";
+        }
+    }
+    std::cout << '\n';
+    closedir(p_dir);
 ```
 ---
 ---
