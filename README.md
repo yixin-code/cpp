@@ -966,6 +966,19 @@
         << std::setw(2) << std::setfill('0') << t.tm_min << ":"
         << std::setw(2) << std::setfill('0') << t.tm_sec << '\n';
 ```
+* [显示当前时间](./linux/linux系统编程/时间/display_current_time2.cpp)
+```cpp
+    #include <iostream>
+    #include <time.h>
+    #include <string.h>
+    time_t      tt      = time(nullptr);
+    char        buf[88] = {0};
+    struct tm   p_t;
+    memset(&p_t, 0, sizeof(p_t));
+    localtime_r(&tt, &p_t);
+    strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", &p_t);
+    std::cout << buf << std::endl;
+```
 * [时间转为tm结构体在转为秒](./linux/linux系统编程/时间/time_to_tm_to_sec.cpp)
 ```cpp
     #include <iostream>
@@ -1237,6 +1250,47 @@
         exit(1);
     }
     std::cout << "row: " << ws.ws_row << ", col: " << ws.ws_col << "\n";
+```
+### mmap可以把磁盘文件直接映射到内存，然后直接对该内存进行操作(相比read/write效率更高)
+* 返回地址空间 失败返回MAP_FAILED
+* addr: nullptr 自动选择，否则会在传入地址之上的一段合适空间
+* len: 映射的内存长度
+* prot:
+    * PROT_EXEC 映射的这段可执行 例如动态库
+    * PROT_READ 映射的这段可读
+    * PROT_WRITE 映射的这段可写
+    * PROT_NONE 映射的这段不可访问
+* flag: 
+    * MAP_SHARED 多个进程对相同文件映射共享
+    * MAP_PRIVATE 多个进程对相同文件映射不共享
+* filedes: 文件描述符
+* off: 0 从文件什么位置开始映射，必须是页大小的整数倍
+* [mmap修改文件](./linux/linux系统编程/文件读写/mmap.cpp)
+```cpp
+    #include <iostream>
+    #include <unistd.h>
+    #include <fcntl.h>
+    #include <string.h>
+    #include <sys/mman.h>
+    int write_fd = open("./test.txt", O_RDWR); // 需要可读可写 否则mmap -> permission denied
+    if (write_fd == -1) {
+        perror("open fail");
+        exit(1);
+    }
+    // int *p = (int*)mmap(nullptr, 9, PROT_WRITE, MAP_SHARED, write_fd, 0);
+    char *p = (char*)mmap(nullptr, 9, PROT_WRITE, MAP_SHARED, write_fd, 0);
+    if (p == MAP_FAILED) {
+        perror("mmap fail");
+        close(write_fd);
+        exit(1);
+    }
+    // 文件中数据 123456789 -> DCBA56789
+        // 41(A)高位，9高地址 小端低存低高存高
+    // p[0] = 0x41424344;
+    // 文件中数据 DCBA56789 -> abcd56789
+    strcpy(p, "abcd");
+    munmap((void*)p, 9);
+    close(write_fd);
 ```
 ## 进程(资源管理的最小单位，有自己的数据段、代码段、堆栈段) 不能保证新进程和调用进程的执行顺序
 * ps -eo pid,ppid,sid,pgrp,cmd,stat | grep -E 'PID|a.out'
@@ -2382,7 +2436,7 @@
     fin.open("a.txt");
     std::cout << "errno: " << errno << strerror(errno) << "\n";
 ```
-## 目录操作
+## 文件目录操作
 ### 获取当前目录名getcwd(buf, sizeof(buf))
 * [获取当前目录名](./linux/linux系统编程/目录/getcwd.cpp)
 ```cpp
@@ -2418,6 +2472,14 @@
     #include <iostream>
     #include <unistd.h>
     rmdir("/home/yixin/Temp/aaa");
+    rmdir("/home/yixin/Temp/bb"); // 无法删除文件
+```
+### 删除文件或目录remove("/home/yixin/Temp/aaa)
+* [删除文件或目录](./linux/linux系统编程/目录/remove.cpp)
+```cpp
+    #include <iostream>
+    remove("/home/yixin/Temp/aaa");
+    remove("/home/yixin/Temp/bb");
 ```
 ### 打开文件DIR* p_dir = opendir(/home/yixin/Temp)
 * [打开文件](./linux/linux系统编程/目录/opendir.cpp)
@@ -2449,6 +2511,65 @@
     }
     std::cout << '\n';
     closedir(p_dir);
+```
+### 文件访问权限access("/home/yixin/Code/cpp", F_OK)
+* [文件访问权限](./linux/linux系统编程/目录/access.cpp)
+```cpp
+    #include <iostream>
+    #include <unistd.h>
+    if (access("/home/yixin/Code/cpp", F_OK) == 0) {
+        std::cout << "文件存在\n";
+    }
+    if (access("/home/yixin/Code/cpp", R_OK) == 0) {
+        std::cout << "文件可读\n";
+    }
+    if (access("/home/yixin/Code/cpp", W_OK) == 0) {
+        std::cout << "文件可写\n";
+    }
+    if (access("/home/yixin/Code/cpp", X_OK) == 0) {
+        std::cout << "文件可执行\n";
+    }
+```
+### 文件信息stat("/home/yixin/Code/cpp", &st)
+* [文件信息](./linux/linux系统编程/目录/stat.cpp)
+```cpp
+    #include <iostream>
+    #include <string.h>
+    #include <sys/stat.h>
+    #include <time.h>
+    #include <iomanip>
+    struct stat st;
+    memset(&st, 0, sizeof(st));
+    stat("/home/yixin/Code/cpp", &st);
+    if (S_ISDIR(st.st_mode)) { // 是目录
+        std::cout << "cpp is dir\n";
+        std::cout << st.st_size << '\n'; // 文件大小
+        time_t      tt = st.st_mtim.tv_sec; // 最后修改时间
+        struct tm   t;
+        localtime_r(&tt, &t);
+        std::cout << t.tm_year + 1990 << "-"
+            << std::setw(2) << std::setfill('0') << t.tm_mon + 1 << "-"
+            << std::setw(2) << std::setfill('0') << t.tm_mday << " "
+            << std::setw(2) << std::setfill('0') << t.tm_hour << ":"
+            << std::setw(2) << std::setfill('0') << t.tm_min << ":"
+            << std::setw(2) << std::setfill('0') << t.tm_sec << '\n';
+    }
+    if (S_ISREG(st.st_mode) == false) { // 是文件
+        std::cout << "cpp not file\n";
+        std::cout << st.st_size << '\n'; // 文件大小
+        time_t      tt      = st.st_mtim.tv_sec; // 最后修改时间
+        struct tm   *p_t    = localtime(&tt);
+        char        buf[80] = {0};
+        strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", p_t);
+        std::cout << buf << "\n";
+    }
+```
+### 重命名文件目录rename("/home/yixin/a", "/home/yixin/b")
+* [重命名文件或目录](./linux/linux系统编程/目录/rename.cpp)
+```cpp
+    #include <iostream>
+    rename("/home/yixin/Temp/aaa", "/home/yixin/Temp/bbb");
+    rename("/home/yixin/Temp/aa", "/home/yixin/Temp/bb");
 ```
 ---
 ---
@@ -3130,6 +3251,8 @@
     * 用户态执行操作和访问资源会受到限制，内核态执行则没有限制
     * 程序执行是只有需要切换到内核态时，才会由系统自动切换。
         * 可以保护系统，合理分配资源、避免资源冲突、耗尽
+## ext2文件系统
+![ext2文件系统](./资源/ext2文件系统.png)
 ## linux命令
 ### 压缩解压缩
 * 压缩 tar -czvf xxx.tar.gz file1 file2
