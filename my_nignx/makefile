@@ -4,7 +4,7 @@ TARGET=./nginx
 
 INCLUDE=-I ./_include
 
-SRC=./app/nginx.cpp ./app/ngx_conf.cpp ./app/ngx_func.cpp ./app/ngx_log.cpp ./app/ngx_printf.cpp ./app/ngx_set_process_title.cpp ./signal/ngx_signal.cpp ./proc/ngx_process.cpp
+SRC=./app/nginx.cpp ./app/ngx_conf.cpp ./app/ngx_func.cpp ./app/ngx_log.cpp ./app/ngx_printf.cpp ./app/ngx_set_process_title.cpp ./signal/ngx_signal.cpp ./proc/ngx_process.cpp ./proc/ngx_daemon.cpp
 
 OBJ=$(SRC:.cpp=.o)
 

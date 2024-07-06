@@ -270,6 +270,19 @@
     i : 1, j : 3, k : 3
 ```
 ### goto不能跨函数 不能跳过定义
+```cpp
+    // 这种情况是可以跳过定义的
+    #include <iostream>
+        if (true) {
+            goto fly;
+        }
+        if (true) {
+            int num = 11;
+            std::cout << "num: " << num << "\n";
+        }
+    fly:
+        std::cout << "fly\n";
+```
 ## 递归
 ### 斐波那契数列
 * [斐波那契数列](./语言/递归/斐波那契数列.cpp)

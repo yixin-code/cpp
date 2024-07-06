@@ -20,13 +20,14 @@ struct Log_t {
 };
 
 extern char *g_p_environ; // 环境变量
-extern int g_environ_len; // 环境变量字节数
-extern int g_argv_len; // 命令行参数字节数
-extern int g_argc; // 命令行参数个
+extern int  g_environ_len; // 环境变量字节数
+extern int  g_argv_len; // 命令行参数字节数
+extern int  g_argc; // 命令行参数个
 extern char **g_p_argv; // 命令行参数
+extern bool g_daemon; // 是否启动守护进程标准
 
 extern Log_t log_t;
-extern pid_t ngx_pid;
-extern pid_t ngx_ppid;
+extern pid_t ngx_pid; // 当前进程pid
+extern pid_t ngx_ppid; // 父进程pid
 
 #endif

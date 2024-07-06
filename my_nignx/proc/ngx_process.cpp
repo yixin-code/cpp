@@ -38,7 +38,7 @@ void ngx_master_process() {
     }
 
     // 设置主进程标题
-    size_t limit = 0;
+    int limit = 0;
 
     limit += sizeof(master_process);
     limit += g_argv_len;
