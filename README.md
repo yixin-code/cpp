@@ -2525,32 +2525,22 @@
     std::cout << '\n';
     closedir(p_dir);
 ```
-### 文件访问权限access("/home/yixin/Code/cpp", F_OK)
-* [文件访问权限](./linux/linux系统编程/目录/access.cpp)
+### 重命名文件目录rename("/home/yixin/a", "/home/yixin/b")
+* [重命名文件或目录](./linux/linux系统编程/目录/rename.cpp)
 ```cpp
     #include <iostream>
-    #include <unistd.h>
-    if (access("/home/yixin/Code/cpp", F_OK) == 0) {
-        std::cout << "文件存在\n";
-    }
-    if (access("/home/yixin/Code/cpp", R_OK) == 0) {
-        std::cout << "文件可读\n";
-    }
-    if (access("/home/yixin/Code/cpp", W_OK) == 0) {
-        std::cout << "文件可写\n";
-    }
-    if (access("/home/yixin/Code/cpp", X_OK) == 0) {
-        std::cout << "文件可执行\n";
-    }
+    rename("/home/yixin/Temp/aaa", "/home/yixin/Temp/bbb");
+    rename("/home/yixin/Temp/aa", "/home/yixin/Temp/bb");
 ```
-### 文件信息(inode)stat("/home/yixin/Code/cpp", &st)
+### 文件信息状态
+#### 文件信息(inode)stat("/home/yixin/Code/cpp", &st)
 * [文件信息](./linux/linux系统编程/目录/stat.cpp)
 ```cpp
-    #include <iostream>
-    #include <string.h>
-    #include <sys/stat.h>
-    #include <time.h>
-    #include <iomanip>
+#include <iostream>
+#include <string.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <iomanip>
     struct stat st;
     memset(&st, 0, sizeof(st));
     stat("/home/yixin/Code/cpp", &st);
@@ -2577,12 +2567,33 @@
         std::cout << buf << "\n";
     }
 ```
-### 重命名文件目录rename("/home/yixin/a", "/home/yixin/b")
-* [重命名文件或目录](./linux/linux系统编程/目录/rename.cpp)
+#### 文件访问权限access("/home/yixin/Code/cpp", F_OK)
+* [文件访问权限](./linux/linux系统编程/目录/access.cpp)
 ```cpp
-    #include <iostream>
-    rename("/home/yixin/Temp/aaa", "/home/yixin/Temp/bbb");
-    rename("/home/yixin/Temp/aa", "/home/yixin/Temp/bb");
+#include <iostream>
+#include <unistd.h>
+    if (access("/home/yixin/Code/cpp", F_OK) == 0) {
+        std::cout << "文件存在\n";
+    }
+    if (access("/home/yixin/Code/cpp", R_OK) == 0) {
+        std::cout << "文件可读\n";
+    }
+    if (access("/home/yixin/Code/cpp", W_OK) == 0) {
+        std::cout << "文件可写\n";
+    }
+    if (access("/home/yixin/Code/cpp", X_OK) == 0) {
+        std::cout << "文件可执行\n";
+    }
+```
+#### 修改文件权限chmod("/home/yixin/Temp/aaa", 0777)
+* [修改文件权限](./linux/linux系统编程/目录/chmod.cpp)
+```cpp
+#include <iostream>
+#include <sys/stat.h>
+    if (chmod("/home/yixin/Temp/aaa", 0777) == -1) {
+        perror("chomd fail");
+        exit(1);
+    }
 ```
 ---
 ---
@@ -3316,6 +3327,12 @@
     * funcsave c 保存
 ### 查看文件信息
 * stat test.txt 
+### 创建新用户
+* useradd yixin -s /bin/fish
+    * -s 指定shell
+### 删除用户
+* userdel -r yixin
+    * -r 删除用户主目录
 ---
 ---
 ---
