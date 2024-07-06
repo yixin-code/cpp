@@ -2530,7 +2530,7 @@
         std::cout << "文件可执行\n";
     }
 ```
-### 文件信息stat("/home/yixin/Code/cpp", &st)
+### 文件信息(inode)stat("/home/yixin/Code/cpp", &st)
 * [文件信息](./linux/linux系统编程/目录/stat.cpp)
 ```cpp
     #include <iostream>
@@ -3251,6 +3251,18 @@
     * 用户态执行操作和访问资源会受到限制，内核态执行则没有限制
     * 程序执行是只有需要切换到内核态时，才会由系统自动切换。
         * 可以保护系统，合理分配资源、避免资源冲突、耗尽
+## 会话(session)
+* 一个或多个进程组的集合
+* 一般情况下，一个shell中的所有进程都是属于一个会话的。
+    * shell 是 session leader。可以调用系统函数创建新的会话(session)
+    * 终端断开，会给session leader发送SIGHUP信号(默认终止进程)
+        * 终止session下的所有进程
+* sid 会话id session id
+![session leader](./资源/session_leader.png)
+### 进程组(process group)
+* 一个或多个进程的集合
+    * 每个进程组有唯一的进程组ID
+    * 可以调用系统函数创建 加入进程组
 ## ext2文件系统
 ![ext2文件系统](./资源/ext2文件系统.png)
 ## linux命令
@@ -3277,30 +3289,20 @@
 ### 后台执行./a.out &, 变为前台fg
 ### 创建新会话使其变为新的组长
 * setsid ./a.out
-## 会话(session)
-* 一个或多个进程组的集合
-* 一般情况下，一个shell中的所有进程都是属于一个会话的。
-    * shell 是 session leader。可以调用系统函数创建新的会话(session)
-    * 终端断开，会给session leader发送SIGHUP信号(默认终止进程)
-        * 终止session下的所有进程
-* sid 会话id session id
-![session leader](./资源/session_leader.png)
-### 进程组(process group)
-* 一个或多个进程的集合
-    * 每个进程组有唯一的进程组ID
-    * 可以调用系统函数创建 加入进程组
-## 安装deb软件
+### 安装deb软件
 * yay -Sy debtap
 * sudo debtap -u
 * debtap xxx.deb
 * sudo pacman -U xxx
-## yay
+### yay
 * yay -R 软件名 卸载软件
 * yay -Rns cmatrix 卸载软件和依赖包
 * yay -Yc 清理掉系统中不需要的软件包
-## fish
+### fish
 * alias c clear 别名
     * funcsave c 保存
+### 查看文件信息
+* stat test.txt 
 ---
 ---
 ---
