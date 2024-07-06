@@ -2595,6 +2595,10 @@
         exit(1);
     }
 ```
+#### 修改文件用户id组id chown("/home/yixin/Temp/aaa", 用户id, 组id)
+* [修改文件用户id组id](./linux/linux系统编程/目录/chown.cpp)
+```cpp
+```
 ---
 ---
 ---
@@ -3328,11 +3332,16 @@
 ### 查看文件信息
 * stat test.txt 
 ### 创建新用户
-* useradd yixin -s /bin/fish
+* useradd yixin -m -s /bin/fish
     * -s 指定shell
+    * -m 自动创建家目录
 ### 删除用户
 * userdel -r yixin
     * -r 删除用户主目录
+### 用户id
+* id yixin
+### 查看系统中的用户
+* cat /etc/passwd
 ---
 ---
 ---
