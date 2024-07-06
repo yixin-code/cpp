@@ -3429,11 +3429,14 @@
 * [配置文件读取](./my_nignx/app/ngx_conf.cpp)
 * [删除字符串前后空格](./my_nignx/app/ngx_func.cpp)
 * [设置进程标题](./my_nignx/app/ngx_set_process_title.cpp)
-* 日志
+#### 日志
 * [格式化读写](./my_nignx/app/ngx_log.cpp)
 * [打开日志等级和路径给予初值](./my_nignx/app/ngx_log.cpp)
-* 信号
+#### 信号
 * [信号捕捉](./my_nignx/signal/ngx_signal.cpp)
+#### 进程
+* [创建工作进程](./my_nignx/proc/ngx_process.cpp)
+* [创建守护进程](./my_nignx/proc/ngx_daemon.cpp)
 ---
 ---
 ---
