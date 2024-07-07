@@ -3,6 +3,7 @@
 #include "ngx_conf.h"
 #include "ngx_func.h"
 #include "ngx_global.h"
+#include "ngx_macro.h"
 
 static void free_resource();
 
@@ -14,6 +15,7 @@ bool    g_daemon        = false; // 是否启动守护进程标准
 char    **g_p_argv      = nullptr; // 命令行参数
 pid_t   ngx_pid         = 0; // 当前进程pid
 pid_t   ngx_ppid        = 0; // 当前父进程pid
+bool    ngx_process     = NGX_PROCESS_MASTER; // 进程标志
 
 int main(int argc, char *argv[]) {
     int ret_code    = 0; // 退出代码0表示正常退出
@@ -21,6 +23,8 @@ int main(int argc, char *argv[]) {
     ngx_ppid        = getppid();
     g_p_argv        = argv;
     g_argc          = argc;
+    log_t.m_fd      = -1;
+    ngx_process     = NGX_PROCESS_MASTER;
 
     CConfig *p_config = CConfig::get_instance();
     if (p_config->load_config("./nginx.conf") == false) {

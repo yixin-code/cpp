@@ -30,4 +30,6 @@ extern Log_t log_t;
 extern pid_t ngx_pid; // 当前进程pid
 extern pid_t ngx_ppid; // 父进程pid
 
+extern bool ngx_process; // 进程标志
+
 #endif

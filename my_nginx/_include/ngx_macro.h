@@ -21,4 +21,8 @@
 #define NGX_LOG_INFO        7 //信息 【info】
 #define NGX_LOG_DEBUG       8 //调试 【debug】：最低级别
 
+// 进程标志
+#define NGX_PROCESS_MASTER  0 // master 管理进程
+#define NGX_PROCESS_WORKER  1 // worker 工作进程
+
 #endif
