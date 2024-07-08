@@ -7,24 +7,25 @@
 
 static void free_resource();
 
-char    *g_p_environ    = nullptr; // 环境变量
-int     g_environ_len   = 0; // 环境变量字节数
-int     g_argv_len      = 0; // 命令行参数字节数
-int     g_argc          = 0; // 命令行参数个
-bool    g_daemon        = false; // 是否启动守护进程标准
-char    **g_p_argv      = nullptr; // 命令行参数
-pid_t   ngx_pid         = 0; // 当前进程pid
-pid_t   ngx_ppid        = 0; // 当前父进程pid
-bool    ngx_process     = NGX_PROCESS_MASTER; // 进程标志
+char    *g_p_environ            = nullptr; // 环境变量
+int     g_environ_len           = 0; // 环境变量字节数
+int     g_argv_len              = 0; // 命令行参数字节数
+int     g_argc                  = 0; // 命令行参数个
+bool    g_daemon                = false; // 是否启动守护进程标准
+char    **g_p_argv              = nullptr; // 命令行参数
+pid_t   g_pid                   = 0; // 当前进程pid
+pid_t   g_ppid                  = 0; // 当前父进程pid
+bool    g_process_flag          = NGX_PROCESS_FLAG_MASTER; // 进程标志
+bool    g_worker_process_state  = false; // worker进程状态变化
 
 int main(int argc, char *argv[]) {
     int ret_code    = 0; // 退出代码0表示正常退出
-    ngx_pid         = getpid();
-    ngx_ppid        = getppid();
+    g_pid         = getpid();
+    g_ppid        = getppid();
     g_p_argv        = argv;
     g_argc          = argc;
     log_t.m_fd      = -1;
-    ngx_process     = NGX_PROCESS_MASTER;
+    g_process_flag     = NGX_PROCESS_FLAG_MASTER;
 
     CConfig *p_config = CConfig::get_instance();
     if (p_config->load_config("./nginx.conf") == false) {

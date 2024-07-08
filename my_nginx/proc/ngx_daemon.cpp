@@ -20,8 +20,8 @@ int ngx_daemon(void) {
     }
     }
 
-    ngx_ppid    = ngx_pid; // ngx_pid 为当前子进程的父进程的pid
-    ngx_pid     = getpid(); // 当前子进程的pid
+    g_ppid    = g_pid; // g_pid 为当前子进程的父进程的pid
+    g_pid     = getpid(); // 当前子进程的pid
 
     if (setsid() == -1) {
         ngx_log_core(NGX_LOG_EMERG, errno, "ngx_daemon setsig fail");

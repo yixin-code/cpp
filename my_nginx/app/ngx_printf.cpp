@@ -7,8 +7,8 @@
 
 // 显示数字
 static u_char* display_num(u_char* p_cur, u_char* p_end, uint64_t ui64, u_char zero, uintptr_t hex, uintptr_t width) {
-    u_char  temp_str[MAX_INT64_LEN]     = {0}; // 临时存放数据数组
-    u_char  *p_temp_cur                 = temp_str + MAX_INT64_LEN; // 初始指向temp_str结尾
+    u_char  temp_str[NGX_MAX_INT64_LEN]     = {0}; // 临时存放数据数组
+    u_char  *p_temp_cur                 = temp_str + NGX_MAX_INT64_LEN; // 初始指向temp_str结尾
 
     uint32_t ui32                       = 0; // 32位无符号整数
     size_t char_len                     = 0; // 字符长度
@@ -18,7 +18,7 @@ static u_char* display_num(u_char* p_cur, u_char* p_end, uint64_t ui64, u_char z
 
 
     if (hex == 0) { // 非十六进制
-        if (ui64 <= (uint64_t)MAX_UINT32) {
+        if (ui64 <= (uint64_t)NGX_MAX_UINT32) {
             ui32 = (uint32_t)ui64;
             do { // 12345 -> '1''2''3''4''5'
                 *(--p_temp_cur) = (u_char)(ui32 % 10 + '0');
@@ -42,13 +42,13 @@ static u_char* display_num(u_char* p_cur, u_char* p_end, uint64_t ui64, u_char z
         } while (ui64 >>= 4); // 一次取最后4位
     }
 
-    char_len = (temp_str + MAX_INT64_LEN) - p_temp_cur;
+    char_len = (temp_str + NGX_MAX_INT64_LEN) - p_temp_cur;
 
     while (char_len++ < width && p_cur < p_end) { // 宽度大于实际字符长度时填充
         *(p_cur++) = zero;
     }
 
-    char_len = (temp_str + MAX_INT64_LEN) - p_temp_cur;
+    char_len = (temp_str + NGX_MAX_INT64_LEN) - p_temp_cur;
 
     if (p_cur + char_len > p_end) {
         char_len = p_end - p_cur;

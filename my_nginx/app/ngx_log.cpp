@@ -25,9 +25,9 @@ static u_char log_level[][20] {
 
 // 格式化读写
 void ngx_log_stderr(int error_num, const char* format, ...) {
-    u_char err_str[MAX_ERR_INFO_LEN]    = {0}; // 错误信息字符串
+    u_char err_str[NGX_MAX_ERR_INFO_LEN]    = {0}; // 错误信息字符串
     u_char *p_cur                       = err_str; // 错误信息指针当前位置
-    u_char *p_end                       = err_str + MAX_ERR_INFO_LEN; // 错误信息字符串最后\0的位置
+    u_char *p_end                       = err_str + NGX_MAX_ERR_INFO_LEN; // 错误信息字符串最后\0的位置
 
     p_cur = NGX_MEMCPY_RET_CUR(err_str, "nginx: ", strlen("nginx: ")); // p_cur 指向当前可写入位置
 
@@ -79,7 +79,7 @@ void ngx_log_init() {
     CConfig *p_config = CConfig::get_instance();
     u_char *p_log_name = (u_char*)p_config->get_string("Log");
     if (p_log_name == nullptr) {
-        p_log_name = (u_char*)LOG_NAME_PATH; // 给初始路径
+        p_log_name = (u_char*)NGX_LOG_NAME_PATH; // 给初始路径
     }
     log_t.m_log_level = p_config->get_int_default("LogLevel", NGX_LOG_NOTICE); // 给初始日志等级
 
@@ -96,8 +96,8 @@ void ngx_log_init() {
 // 日志核心文件
     // 日志写入文件
 void ngx_log_core(int level, int error_num, const char* format, ...) {
-    u_char str_log_buf[MAX_ERR_INFO_LEN] = {0};
-    u_char *p_end = str_log_buf + MAX_ERR_INFO_LEN - 1; // 指向log_buf结尾
+    u_char str_log_buf[NGX_MAX_ERR_INFO_LEN] = {0};
+    u_char *p_end = str_log_buf + NGX_MAX_ERR_INFO_LEN - 1; // 指向log_buf结尾
     u_char *p_cur = str_log_buf;
 
     timeval *p_tv = nullptr;
@@ -109,7 +109,7 @@ void ngx_log_core(int level, int error_num, const char* format, ...) {
     p_cur = format_sprintf(p_cur, p_end, "%4d-%02d-%02d %02d:%02d:%02d",
         t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
     p_cur = format_sprintf(p_cur, p_end, " [%s] ", log_level[level]);
-    p_cur = format_sprintf(p_cur, p_end, "%P: ", ngx_pid);
+    p_cur = format_sprintf(p_cur, p_end, "%P: ", g_pid);
 
     va_list ap;
     va_start(ap, format);

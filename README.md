@@ -3269,13 +3269,14 @@
 ![pts](./资源/pts.png)
 > shell 解释执行命令
 ## linux目录作用
-* usr 用户安装的软件、库文件、头文件等资源
+* usr(unix system resources) 用户安装的软件、库文件、头文件等资源
     * bin 用户安装的可执行文件
     * sbin 用户安装的系统管理工具和系统服务的可执行文件
     * lib 用户安装的库文件
     * include 存放头文件
     * share 程序资源文件，文档 帮助文件 等
     * local 用户安装的软件
+* var(variable) 存放系统日志文件、数据库文件、缓存数据等
 ## 体系结构
 ![体系结构](./资源/linux体系结构.png)
 * 内核：控制计算机资源，为程序提供运行环境
@@ -3481,7 +3482,7 @@
 #### 信号
 * [信号捕捉](./my_nginx/signal/ngx_signal.cpp)
 #### 进程
-* [创建工作进程](./my_nginx/proc/ngx_process.cpp)
+* [创建工作进程](./my_nginx/proc/g_process_flag.cpp)
 * [创建守护进程](./my_nginx/proc/ngx_daemon.cpp)
 ---
 ---

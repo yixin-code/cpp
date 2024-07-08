@@ -89,8 +89,8 @@ int create_process(int number, const char* process_name) {
         return -1;
     }
     case 0: { // 子进程进入循环
-        ngx_pid     = getpid();
-        ngx_ppid    = getppid();
+        g_pid     = getpid();
+        g_ppid    = getppid();
         sub_process(number, process_name);
         break;
     }
@@ -103,11 +103,11 @@ int create_process(int number, const char* process_name) {
 
 // 子进程
 void sub_process(int number, const char* process_name) {
-    ngx_process = NGX_PROCESS_WORKER;
+    g_process_flag = NGX_PROCESS_FLAG_WORKER;
 
     process_init(number);
     set_process_title(process_name);
-    ngx_log_core(NGX_LOG_NOTICE, 0, "%s %P 已启动", process_name, ngx_pid);
+    ngx_log_core(NGX_LOG_NOTICE, 0, "%s %P 已启动", process_name, g_pid);
 
     while (true) {
         std::cout << "subprocess loop\n";
