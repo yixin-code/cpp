@@ -100,11 +100,17 @@ void ngx_log_core(int level, int error_num, const char* format, ...) {
     u_char *p_end = str_log_buf + NGX_MAX_ERR_INFO_LEN - 1; // 指向log_buf结尾
     u_char *p_cur = str_log_buf;
 
-    timeval *p_tv = nullptr;
-    gettimeofday(p_tv, nullptr); // 得到当前时间距1970-1-1的秒数和过去的微妙数
-    tm t;
+    // struct timeval *p_tv = nullptr;
+    struct timeval  tv;
+    gettimeofday(&tv, nullptr); // 得到当前时间距1970-1-1的秒数和过去的微妙数
+
+    time_t          sec = tv.tv_sec;
+
+    struct tm       t;
     memset(&t, 0, sizeof(t));
-    localtime_r(&(p_tv->tv_sec), &t); // 返回本地时间 使用tm结构表示
+
+    localtime_r(&sec, &t); // 返回本地时间 使用tm结构表示
+
     // u_char str_cur_time[20] = {0};
     p_cur = format_sprintf(p_cur, p_end, "%4d-%02d-%02d %02d:%02d:%02d",
         t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);

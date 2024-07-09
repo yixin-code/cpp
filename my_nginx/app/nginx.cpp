@@ -20,12 +20,12 @@ bool    g_worker_process_state  = false; // worker进程状态变化
 
 int main(int argc, char *argv[]) {
     int ret_code    = 0; // 退出代码0表示正常退出
-    g_pid         = getpid();
-    g_ppid        = getppid();
+    g_pid           = getpid();
+    g_ppid          = getppid();
     g_p_argv        = argv;
     g_argc          = argc;
     log_t.m_fd      = -1;
-    g_process_flag     = NGX_PROCESS_FLAG_MASTER;
+    g_process_flag  = NGX_PROCESS_FLAG_MASTER;
 
     CConfig *p_config = CConfig::get_instance();
     if (p_config->load_config("./nginx.conf") == false) {
@@ -62,6 +62,7 @@ int main(int argc, char *argv[]) {
     }
 
     ngx_master_process(); // 创建worker子进程
+    write(STDERR_FILENO, "asdf", 4);
 
 fly:
     free_resource();

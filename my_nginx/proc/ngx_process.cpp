@@ -89,8 +89,8 @@ int create_process(int number, const char* process_name) {
         return -1;
     }
     case 0: { // 子进程进入循环
+        g_ppid    = g_pid;
         g_pid     = getpid();
-        g_ppid    = getppid();
         sub_process(number, process_name);
         break;
     }

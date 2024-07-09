@@ -1380,7 +1380,7 @@
     * PCB(进程控制块)还会存在，父进程调用wait/waitpid查看信息，并清除子进程
 * 僵尸进程无法使用kill -9 终止，只能终止正在运行的程序
 #### 父进程可以通过处理SIGCHLD信号，在信号处理函数中调用waitpid来解决僵尸进程
-#### waitpid(pid_t pid, int &status, int option)返回0表示没有资源可回收，返回-1失败
+#### waitpid(pid_t pid, int &status, int option)与WNOHANG一起使用返回0表示没有子进程退出，返回-1失败，成功返回子进程pid
 * [wait(&stat)==waitpid(-1, &stat, 0)](./linux/linux系统编程/进程/等待子进程.cpp)
 * pid
     * **-1, 等待所有子进程**
@@ -1400,6 +1400,9 @@
 * option
     * 0，会阻塞等待子进程结束
     * WNOHANG，不会阻塞等待子进程结束
+* 返回-1
+    * **errno == EINTR 调用被某个信号中断**
+    * **errno == GCHILD 没有子进程**
 ### 守护进程(一般后台长期运行，不和控制终端相关联)
 * ppid为0的进程是内核进程，跟随系统启动关闭
 * tty是?为守护进程
@@ -3378,6 +3381,9 @@
 ## 设置变量值
 * set var num=11
 * set args aaa 设置命令行参数
+## 调试子进程
+* set follow-fork-mode child
+* set follow-fork-mode parent
 ## 段错误 调试core文件
 * 查看用户资源限定
     * umilit -a
