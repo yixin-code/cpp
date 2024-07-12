@@ -2536,8 +2536,7 @@
     rename("/home/yixin/Temp/aaa", "/home/yixin/Temp/bbb");
     rename("/home/yixin/Temp/aa", "/home/yixin/Temp/bb");
 ```
-### 文件目录信息状态
-#### 文件信息(inode)stat("/home/yixin/Code/cpp", &st)
+### 文件信息(inode)stat("/home/yixin/Code/cpp", &st)
 * [文件信息](./linux/linux系统编程/目录/stat.cpp)
 ```cpp
 #include <iostream>
@@ -2571,7 +2570,7 @@
         std::cout << buf << "\n";
     }
 ```
-#### 文件访问权限access("/home/yixin/Code/cpp", F_OK)
+### 文件访问权限access("/home/yixin/Code/cpp", F_OK)
 * [文件访问权限](./linux/linux系统编程/目录/access.cpp)
 ```cpp
 #include <iostream>
@@ -2589,7 +2588,7 @@
         std::cout << "文件可执行\n";
     }
 ```
-#### 修改文件权限chmod("/home/yixin/Temp/aaa", 0777)
+### 修改文件权限chmod("/home/yixin/Temp/aaa", 0777)
 * [修改文件权限](./linux/linux系统编程/目录/chmod.cpp)
 ```cpp
 #include <iostream>
@@ -2599,7 +2598,7 @@
         exit(1);
     }
 ```
-#### 修改文件用户id组id chown("/home/yixin/Temp/aaa", 用户id, 组id)
+### 修改文件用户id组id chown("/home/yixin/Temp/aaa", 用户id, 组id)
 * [修改文件用户id组id](./linux/linux系统编程/目录/chown.cpp)
 ```cpp
 #include <iostream>
@@ -2608,6 +2607,55 @@
         perror("chown fail");
         exit(1);
     }
+```
+### 修改文件访问时间和修改时间utime("/home/yixin/Temp/aaa", &utimbuf(结构体))
+* [修改文件访问时间和修改时间](./linux/linux系统编程/目录/utime.cpp)
+```cpp
+#include <iostream>
+#include <utime.h>
+#include <time.h>
+#include <string.h>
+    struct utimbuf time_buf;
+    memset(&time_buf, 0, sizeof(time_buf));
+    if (utime("/home/yixin/Temp/nginx", &time_buf) == -1) {
+        perror("utime fail");
+        exit(1);
+    }
+    time_buf.actime     = time(nullptr); // 访问时间
+    time_buf.modtime    = time(nullptr); // 修改时间
+```
+### 修改文件大小truncate("/home/yixin/Temp/test", 100)
+* [修改文件大小](./linux/linux系统编程/目录/truncate.cpp)
+```cpp
+#include <iostream>
+#include <unistd.h>
+    if (truncate("/home/yixin/Temp/test", 100) == -1) {
+        perror("truncate fail");
+        exit(1);
+    }
+```
+### 创建硬连接link("/home/yixin/Temp/aaa", "/home/yixin/Temp/aaa2")
+* [创建硬连接](./linux/linux系统编程/目录/link.cpp)
+```cpp
+#include <iostream>
+#include <unistd.h>
+    if (link("/home/yixin/Temp/test", "/home/yixin/Temp/test3") == -1) {
+        perror("link fail");
+        exit(1);
+    }
+```
+### 读取符号链接确切路径readlink("/proc/self/exe", buf, sizeof(buf))
+* [读取符号链接确切路径](./linux/linux系统编程/目录/readlink.cpp)
+```cpp
+#include <iostream>
+#include <unistd.h>
+    char buf[1024] = {0};
+    const char * path = "/proc/self/exe";
+    if (readlink(path, buf, sizeof(buf) - 1) == -1) {
+        perror("readlink fail");
+        exit(1);
+    }
+    std::cout << buf << "\n";
 ```
 ---
 ---
