@@ -2529,6 +2529,9 @@
     std::cout << '\n';
     closedir(p_dir);
 ```
+* [递归读取目录中的文件](./linux/linux系统编程/目录/readdir2.cpp)
+```cpp
+```
 ### 重命名文件目录rename("/home/yixin/a", "/home/yixin/b")
 * [重命名文件或目录](./linux/linux系统编程/目录/rename.cpp)
 ```cpp
