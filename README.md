@@ -2519,10 +2519,10 @@
         // if (p_dirent == nullptr) {
         //     break;
         // }
-        if (p_dirent->d_type == DT_DIR) {
+        if (p_dirent->d_type == DT_DIR) { // 是否为目录
             std::cout << p_dirent->d_name << " ";
         }
-        if (p_dirent->d_type == DT_REG) {
+        if (p_dirent->d_type == DT_REG) { // 是否为普通文件
             std::cout << p_dirent->d_name << " ";
         }
     }
