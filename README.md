@@ -1150,13 +1150,29 @@
         sleep(1);
     }
 ```
-### 重定向dup2
+### 重定向dup、dup2，复制文件描述符使两个文件描述符指向同一个file结构体
+* [保存，重定向，恢复文件描述符](./linux/linux系统编程/文件读写/dup.cpp)
 ```cpp
-    #include <unistd.h>
-    // fd先复制一份，复制的fd = STDIN_FILENO，fd本身不再需要了，关闭fd以免占用改文件描述符
-    dup2(fd, STDIN_FILENO); // fd指向的文件变为标准输入
+#include <iostream>
+#include <string.h>
+#include <fcntl.h> // open
+#include <unistd.h> // write
+// #include <sys/stat.h> // umask
+    int fd = 0;
+    // umask(0);
+    if ((fd = open("./test", O_WRONLY | O_CREAT, 0644)) < 0) {
+        perror("open fail");
+        exit(1);
+    }
+    int copy_fd = dup(STDOUT_FILENO); // 复制文件描述符 copy_fd -> STDOUT_FILENO
+    dup2(fd, STDOUT_FILENO); // 重定向 STDOUT_FILENO -> fd
     close(fd);
+    write(STDOUT_FILENO, "hello world", strlen("hello world"));
+    dup2(copy_fd, STDOUT_FILENO); // STDOUT_FILENO -> copy_fd
+    close(copy_fd);
+    write(STDOUT_FILENO, "hello world", strlen("hello world"));
 ```
+![dup,dup2](./资源/dup.png)
 ### 文件定位lseek
 * [文件定位](./linux/linux系统编程/文件读写/lseek.cpp)
 ```cpp
@@ -3355,6 +3371,8 @@
     * 可以调用系统函数创建 加入进程组
 ## ext2文件系统
 ![ext2文件系统](./资源/ext2文件系统.png)
+## VFS虚拟文件系统
+![VFS虚拟文件系统](./资源/VFS虚拟文件系统.png)
 ## linux命令
 ### 压缩解压缩
 * 压缩 tar -czvf xxx.tar.gz file1 file2

@@ -1,6 +1,6 @@
 TARGET=a.out
 
-TEMP=./linux/linux系统编程/目录/readdir2.cpp
+TEMP=./linux/linux系统编程/文件读写/dup.cpp
 # TEMP=./语言/STL/queue.cpp
 # TEMP=./练习/mycp.cpp
 # TEMP=./linux/linux网络编程/http.cpp
