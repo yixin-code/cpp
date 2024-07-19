@@ -1323,6 +1323,8 @@
 ```
 ## 进程(资源管理的最小单位，有自己的数据段、代码段、堆栈段) 不能保证新进程和调用进程的执行顺序
 * ps -eo pid,ppid,sid,pgrp,cmd,stat | grep -E 'PID|a.out'
+### 进程控制块(PCB)
+* 进程控制块(PCB)具体实现是task_struct结构体。它包含了进程的所有信息，如进程标识符(PID)、进程状态(运行、就绪、阻塞等)、内存管理信息(虚拟内存映射等)、文件系统信息、信号处理信息、调度信息(优先级、调度策略等)等
 ### 进程状态模型
 #### 三态
 ![进程状态转换-三态](./资源/进程状态转换-三态.png)
@@ -1356,7 +1358,24 @@
         sleep(1);
     }
 ```
-#### fork()写的时候会复制一份给该进程单独使用(其他进程不会受到影响)，读的时候所有进程共享
+### 创建10个子进程
+* [创建10个子进程](./linux/linux系统编程/进程/fork.cpp)
+```cpp
+#include <iostream>
+#include <unistd.h> // fork
+#include <sys/wait.h> // waitpid
+    pid_t pid = 0;
+    for (int i = 0; i < 10; ++i) {
+        pid = fork();
+        if (pid == 0) {
+            std::cout << "child " << i + 1 << ": " << getpid() << ", " << getppid() << '\n';
+            exit(0); // 该子进程执行完退出，由父进程继续创建子进程
+        }
+    }
+    std::cout << "parent: "  << getpid() << "\n";
+    waitpid(-1, nullptr, 0);
+```
+### fork()写的时候会复制一份给该进程单独使用(其他进程不会受到影响)，读的时候所有进程共享
 * [写时复制](./linux/linux系统编程/进程/写时复制.cpp)
 ```cpp
     #include <unistd.h>
@@ -2098,6 +2117,7 @@
         pthread_exit(nullptr);
     }
     // 参数2 0 其他进程不共享 1 其他进程共享
+    // 参数3 信号量初始值
     sem_init(&sem, 0, 0);
     sem_init(&sem2, 0, 0);
     pthread_t   pthread;
