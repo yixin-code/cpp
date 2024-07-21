@@ -1396,20 +1396,26 @@
 ```
 * g_num的地址相同，只是在各自的地址空间中偏移量相同。
     * 只是在映射的内存地址偏移量相同，物理内存中实际上是不同位置
-### exec函数族 在进程中启动一个新程序
+### 环境变量**environ 查询环境变量getenv(name得到value) 设置环境变量setenv(参数3 true覆盖已有的，false不覆盖)
+### exec函数族 在进程中启动一个新程序 除了进程号（PID）之外，其他所有内容(包括代码、数据、堆栈等)都会被新的程序替换
+|函数名|描述|
+|-----|----|
+|execl|通过指定程序路径和命令行参数列表（以可变参数形式）来执行程序。|
+|execle|与execl类似，但允许指定环境变量数组。|
+|execlp|通过指定程序名和命令行参数列表（以可变参数形式）来执行程序，程序名会自动在环境变量PATH指定的路径中查找。|
+|execv|通过指定程序路径和命令行参数数组（以指针数组形式）来执行程序。|
+|execve|与execv类似，但允许指定环境变量数组。|
+|execvp|通过指定程序名和命令行参数数组（以指针数组形式）来执行程序，程序名会自动在环境变量PATH指定的路径中查找。|
 ### 孤儿进程(父进程先终止，由init进程接管的子进程)
 * [忽略sighub信号可以在终端关闭后，进程可以继续执行(孤儿进程)](./linux/linux系统编程/信号/孤儿进程.cpp)
 ```cpp
-    #include <signal.h>
-    int main() {
-        signal(SIGHUP, SIG_IGN); // 忽略sighub信号
-        while (true) {
-            std::cout << "sleep\n";
-            sleep(1); // 秒
-        }
-        std::cout << "main end\n";
-        return 0;
+#include <signal.h>
+    signal(SIGHUP, SIG_IGN); // 忽略sighub信号
+    while (true) {
+        std::cout << "sleep\n";
+        sleep(1); // 秒
     }
+    std::cout << "main end\n";
 ```
 ### 僵尸进程(子进程先终止，父进程没有使用wait/waitpid等待回收资源，STAT为Z)
 * 进程结束会关闭所有文件描述符，释放分配的内存。
