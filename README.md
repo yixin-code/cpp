@@ -1206,7 +1206,6 @@
     #include <iostream>
     #include <fcntl.h>
     #include <unistd.h>
-
     //  O_ACCMODE->0x3->0011(表示读写执行) o_rdonly->0x0->0000 O_WRONLY->0x1->0001 O_RDWR->0x2->0010
     if (argc < 2) {
         perror("eg: ./a.out 1");
@@ -1417,7 +1416,50 @@
     buf = getenv("HOME");
     std::cout << buf << "\n";
 ```
-### exec函数族 在进程中启动一个新程序 除了进程号（PID）之外，其他所有内容(包括代码、数据、堆栈等)都会被新的程序替换
+### exec函数族 在进程中启动一个新程序 除了进程号(PID)之外，其他所有内容(包括代码、数据、堆栈等)都会被新的程序替换
+* [启动一个新程序](./linux/linux系统编程/进程/execlp.cpp)
+```cpp
+#include <iostream>
+#include <unistd.h> // execlp
+    // if (execlp("ls", "ls -la", nullptr) == -1) { // error 并不会正确解析ls -la
+    // if (execlp("ls", "ls", "-l", "-a", nullptr) == -1) {
+    if (execlp("ls", "ls", "-la", nullptr) == -1) {
+        perror("execlp fail");
+        exit(1);
+    }
+```
+![进程中执行exec](./资源/进程中执行exec.png) 
+* [重定向文件使用exec调用一个新程序读写](./linux/linux系统编程/进程/execlp_dup2.cpp)
+```cpp
+#include <iostream>
+#include <unistd.h>
+#include <fcntl.h>
+    if (argc < 3) {
+        std::cout << "eg ./a.out test test2\n";
+        exit(1);
+    }
+    int fd = open(argv[1], O_RDONLY);
+    if (fd == -1) {
+        perror("open read fail");
+        exit(1);
+    }
+    dup2(fd, STDIN_FILENO);
+    close(fd);
+    fd = open(argv[2], O_WRONLY | O_CREAT, 0644);
+    if (fd == -1) {
+        perror("open write fail");
+        exit(1);
+    }
+    dup2(fd, STDOUT_FILENO);
+    close(fd);
+    if (execl("./toupper", "./toupper", nullptr) == -1) {
+        perror("execl fail");
+        exit(1);
+    }
+```
+* [toupper](./linux/linux系统编程/进程/toupper.cpp)
+```cpp
+```
 |函数名|描述|
 |-----|----|
 |execl|通过指定程序路径和命令行参数列表（以可变参数形式）来执行程序。|
@@ -1426,6 +1468,7 @@
 |execv|通过指定程序路径和命令行参数数组（以指针数组形式）来执行程序。|
 |execve|与execv类似，但允许指定环境变量数组。|
 |execvp|通过指定程序名和命令行参数数组（以指针数组形式）来执行程序，程序名会自动在环境变量PATH指定的路径中查找。|
+* **l(l时参数而需要以nullptr(哨兵)结尾) -> list v -> vector p -> PATH**
 ### 孤儿进程(父进程先终止，由init进程接管的子进程)
 * [忽略sighub信号可以在终端关闭后，进程可以继续执行(孤儿进程)](./linux/linux系统编程/信号/孤儿进程.cpp)
 ```cpp
