@@ -1397,6 +1397,26 @@
 * g_num的地址相同，只是在各自的地址空间中偏移量相同。
     * 只是在映射的内存地址偏移量相同，物理内存中实际上是不同位置
 ### 环境变量**environ 查询环境变量getenv(name得到value) 设置环境变量setenv(参数3 true覆盖已有的，false不覆盖)
+* [打印、查询、设置、环境变量](./linux/linux系统编程/进程/setenv.cpp)
+```cpp
+#include <iostream>
+#include <unistd.h>
+    for (int i = 0; environ[i] != nullptr; ++i) { // **environ以nullptr结尾
+        std::cout << environ[i] << '\n';
+    }
+    std::cout << '\n';
+    char *buf = getenv("HOME"); // 查询环境变量
+    std::cout << buf << "\n";
+    // 设置环境变量，没有添加，有覆盖
+        // 参数三 true覆盖 false不覆盖
+    // shell中的环境变量传递给了./a.out，修改的是./a.out中的环境变量并不会影响shell中的环境变量
+    setenv("yixin", "hello yixin", true);
+    buf = getenv("yixin");
+    std::cout << buf << "\n";
+    setenv("HOME", "hello world", true);
+    buf = getenv("HOME");
+    std::cout << buf << "\n";
+```
 ### exec函数族 在进程中启动一个新程序 除了进程号（PID）之外，其他所有内容(包括代码、数据、堆栈等)都会被新的程序替换
 |函数名|描述|
 |-----|----|
