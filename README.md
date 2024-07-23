@@ -1495,13 +1495,10 @@
 * status
     * null，不关心返回状态
     * 非null
-        * WIFEXITED(status) 检测
-                * 如果正常退出返回true
-            * WEXITSTATUS(status) 检测
-                * 返回状态码(return或exit中的数字)
-        * WIFSIGNALED(status) 检测
-                * 如果是被signal结束的，返回true
-            * 当返回true时，WTERMSIG(status) 返回信号编号
+        * WIFEXITED(status) 正常退出返回true
+            * WEXITSTATUS(status) 返回状态码(return或exit中的数字)
+        * WIFSIGNALED(status) 被signal结束的，返回true
+            * WTERMSIG(status) 返回被信号结束的信号编号
 * option
     * 0，会阻塞等待子进程结束
     * WNOHANG，不会阻塞等待子进程结束
@@ -1633,6 +1630,11 @@
         std::cout << "son process exit\n";
     }
 ```
+### 进程间通信
+* 不同进程有不同的用户地址空间，任何一个进程的全局变量在另一个进程中都看不到，所以进程之间要交换数据必须通过内核
+#### 无名管道 pipe(int fd[2]) 两个文件描述符一个用于读(fd[0])一个用于写(fd[1]) 管道是单项的
+* fork后子进程会复制父进程的文件描述符表
+* 一个进程关闭读端，一个进程关闭写端
 ## 线程(程序执行的最小单位，共享所属进程的资源) 不能保证新线程和调用线程的执行顺序
 ### 线程栈区分配
 ![线程栈区分配](./资源/线程栈区分配.png)
