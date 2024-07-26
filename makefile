@@ -1,7 +1,7 @@
 TARGET=a.out
 # TARGET=toupper
 
-TEMP=./linux/linux系统编程/进程/pipe.cpp
+TEMP=./linux/linux系统编程/进程/popen.cpp
 # TEMP=./语言/STL/queue.cpp
 # TEMP=./练习/mycp.cpp
 # TEMP=./linux/linux网络编程/http.cpp

@@ -1668,6 +1668,25 @@
         std::cout << "parent end\n";
     }
 ```
+##### 管道 popen(创建一个管道，fork一个子进程，关闭管道不使用的端，exec执行一个命令，返回一个FILE指针) pclose
+* 参数二: r 读、w 写
+* [读取另一个程序输出](./linux/linux系统编程/进程/popen.cpp)
+```cpp
+#include <iostream>
+    FILE *p_fp = popen("cat ./test", "r");
+    if (p_fp == nullptr) {
+        perror("popen fail");
+        exit(1);
+    }
+    int ch = 0;
+    while ((ch = fgetc(p_fp)) != EOF) {
+        std::cout << (char)toupper(ch);
+    }
+    pclose(p_fp);
+```
+* [做为另一个程序的输入](./linux/linux系统编程/进程/popen2.cppp)
+```cpp
+```
 ## 线程(程序执行的最小单位，共享所属进程的资源) 不能保证新线程和调用线程的执行顺序
 ### 线程栈区分配
 ![线程栈区分配](./资源/线程栈区分配.png)
