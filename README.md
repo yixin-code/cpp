@@ -1635,6 +1635,36 @@
 #### 无名管道 pipe(int fd[2]) 两个文件描述符一个用于读(fd[0])一个用于写(fd[1]) 管道是单项的
 * fork后子进程会复制父进程的文件描述符表
 * 一个进程关闭读端，一个进程关闭写端
+* [无名管道](./linux/linux系统编程/进程/pipe.cpp)
+```cpp
+#include <iostream>
+#include <sys/wait.h> // waitpid
+#include <unistd.h> // pipe fork close write read
+#include <string.h>
+    int fds[2] = {0};
+    if (pipe(fds) == -1) {
+        perror("pipe fail");
+        exit(1);
+    }
+    pid_t pid = fork();
+    if (pid == -1) {
+        perror("fork fail");
+        exit(1);
+    } else if (pid == 0) {
+        close(fds[1]); // 关闭写端
+        char buf[20] = {0};
+        read(fds[0], buf, 20);
+        std::cout << buf << '\n';
+        close(fds[0]);
+        std::cout << "child end\n";
+    } else {
+        close(fds[0]); // 关闭读端
+        write(fds[1], "hello world", strlen("hello world"));
+        waitpid(-1, nullptr, 0);
+        close(fds[1]);
+        std::cout << "parent end\n";
+    }
+```
 ## 线程(程序执行的最小单位，共享所属进程的资源) 不能保证新线程和调用线程的执行顺序
 ### 线程栈区分配
 ![线程栈区分配](./资源/线程栈区分配.png)
