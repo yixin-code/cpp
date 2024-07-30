@@ -1696,8 +1696,35 @@
     fputs("hello world", p_fp);
     pclose(p_fp);
 ```
-#### 有名管道 
-* mkfifo命令创建一个管道 管道文件在磁盘上没有数据块，只是在内核中标识一条通道，各进程可以打开进行read和write
+#### 有名管道 mkfifo命令创建一个管道 管道文件在磁盘上没有数据块，只是在内核中标识一条通道，各进程可以打开进行read和write
+* 只有读写单独一个进程时 open打开管道文件时会阻塞
+* [有名管道读进程](./linux/linux系统编程/进程/FIFO/fifo_read.cpp)
+```cpp
+#include <iostream>
+#include <fcntl.h> // open
+#include <unistd.h> // read
+    int fd = open("./linux/linux系统编程/进程/FIFO/p_fifo", O_RDONLY);
+    if (fd == -1) {
+        perror("open fail");
+    }
+    char buf[20] = {0};
+    read(fd, buf, 20);
+    std::cout << buf << '\n';
+    close(fd);
+```
+* [有名管道写进程](./linux/linux系统编程/进程/FIFO/fifo_write.cpp)
+```cpp
+#include <iostream>
+#include <fcntl.h> // open
+#include <unistd.h> // write close
+#include <string.h>
+    int fd = open("./linux/linux系统编程/进程/FIFO/p_fifo", O_WRONLY);
+    if (fd == -1) {
+        perror("open fail");
+    }
+    write(fd, "hello world", strlen("hello world"));
+    close(fd);
+```
 ## 线程(程序执行的最小单位，共享所属进程的资源) 不能保证新线程和调用线程的执行顺序
 ### 线程栈区分配
 ![线程栈区分配](./资源/线程栈区分配.png)
