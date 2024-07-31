@@ -1630,7 +1630,7 @@
         std::cout << "son process exit\n";
     }
 ```
-### 进程间通信
+### 进程间通信(IPC)
 * 不同进程有不同的用户地址空间，任何一个进程的全局变量在另一个进程中都看不到，所以进程之间要交换数据必须通过内核
 #### 无名管道 pipe(int fd[2]) 两个文件描述符一个用于读(fd[0])一个用于写(fd[1]) 管道是单项的
 * fork后子进程会复制父进程的文件描述符表 一个进程关闭读端，一个进程关闭写端
@@ -1725,6 +1725,9 @@
     write(fd, "hello world", strlen("hello world"));
     close(fd);
 ```
+#### 共享内存(在内核中映射一段内存) ipcs命令 查看共享内存
+![共享内存](./资源/共享内存.png)
+* [共享内存](./linux/linux系统编程/进程/shared_memory.cpp)
 ## 线程(程序执行的最小单位，共享所属进程的资源) 不能保证新线程和调用线程的执行顺序
 ### 线程栈区分配
 ![线程栈区分配](./资源/线程栈区分配.png)
@@ -3760,6 +3763,8 @@
 * yay -Sy visual-studio-code-bin
 ## 浏览器
 * yay -Sy microsoft-edge-stable-bin
+## 有道笔记
+* yay -Sy ynote-desktop-bin
 ## lazygit
 * yay -Sy lazygit
     > ssh-keygen -t rsa
