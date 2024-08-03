@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sys/shm.h> // shmget shmat
+#include <wait.h> // waitpid
 #include <sys/ipc.h> // ftok
 #include <unistd.h> // fork
 
@@ -22,13 +23,26 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
+    char buf[1024] = {0};
+
     pid_t pid = fork();
     switch (pid) {
     case -1: {
         perror("fork fail");
         exit(1);
     }
-    case 0:
+    case 0: { // 子进程
+        while (true) {
+            
+        }
+    }
+    default: { // 子进程
+        while (true) {
+            std::cin >> buf;
+            write();
+        }
+        waitpid(-1, nullptr, 0);
+    }
     }
 
     shmdt(p_shm);
