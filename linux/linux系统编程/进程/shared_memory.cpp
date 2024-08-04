@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string.h>
 #include <sys/shm.h> // shmget shmat
 #include <wait.h> // waitpid
 #include <sys/ipc.h> // ftok
@@ -23,8 +24,6 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    char buf[1024] = {0};
-
     pid_t pid = fork();
     switch (pid) {
     case -1: {
@@ -36,10 +35,10 @@ int main(int argc, char *argv[]) {
             
         }
     }
-    default: { // 子进程
+    default: { // 父进程
         while (true) {
-            std::cin >> buf;
-            write();
+            std::cin >> p_shm;
+            memset(p_shm, 0, 1024);
         }
         waitpid(-1, nullptr, 0);
     }
