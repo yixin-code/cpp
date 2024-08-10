@@ -159,17 +159,25 @@
     > 有无符号不要一起进行运算
 ## 别名typedef/using
 * 基础类型
-    * typedef int int_type;
-    * using int_type = int;
+```cpp
+    typedef int int_type;
+    using int_type = int;
+```
 * 数组
-    * typedef int arr_type[11];
-    * using arr_type = int[11];
+```cpp
+    typedef int arr_type[11];
+    using arr_type = int[11];
+```
 * 函数指针
-    * typedef void (*p_func_type)(void);
-    * using p_func_type = void(*)(void);
+```cpp
+    typedef void (*p_func_type)(void);
+    using p_func_type = void(*)(void);
+```
 * 成员函数指针
-    * typedef void (A::*p_m_func_type)(void);
-    * using p_m_func_type = void(A::*)(void);
+```cpp
+    typedef void (A::*p_m_func_type)(void);
+    using p_m_func_type = void(A::*)(void);
+```
 ## sizeof 编译时期确定 得到的结果是一个常量表达式
 ## 运算符
 ### 算术运算符
