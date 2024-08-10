@@ -1729,6 +1729,55 @@
 ![共享内存](./资源/共享内存.png)
 * [共享内存](./linux/linux系统编程/进程/shared_memory.cpp)
 ```cpp
+#include <iostream>
+#include <string.h>
+#include <sys/shm.h> // shmget shmat
+#include <wait.h> // waitpid
+#include <sys/ipc.h> // ftok
+#include <unistd.h> // fork
+    key_t key = ftok("/home/yixin/Temp", 22);
+    if (key == -1) {
+        perror("ftok fail");
+        exit(1);
+    }
+    int shm_id = shmget(key, 1024, IPC_CREAT | 0664);
+    if (shm_id == -1) {
+        perror("shmget fail");
+        exit(1);
+    }
+    char *p_shm = (char*)shmat(shm_id, nullptr, 0);
+    if (p_shm == (char*)-1) {
+        perror("shmat fail");
+        exit(1);
+    }
+    pid_t pid = fork();
+    switch (pid) {
+    case -1: {
+        perror("fork fail");
+        exit(1);
+    }
+    case 0: { // 子进程
+        while (true) {
+            if (strcasecmp(p_shm, "quit") == 0) {
+                break;
+            }
+            if (*p_shm != 0) {
+                std::cout << "son thread: " << '[' << p_shm << ']' << '\n';
+            }
+            memset(p_shm, 0, 1024);
+        }
+    }
+    default: { // 父进程
+        while (true) {
+            scanf("%s", p_shm);
+            if (strcasecmp(p_shm, "quit") == 0) {
+                break;
+            }
+        }
+        waitpid(-1, nullptr, 0);
+    }
+    }
+    shmdt(p_shm);
 ```
 ## 线程(程序执行的最小单位，共享所属进程的资源) 不能保证新线程和调用线程的执行顺序
 ### 线程栈区分配

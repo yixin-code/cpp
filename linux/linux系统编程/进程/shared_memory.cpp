@@ -32,13 +32,21 @@ int main(int argc, char *argv[]) {
     }
     case 0: { // 子进程
         while (true) {
-            
+            if (strcasecmp(p_shm, "quit") == 0) {
+                break;
+            }
+            if (*p_shm != 0) {
+                std::cout << "son thread: " << '[' << p_shm << ']' << '\n';
+            }
+            memset(p_shm, 0, 1024);
         }
     }
     default: { // 父进程
         while (true) {
-            std::cin >> p_shm;
-            memset(p_shm, 0, 1024);
+            scanf("%s", p_shm);
+            if (strcasecmp(p_shm, "quit") == 0) {
+                break;
+            }
         }
         waitpid(-1, nullptr, 0);
     }
