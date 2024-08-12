@@ -1733,7 +1733,7 @@
     write(fd, "hello world", strlen("hello world"));
     close(fd);
 ```
-#### 共享内存(在内核中映射一段内存) ipcs命令 查看共享内存
+#### 共享内存(在内核中映射一段内存) ipcs命令 查看共享内存，ipcrm -m 编号 删除共享内存
 ![共享内存](./资源/共享内存.png)
 * [共享内存](./linux/linux系统编程/进程/shared_memory.cpp)
 ```cpp
