@@ -50,13 +50,13 @@ int main(int argc, char *argv[]) {
     default: {
         key_t msg_key = ftok("/home/yixin/Temp", 11);
         if (msg_key == -1) {
-            perror("child ftok fail");
+            perror("parent ftok fail");
             exit(1);
         }
 
         int msg_id = msgget(msg_key, IPC_CREAT | 0664);
         if (msg_id == -1) {
-            perror("child msgget fail");
+            perror("parent msgget fail");
             exit(1);
         }
 
@@ -66,14 +66,14 @@ int main(int argc, char *argv[]) {
         } msg;
 
         if (msgrcv(msg_id, &msg, sizeof(msg.m_text), 1, 0) == -1) {
-            perror("child msgrcv fail");
+            perror("parent msgrcv fail");
             exit(1);
         }
 
         std::cout << "recv: " << msg.m_text << '\n';
 
         if (msgrcv(msg_id, &msg, sizeof(msg.m_text), 2, 0) == -1) {
-            perror("child msgrcv fail");
+            perror("parent msgrcv fail");
             exit(1);
         }
 
