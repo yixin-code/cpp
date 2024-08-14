@@ -3713,9 +3713,23 @@
 * ps -eo pid,ppid,sid,pgid,cmd | grep -E 'PID|a.out|fish'
     * o 指定输出选项
 * ps -aux | grep -E 'PID|a.out|fish'
-### 后台执行./a.out &, 变为前台fg
-### 创建新会话使其变为新的组长
+#### 查看文件信息
+* stat test.txt 
+#### 查看系统中的用户
+* cat /etc/passwd
+#### 查看用户id
+* id yixin
+### 创建
+#### 创建新会话使其变为新的组长
 * setsid ./a.out
+#### 创建新用户
+* useradd yixin -m -s /bin/fish
+    * -s 指定shell
+    * -m 自动创建家目录
+##### 删除用户
+* userdel -r yixin
+    * -r 删除用户主目录
+### 后台执行./a.out &, 变为前台fg
 ### 安装deb软件
 * yay -Sy debtap
 * sudo debtap -u
@@ -3728,19 +3742,6 @@
 ### fish
 * alias c clear 别名
     * funcsave c 保存
-### 查看文件信息
-* stat test.txt 
-### 创建新用户
-* useradd yixin -m -s /bin/fish
-    * -s 指定shell
-    * -m 自动创建家目录
-### 删除用户
-* userdel -r yixin
-    * -r 删除用户主目录
-### 用户id
-* id yixin
-### 查看系统中的用户
-* cat /etc/passwd
 ---
 ---
 ---
