@@ -1,10 +1,8 @@
 TARGET=a.out
-# TARGET=toupper
 
 TEMP=./linux/linux系统编程/进程/msg.cpp
-# TEMP=./语言/STL/queue.cpp
+# TEMP=./练习/test.cpp
 # TEMP=./练习/mycp.cpp
-# TEMP=./linux/linux网络编程/http.cpp
 
 # 当前目录下所有.cpp文件
 # TEMP=$(wildcard *.cpp)
@@ -30,7 +28,6 @@ all:a.out
 
 $(TARGET):$(SRC)
 	$(G) $(SRC) $(FLAG) -o $(TARGET)
-#	$(G) $(SRC) $(FLAG) -o $(TARGET)
 
 %.o:%.cpp
 	$(G) $< -c $(FLAG) -o $@
