@@ -1881,14 +1881,14 @@ void copy_array(int *restrict src, int *restrict dest, size_t n) {
 ### 创建线程pthread_create 退出线程pthread_exit 阻塞等待线程结束回收资源pthread_join 线程分离自动释放资源pthread_detach(并不会阻塞等待子线程) 比较两个线程id pthread_equal(相等返回0)
 * [创建退出回收资源](./linux/linux系统编程/线程/创建退出回收资源.cpp)
 ```cpp
-    #include <iostream>
-    #include <pthread.h>
-    void* func(void *arg) {
-        int64_t *p = (int64_t*)arg;
-        std::cout << "func: " << *p << std::endl;
-        ++(*p);
-        pthread_exit((void*)p); // pthread_join可接收返回值 不关心可以nullpter
-    }
+#include <iostream>
+#include <pthread.h>
+void* func(void *arg) {
+    int64_t *p = (int64_t*)arg;
+    std::cout << "func: " << *p << std::endl;
+    ++(*p);
+    pthread_exit((void*)p); // pthread_join可接收返回值 不关心可以nullpter
+}
     pthread_t tid = 0;
     int64_t num = 11;
     // 成功返回0 失败返回errno
@@ -1901,14 +1901,14 @@ void copy_array(int *restrict src, int *restrict dest, size_t n) {
 * 不关心线程返回结果，也无需等待线程结束可以使用pthread_detach
 * [线程分离，pthread_self得到线程id](./linux/linux系统编程/线程/pthread_detach.cpp)
 ```cpp
-    #include <iostream>
-    #include <unistd.h>
-    #include <pthread.h>
-    void* func(void *arg) {
-        pthread_detach(pthread_self());
-        std::cout << "func...\n";
-        pthread_exit(nullptr);
-    }
+#include <iostream>
+#include <unistd.h>
+#include <pthread.h>
+void* func(void *arg) {
+    pthread_detach(pthread_self());
+    std::cout << "func...\n";
+    pthread_exit(nullptr);
+}
     std::cout << "main...\n";
     pthread_t tid = 0;
     pthread_create(&tid, nullptr, func, nullptr);
@@ -1917,29 +1917,29 @@ void copy_array(int *restrict src, int *restrict dest, size_t n) {
 #### 线程属性设置pthread_attr_t
 * [线程属性设置](./linux/linux系统编程/线程/pthread_attribute.cpp)
 ```cpp
-    #include <iostream>
-    #include <unistd.h>
-    #include <pthread.h>
-    void print_state(pthread_attr_t *attribute) {
-        int state = 0;
-        if (pthread_attr_getdetachstate(attribute, &state) != 0) {
-            perror("pthread_attr_getdetachstate");
-            exit(1);
-        } else { 
-            if (state == PTHREAD_CREATE_DETACHED) {
-                std::cout << "thread detached\n";
-            } else if (state == PTHREAD_CREATE_JOINABLE) {
-                std::cout << "thread joinable\n";
-            }
+#include <iostream>
+#include <unistd.h>
+#include <pthread.h>
+void print_state(pthread_attr_t *attribute) {
+    int state = 0;
+    if (pthread_attr_getdetachstate(attribute, &state) != 0) { // 获取线程分离状态，成功返回 0, 失败返回errno
+        perror("pthread_attr_getdetachstate");
+        exit(1);
+    } else { 
+        if (state == PTHREAD_CREATE_DETACHED) {
+            std::cout << "thread detached\n";
+        } else if (state == PTHREAD_CREATE_JOINABLE) {
+            std::cout << "thread joinable\n";
         }
     }
-    void *thread_func(void *arg) {
-        int64_t num = (int64_t)arg;
-        for (int i = 0; i < num; ++i) {
-            std::cout << i << "\n";
-        }
-        pthread_exit(nullptr);
+}
+void *thread_func(void *arg) {
+    int64_t num = (int64_t)arg;
+    for (int i = 0; i < num; ++i) {
+        std::cout << i << "\n";
     }
+    pthread_exit(nullptr);
+}
     pthread_attr_t attribute;
     pthread_attr_init(&attribute); // 初始化
     pthread_attr_setdetachstate(&attribute, PTHREAD_CREATE_DETACHED); // 设置分离
@@ -1957,23 +1957,23 @@ void copy_array(int *restrict src, int *restrict dest, size_t n) {
 ### 取消同进程中的线程pthread_cancel pthread_cleanup_push pthread_cleanup_pop可做线程清理函数类似atexit
 * [取消同进程中的线程](./linux/linux系统编程/线程/pthread_cancel.cpp)
 ```cpp
-    #include <iostream>
-    #include <unistd.h>
-    #include <pthread.h>
-    void cleanup_func(void *arg) {
-        std::cout << "cleanup func\n";
-        return;
+#include <iostream>
+#include <unistd.h>
+#include <pthread.h>
+void cleanup_func(void *arg) {
+    std::cout << "cleanup func\n";
+    return;
+}
+void *thread_func(void *arg) {
+    pthread_cleanup_push(cleanup_func, nullptr); // 取消时会调用cleanup_func
+    while (1) {
+        pthread_testcancel(); // 测试是否为其他线程取消
+        std::cout << "thread_func\n";
+        sleep(1);
     }
-    void *thread_func(void *arg) {
-        pthread_cleanup_push(cleanup_func, nullptr); // 取消时会调用cleanup_func
-        while (1) {
-            pthread_testcancel(); // 测试是否为其他线程取消
-            std::cout << "thread_func\n";
-            sleep(1);
-        }
-        pthread_cleanup_pop(0); // 非零调用cleanup_func
-        pthread_exit(nullptr);
-    }
+    pthread_cleanup_pop(0); // 非零调用cleanup_func
+    pthread_exit(nullptr);
+}
     pthread_t tid = 0;
     if (pthread_create(&tid, nullptr, thread_func, nullptr) != 0);
     sleep(3);
@@ -1984,35 +1984,35 @@ void copy_array(int *restrict src, int *restrict dest, size_t n) {
 #### 互斥锁(独占访问) 保护共享资源一致性 pthread_mutex_init_destroy初始化销毁 pthread_mutex_lock_trylock阻塞非阻塞(EBUSY(没有拿到锁))
 * [互斥锁阻塞pthread_mutex_lock](./linux/linux系统编程/线程/pthread_mutex_lock.cpp)
 ```cpp
-    #include <iostream>
-    #include <unistd.h>
-    #include <pthread.h>
-    class Account {
-    public:
-        Account(int number, double balance);
-        ~Account();
-    public:
-        double  withdraw_money(const double money);    // 取钱
-        double  get_balance(void);                     // 余额
-    private:
-        int             m_number;   // 编号
-        double          m_balance;  // 余额
-        pthread_mutex_t m_mutex;    // 互斥锁
-    };
-    struct User {
-        std::string m_name;
-        Account*    m_p_account;
-    };
-    void *thread_func(void *arg) {
-        if (arg == nullptr) {
-            perror("arg is nullptr");
-            exit(1);
-        }
-        User* p = (User*)arg;
-        p->m_p_account->withdraw_money(1111.1111);
-        std::cout << p->m_name << " balance: " << p->m_p_account->get_balance() << std::endl;
-        pthread_exit(nullptr);
+#include <iostream>
+#include <unistd.h>
+#include <pthread.h>
+class Account {
+public:
+    Account(int number, double balance);
+    ~Account();
+public:
+    double  withdraw_money(const double money);    // 取钱
+    double  get_balance(void);                     // 余额
+private:
+    int            m_number;   // 编号
+    double         m_balance;  // 余额
+    pthread_mutex_tm_mutex;    // 互斥锁
+};
+struct User {
+    std::string m_name;
+    Account*    m_p_account;
+};
+void *thread_func(void *arg) {
+    if (arg == nullptr) {
+        perror("argis nullptr");
+        exit(1);
     }
+    User* p = (User*)arg;
+    p->m_p_account->withdraw_money(1111.1111);
+    std::cout << p->m_name << " balance: " << p->m_p_account->get_balance() << std::endl;
+    pthread_exit(nullptr);
+}
     Account account{1234, 1111.1111};
     User user;
     user.m_name         = "aaa";
