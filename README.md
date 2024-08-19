@@ -1798,7 +1798,7 @@ void copy_array(int *restrict src, int *restrict dest, size_t n) {
     }
     shmdt(p_shm);
 ```
-#### 消息队列(映射一段内存，按照队列形式添加存储) ipcs命令 查看共享内存，ipcrm -q 编号 删除共享内存
+#### 消息队列(映射一段内存，按照队列形式添加存储) ipcs命令 查看消息队列，ipcrm -q 编号 删除消息队列
 ![消息队列](./资源/消息队列.png)
 * [消息队列](./linux/linux系统编程/进程/msg.cpp)
 ```cpp
