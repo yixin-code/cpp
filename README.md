@@ -1899,6 +1899,7 @@ void* func(void *arg) {
     std::cout << "main: " << *(int64_t*)p_exit << std::endl;
 ```
 * 不关心线程返回结果，也无需等待线程结束可以使用pthread_detach
+### 退出线程 pthr
 * [线程分离，pthread_self得到线程id](./linux/linux系统编程/线程/pthread_detach.cpp)
 ```cpp
 #include <iostream>
