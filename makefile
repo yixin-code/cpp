@@ -1,7 +1,7 @@
 TARGET=a.out
 
-# TEMP=./linux/linux系统编程/进程/msg.cpp
-TEMP=./练习/test.cpp
+TEMP=./linux/linux系统编程/线程/quit_thread.cpp
+# TEMP=./练习/test.cpp
 # TEMP=./练习/mycp.cpp
 
 # 当前目录下所有.cpp文件
