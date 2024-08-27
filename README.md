@@ -2076,33 +2076,33 @@ void *thread_func(void *arg) {
     }
     pthread_join(tid, nullptr);
     pthread_join(tid2, nullptr);
-    Account::Account(int number, double balance) : m_number(number), m_balance(balance) {
-        pthread_mutex_init(&this->m_mutex, nullptr);
-    }
-    Account::~Account() {
-        pthread_mutex_destroy(&this->m_mutex);
-    }
-    double Account::withdraw_money(const double money) {
-        pthread_mutex_lock(&this->m_mutex);
-        if (this->m_balance < money) {
-            std::cout << "balance greater money\n";
-            pthread_mutex_unlock(&this->m_mutex);
-            return 0.0;
-        }
-        // 模拟存储操作
-        double temp_balance = this->m_balance;
-        sleep(1);
-        temp_balance -= money;
-        this->m_balance = temp_balance;
+Account::Account(int number, double balance) : m_number(number), m_balance(balance) {
+    pthread_mutex_init(&this->m_mutex, nullptr);
+}
+Account::~Account() {
+    pthread_mutex_destroy(&this->m_mutex);
+}
+double Account::withdraw_money(const double money) {
+    pthread_mutex_lock(&this->m_mutex);
+    if (this->m_balance < money) {
+        std::cout << "balance greater money\n";
         pthread_mutex_unlock(&this->m_mutex);
-        return money;
+        return 0.0;
     }
-    double Account::get_balance(void) {
-        pthread_mutex_lock(&this->m_mutex);
-        double temp_balance = this->m_balance;
-        pthread_mutex_unlock(&this->m_mutex);
-        return temp_balance;
-    }
+    // 模拟存储操作
+    double temp_balance = this->m_balance;
+    sleep(1);
+    temp_balance -= money;
+    this->m_balance = temp_balance;
+    pthread_mutex_unlock(&this->m_mutex);
+    return money;
+}
+double Account::get_balance(void) {
+    pthread_mutex_lock(&this->m_mutex);
+    double temp_balance = this->m_balance;
+    pthread_mutex_unlock(&this->m_mutex);
+    return temp_balance;
+}
 ```
 * [互斥锁非阻塞pthread_mutex_trylock](./linux/linux系统编程/线程/pthread_mutex_trylock.cpp)
 ```cpp

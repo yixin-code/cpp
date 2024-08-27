@@ -1,13 +1,14 @@
 #include <iostream>
 #include <pthread.h> // pthread_t pthread_create pthread_exit pthread_self
 
-int num = 0;
+int     num     = 0;
+int     temp    = 0;
 
 void* func(void *arg) {
     for (int i = 0; i < 50000; ++i) {
-        // ++num;
-        num = num + 1;
+        temp = num;
         std::cout << "tid: " << pthread_self() << ", num: " << num << '\n';
+        num = temp + 1;
     }
 
     pthread_exit(nullptr);
