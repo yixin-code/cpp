@@ -3966,6 +3966,8 @@ const double Account::get_balance(void) {
 * sudo pacman -Sy mpv
 ## 电子书
 * yay -Sy mupdf
+    * shift + w 自动适应屏幕
+    * shift + i 暗色
 ## U启盘 镜像
 * yay -Sy woeusb
 ## github加速
