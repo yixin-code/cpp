@@ -2106,34 +2106,34 @@ double Account::get_balance(void) {
 ```
 * [互斥锁非阻塞pthread_mutex_trylock](./linux/linux系统编程/线程/pthread_mutex_trylock.cpp)
 ```cpp
-    #include <iostream>
-    #include <string>
-    #include <pthread.h>
-    #include <assert.h>
-    class Account {
-    public:
-        Account(int number, double balance);
-        ~Account();
-    public:
-        const double deposit(double money);
-        const double get_balance(void);
-    private:
-        int             m_number;
-        double          m_balance;
-        pthread_mutex_t m_mutex;
-    };
-    struct User {
-        std::string m_name;
-        Account*    m_p_account;
-    };
-    void *thread_func(void *arg) {
-        assert(arg != nullptr);
+#include <iostream>
+#include <string>
+#include <pthread.h>
+#include <assert.h>
+class Account {
+public:
+    Account(int number, double balance);
+    ~Account();
+public:
+    const double deposit(double money);
+    const double get_balance(void);
+private:
+    int             m_number;
+    double          m_balance;
+    pthread_mutex_t m_mutex;
+};
+struct User {
+    std::string m_name;
+    Account*    m_p_account;
+};
+void *thread_func(void *arg) {
+    assert(arg != nullptr);
 
-        User *p = (User*)arg;
-        std::cout << p->m_name << " deposit " << p->m_p_account->deposit(1111.1111) << ", balance "
-                    << p->m_p_account->get_balance() << "\n";
-        pthread_exit(nullptr);
-    }
+    User *p = (User*)arg;
+    std::cout << p->m_name << " deposit " << p->m_p_account->deposit(1111.1111) << ", balance "
+                << p->m_p_account->get_balance() << "\n";
+    pthread_exit(nullptr);
+}
     Account account(1234, 1111.1111);
     pthread_t tid = 0;
     User user;
@@ -2153,50 +2153,50 @@ double Account::get_balance(void) {
     }
     pthread_join(tid, nullptr);
     pthread_join(tid2, nullptr);
-    Account::Account(int number, double balance) : m_number(number), m_balance(balance) {
-        pthread_mutex_init(&this->m_mutex, nullptr);
-    }
-    Account::~Account() {
-        pthread_mutex_destroy(&this->m_mutex);
-    }
-    const double Account::deposit(double money) {
-        int ret = pthread_mutex_trylock(&this->m_mutex);
-        if (ret == 0) {
-            if (this->m_balance < money) {
-                std::cout << "balance greater money\n";
-                return this->m_balance;
-            }
-            this->m_balance -= money;
-            pthread_mutex_unlock(&this->m_mutex);
-            return money;
-        } else if (ret == EBUSY) { // 锁被其他线程占用
-            std::cout << "deposit wait lock\n";
-        } else {
-            perror("pthread mutex trylock fail");
-            exit(1);
+Account::Account(int number, double balance) : m_number(number), m_balance(balance) {
+    pthread_mutex_init(&this->m_mutex, nullptr);
+}
+Account::~Account() {
+    pthread_mutex_destroy(&this->m_mutex);
+}
+const double Account::deposit(double money) {
+    int ret = pthread_mutex_trylock(&this->m_mutex);
+    if (ret == 0) {
+        if (this->m_balance < money) {
+            std::cout << "balance greater money\n";
+            return this->m_balance;
         }
-        return 0.0;
+        this->m_balance -= money;
+        pthread_mutex_unlock(&this->m_mutex);
+        return money;
+    } else if (ret == EBUSY) { // 锁被其他线程占用
+        std::cout << "deposit wait lock\n";
+    } else {
+        perror("pthread mutex trylock fail");
+        exit(1);
     }
-    const double Account::get_balance(void) {
-        int ret = pthread_mutex_trylock(&this->m_mutex);
-        if (ret == 0) {
-            double temp_balance = this->m_balance;
-            pthread_mutex_unlock(&this->m_mutex);
-            return temp_balance;
-        } else if (ret == EBUSY) { // 锁被其他线程占用
-            std::cout << "get balance wait lock\n";
-        } else {
-            perror("pthread mutex trylock fail");
-            exit(1);
-        }
-        return 0.0;
+    return 0.0;
+}
+const double Account::get_balance(void) {
+    int ret = pthread_mutex_trylock(&this->m_mutex);
+    if (ret == 0) {
+        double temp_balance = this->m_balance;
+        pthread_mutex_unlock(&this->m_mutex);
+        return temp_balance;
+    } else if (ret == EBUSY) { // 锁被其他线程占用
+        std::cout << "get balance wait lock\n";
+    } else {
+        perror("pthread mutex trylock fail");
+        exit(1);
     }
+    return 0.0;
+}
 ```
 ##### 互斥锁属性和类型设置 EDEADLK(检测锁判断失败)
 * [互斥锁属性](./linux/linux系统编程/线程/mutex_attribute.cpp)
 ```cpp
-    #include <iostream>
-    #include <pthread.h>
+#include <iostream>
+#include <pthread.h>
     pthread_mutexattr_t mutexattr;
     pthread_mutexattr_init(&mutexattr);   // 初始化互斥锁属性 成功0 失败errno
     int res = 0;
