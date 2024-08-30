@@ -2277,33 +2277,33 @@ const double Account::get_balance(void) {
 #### 条件变量(防止竟态条件(执行顺序不当)) pthread_cond_init_destroy初始化销毁 pthread_cond_wait_timewait等待超时等待(会先释放拿到的锁，等待被唤醒后会在加锁) pthread_cond_signal_broadcast唤醒一个所有
 * [条件变量](./linux/linux系统编程/线程/pthread_cond.cpp)
 ```cpp
-    #include <iostream>
-    #include <unistd.h>
-    #include <pthread.h>
-    class CCalc {
-    public:
-        CCalc();
-        ~CCalc();
-    public:
-        void    calc(void);
-        void    get_res(void);
-    private:
-        int             m_res;
-        pthread_mutex_t m_mutex;
-        pthread_cond_t  m_cond;
-    };
-    void *func(void *arg) {
-        CCalc *p = (CCalc*)arg;
-        p->calc();
+#include <iostream>
+#include <unistd.h>
+#include <pthread.h>
+class CCalc {
+public:
+    CCalc();
+    ~CCalc();
+public:
+    void    calc(void);
+    void    get_res(void);
+private:
+    int             m_res;
+    pthread_mutex_t m_mutex;
+    pthread_cond_t  m_cond;
+};
+void *func(void *arg) {
+    CCalc *p = (CCalc*)arg;
+    p->calc();
 
-        pthread_exit(nullptr);
-    }
-    void *func2(void *arg) {
-        CCalc *p = (CCalc*)arg;
-        p->get_res();
+    pthread_exit(nullptr);
+}
+void *func2(void *arg) {
+    CCalc *p = (CCalc*)arg;
+    p->get_res();
 
-        pthread_exit(nullptr);
-    }
+    pthread_exit(nullptr);
+}
     CCalc calc;
     pthread_t tid;
     if (pthread_create(&tid, nullptr, func, (void*)&calc) != 0) {
@@ -2317,41 +2317,41 @@ const double Account::get_balance(void) {
     }
     pthread_join(tid, nullptr);
     pthread_join(tid2, nullptr);
-    CCalc::CCalc() : m_res(0) {
-        pthread_mutex_init(&this->m_mutex, nullptr);
-        pthread_cond_init(&this->m_cond, nullptr);
+CCalc::CCalc() : m_res(0) {
+    pthread_mutex_init(&this->m_mutex, nullptr);
+    pthread_cond_init(&this->m_cond, nullptr);
+}
+CCalc::~CCalc() {
+    pthread_mutex_destroy(&this->m_mutex);
+    pthread_cond_destroy(&this->m_cond);
+}
+void CCalc::calc(void) {
+    for (int i = 1; i <= 10; ++i) {
+        pthread_mutex_lock(&this->m_mutex);
+        this->m_res = i;
+        pthread_cond_broadcast(&this->m_cond);
+        pthread_mutex_unlock(&this->m_mutex);
+        sleep(1);
     }
-    CCalc::~CCalc() {
-        pthread_mutex_destroy(&this->m_mutex);
-        pthread_cond_destroy(&this->m_cond);
-    }
-    void CCalc::calc(void) {
-        for (int i = 1; i <= 10; ++i) {
-            pthread_mutex_lock(&this->m_mutex);
-            this->m_res = i;
-            pthread_cond_broadcast(&this->m_cond);
-            pthread_mutex_unlock(&this->m_mutex);
-            sleep(1);
+    return;
+}
+void CCalc::get_res(void) {
+    while (1) {
+        pthread_mutex_lock(&this->m_mutex);
+        while (this->m_res == 0) {
+            // 会先释放拿到的锁，阻塞等待被唤醒后，在加锁执行后续代码
+            pthread_cond_wait(&this->m_cond, &this->m_mutex);
         }
-        return;
-    }
-    void CCalc::get_res(void) {
-        while (1) {
-            pthread_mutex_lock(&this->m_mutex);
-            while (this->m_res == 0) {
-                // 会先释放拿到的锁，阻塞等待被唤醒后，在加锁执行后续代码
-                pthread_cond_wait(&this->m_cond, &this->m_mutex);
-            }
-            int temp = this->m_res;
-            this->m_res = 0;
-            std::cout << temp << std::endl;
-            pthread_mutex_unlock(&this->m_mutex);
-            if (temp == 10) {
-                break;
-            }
+        int temp = this->m_res;
+        this->m_res = 0;
+        std::cout << temp << std::endl;
+        pthread_mutex_unlock(&this->m_mutex);
+        if (temp == 10) {
+            break;
         }
-        return;
     }
+    return;
+}
 ```
 #### 读者写者问题
 * [单读者单写者](./linux/linux系统编程/线程/read_write.cpp)
