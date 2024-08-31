@@ -9,8 +9,22 @@
 * 连接
     * 连接库 系统引导 生成可执行程序
 ## ![内存分区](./资源/内存分区.png)
-## 作用域生命周期
+### 作用域生命周期
 * static局部变量是在进入函数时被初始化的，生命周期为定义到程序结束
+* 全局变量，编译时预留空间(在符号表中，此时并不会分配物理内存)。运行时分配实际物理内存(发生在main函数之前)
+* [全局变量初始化需要使用常量表达式](./语言/基础类型/global_variable.cpp)
+```cpp
+#include <iostream>
+#include <math.h> // pow
+int g_num = pow(2, 3); // 2的3次幂 c++中居然可以
+    std::cout << "g_num: " << g_num << '\n';
+```
+```c
+#include <stdio.h>
+#include <math.h> // pow
+// int g_num = pow(2, 3); error 常量表达式中不允许使用函数调用
+    printf("g_num: %d\n", pow);
+```
 ## 常量
 * 整型 1 2 3
 * 浮点型 1.1 2.2 3.3
@@ -4022,6 +4036,7 @@ void CCalc::get_res(void) {
 ---
 # 练习
 * [test](./练习/test.cpp)
+* [test](./练习/test.c)
 * [九九乘法表](./练习/九九乘法表.cpp)
 * [菱形](./练习/菱形.cpp)
 * [空心菱形](./练习/空心菱形.cpp)

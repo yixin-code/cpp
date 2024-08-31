@@ -1,8 +1,8 @@
 TARGET=a.out
 
+# TEMP=./语言/基础类型/global_variable.cpp
 # TEMP=./linux/linux系统编程/线程/quit_thread.cpp
 TEMP=./练习/test.cpp
-# TEMP=./练习/mycp.cpp
 
 # 当前目录下所有.cpp文件
 # TEMP=$(wildcard *.cpp)
@@ -12,6 +12,7 @@ SRC=$(patsubst %.cpp, %.o, $(TEMP))
 G = g++
 
 # FLAG=-Wall -std=c++11 -g -fsanitize=address -Werror -O0
+# FLAG=-Wall -std=c++11 -g -O0
 FLAG=-Wall -std=c++11 -g
 
 # 动态库
