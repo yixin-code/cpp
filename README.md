@@ -842,27 +842,34 @@ int weight_lowest_order(int num) {
 ### list双向链表
 #### 大小
 ```cpp
-    std::list<int> l(3);
-    std::cout << l.size() << std::endl; // 3
+std::list<int> l(3);
+std::cout << l.size() << std::endl; // 3
 ```
 #### 循环链表
 ```cpp
-    #include <iostream>
-    #include <list>
-    std::list<int> l{1, 2, 3, 4, 5};
-    std::list<int>::iterator it = l.end();
-    std::cout << *it << std::endl; // 5
-    std::advance(it, 1); // 1
-    it = l.end();
-    std::advance(it, -1);
-    std::cout << *it << std::endl; // 5
+#include <iostream>
+#include <list>
+std::list<int> l{1, 2, 3, 4, 5};
+std::list<int>::iterator it = l.end();
+std::cout << *it << std::endl; // 5
+std::advance(it, 1); // 1
+it = l.end();
+std::advance(it, -1);
+std::cout << *it << std::endl; // 5
 ```
 #### 删除元素
 ```cpp
-    std::list<int> l {1, 2, 3, 4, 5};
-    std::list<int>::iterator it = l.begin();
-    it = l.erase(it);
-    std::cout << *it << std::endl; // 2 删除位置的下一位置
+std::list<int> l {1, 2, 3, 4, 5};
+std::list<int>::iterator it = l.begin();
+it = l.erase(it);
+std::cout << *it << std::endl; // 2 删除位置的下一位置
+```
+#### 增加元素
+```cpp
+std::list<int> l;
+l.push_back(11);
+l.push_back(22);
+
 ```
 ### queue队列
 * [queue](./语言/STL/queue.cpp)
