@@ -1,6 +1,21 @@
 #include <iostream>
+#include <list>
+#include <algorithm> // std::find
 #include <pthread.h> // pthread_t pthread_create pthread_exit pthread_self
 #include <time.h> // timespec
+
+int main(int argc, char *argv[]) {
+    // std::list<int> l{1, 2, 3, 4, 5};
+    // int num = 3;
+    // std::list<int>::iterator it = std::find(l.begin(), l.end(), num);
+    // if (it == l.end()) {
+    //     std::cout << "not find\n";
+    // } else {
+    //     std::cout << "*it: " << *it << ", " << std::distance(l.begin(), it) << '\n'; // 迭代器之间的距离 3 2
+    // }
+
+    return 0;
+}
   
 // int main() {  
 //     // 声明 timespec 结构体变量  

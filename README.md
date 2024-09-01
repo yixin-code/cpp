@@ -842,34 +842,71 @@ int weight_lowest_order(int num) {
 ### list双向链表
 #### 大小
 ```cpp
-std::list<int> l(3);
-std::cout << l.size() << std::endl; // 3
+    std::list<int> l(3);
+    std::cout << l.size() << std::endl; // 3
 ```
 #### 循环链表
 ```cpp
-#include <iostream>
-#include <list>
-std::list<int> l{1, 2, 3, 4, 5};
-std::list<int>::iterator it = l.end();
-std::cout << *it << std::endl; // 5
-std::advance(it, 1); // 1
-it = l.end();
-std::advance(it, -1);
-std::cout << *it << std::endl; // 5
+    #include <iostream>
+    #include <list>
+    std::list<int> l{1, 2, 3, 4, 5};
+    std::list<int>::iterator it = l.end();
+    std::cout << *it << std::endl; // 5
+    std::advance(it, 1); // 1
+    it = l.end();
+    std::advance(it, -1);
+    std::cout << *it << std::endl; // 5
 ```
 #### 删除元素
 ```cpp
-std::list<int> l {1, 2, 3, 4, 5};
-std::list<int>::iterator it = l.begin();
-it = l.erase(it);
-std::cout << *it << std::endl; // 2 删除位置的下一位置
+    std::list<int> l {1, 2, 3, 4, 5};
+    std::list<int>::iterator it = l.begin();
+    it = l.erase(it);
+    std::cout << *it << std::endl; // 2 删除位置的下一位置
 ```
 #### 增加元素
 ```cpp
-std::list<int> l;
-l.push_back(11);
-l.push_back(22);
-
+    std::list<int> l;
+    l.push_back(11); // 尾插
+    l.emplace_back(22); // 尾插
+    for (const int& val : l) {
+        std::cout << val << '\n'; // 11 22
+    }
+```
+```cpp
+    std::list<int> l{1, 2, 3};
+    l.push_front(11); // 前插 == l.emplace_front(11);
+    for (const int& val : l) {
+        std::cout << val << '\n'; // 11 1 2 3
+    }
+```
+```cpp
+    std::list<int> l{1, 2, 3};
+    std::list<int>::iterator it = l.begin();
+    l.insert(it, 11); // 迭代器前插 == l.emplace(it, 11);
+    for (const int& val : l) {
+        std::cout << val << '\n'; // 11 1 2 3
+    }
+```
+```cpp
+    std::list<int> l{1, 2, 3};
+    std::list<int> l2{4, 5, 6};
+    l.insert(l.begin(), l2.begin(), l2.end()); // 迭代器前插
+    for (const int& val : l) {
+        std::cout << val << '\n'; // 4 5 6 1 2 3
+    }
+```
+#### 查找元素
+```cpp
+#include <algorithm> // std::find
+    std::list<int> l{1, 2, 3, 4, 5};
+    int num = 3;
+    std::list<int>::iterator it = std::find(l.begin(), l.end(), num);
+    if (it == l.end()) {
+        std::cout << "not find\n";
+    } else {
+        std::cout << "*it: " << *it << ", " << std::distance(l.begin(), it) << '\n'; // 迭代器之间的距离 3 2
+    }
 ```
 ### queue队列
 * [queue](./语言/STL/queue.cpp)
@@ -2445,7 +2482,7 @@ void CCalc::calc(void) {
 }
 void CCalc::get_res(void) {
     while (1) {
-        struct timespec ts; // 用于表示时间点或时间间隔
+        struct timespec ts; // 用于表示时间点或时间间隔，几秒后
         clock_gettime(CLOCK_REALTIME, &ts); // 获取当前时间
         ts.tv_sec += 3; // 设置超时时间3秒
         pthread_mutex_lock(&this->m_mutex);
