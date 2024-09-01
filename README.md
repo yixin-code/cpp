@@ -2288,7 +2288,7 @@ const double Account::get_balance(void) {
     pthread_rwlock_unlock(&rwlock);
     pthread_rwlock_destroy(&rwlock);
 ```
-#### 条件变量(防止竟态条件(执行顺序不当)) pthread_cond_init_destroy初始化销毁 pthread_cond_wait_timewait等待超时等待(会先释放拿到的锁，等待被唤醒后会在加锁) pthread_cond_signal_broadcast唤醒一个所有
+#### 条件变量(防止竟态条件(执行顺序不当)) pthread_cond_init_destroy初始化销毁 pthread_cond_wait_timedwait等待超时等待(会先释放拿到的锁，等待被唤醒后会在加锁) pthread_cond_signal_broadcast唤醒一个所有
 * [条件变量](./linux/linux系统编程/线程/pthread_cond.cpp)
 ```cpp
 #include <iostream>
@@ -2363,6 +2363,100 @@ void CCalc::get_res(void) {
         if (temp == 10) {
             break;
         }
+    }
+    return;
+}
+```
+* [条件变量timewait](./linux/linux系统编程/线程/pthread_cond_timedwait.cpp)
+```cpp
+#include <iostream>
+#include <unistd.h>
+#include <pthread.h>
+#include <time.h>
+class CCalc {
+public:
+    CCalc();
+    ~CCalc();
+public:
+    void    calc(void);
+    void    get_res(void);
+private:
+    int             m_res;
+    bool            m_flag;
+    pthread_mutex_t m_mutex;
+    pthread_cond_t  m_cond;
+};
+void *func(void *arg) {
+    CCalc *p = (CCalc*)arg;
+    p->calc();
+    pthread_exit(nullptr);
+}
+void *func2(void *arg) {
+    CCalc *p = (CCalc*)arg;
+    p->get_res();
+    pthread_exit(nullptr);
+}
+    CCalc calc;
+    pthread_t tid;
+    if (pthread_create(&tid, nullptr, func, (void*)&calc) != 0) {
+        perror("tid pthread_create");
+        exit(1);
+    }
+    pthread_t tid2;
+    if (pthread_create(&tid2, nullptr, func2, (void*)&calc) != 0) {
+        perror("tid2 pthread_create");
+        exit(1);
+    }
+    pthread_t tid3;
+    if (pthread_create(&tid3, nullptr, func2, (void*)&calc) != 0) {
+        perror("tid3 pthread_create");
+        exit(1);
+    }
+    pthread_join(tid, nullptr);
+    pthread_join(tid2, nullptr);
+    pthread_join(tid3, nullptr);
+CCalc::CCalc() : m_res(0), m_flag(false) {
+    pthread_mutex_init(&this->m_mutex, nullptr);
+    pthread_cond_init(&this->m_cond, nullptr);
+}
+CCalc::~CCalc() {
+    pthread_mutex_destroy(&this->m_mutex);
+    pthread_cond_destroy(&this->m_cond);
+}
+void CCalc::calc(void) {
+    for (int i = 1; i <= 10; ++i) {
+        pthread_mutex_lock(&this->m_mutex);
+        this->m_res = i;
+        if (i == 10) {
+            this->m_flag = true;
+        }
+        pthread_cond_broadcast(&this->m_cond);
+        pthread_mutex_unlock(&this->m_mutex);
+        usleep(5000);
+    }
+    return;
+}
+void CCalc::get_res(void) {
+    while (1) {
+        struct timespec ts; // 用于表示时间点或时间间隔
+        clock_gettime(CLOCK_REALTIME, &ts); // 获取当前时间
+        ts.tv_sec += 3; // 设置超时时间3秒
+        pthread_mutex_lock(&this->m_mutex);
+        while (this->m_res == 0 && this->m_flag == false) {
+            // 会先释放拿到的锁，阻塞等待被唤醒后，在加锁执行后续代码
+            int ret = pthread_cond_timedwait(&this->m_cond, &this->m_mutex, &ts);
+            if (ret == ETIMEDOUT) { // 判断超时
+                std::cout << "time out\n";
+                return;
+            }
+        }
+        if (this->m_flag == true && this->m_res == 0) {
+            pthread_mutex_unlock(&this->m_mutex);
+            break;
+        }
+        std::cout << "tid: " << pthread_self() << " " << this->m_res << std::endl;
+        this->m_res = 0;
+        pthread_mutex_unlock(&this->m_mutex);
     }
     return;
 }
