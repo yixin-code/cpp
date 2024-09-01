@@ -6,19 +6,19 @@
 #include <unistd.h> // fork
 
 int main(int argc, char *argv[]) {
-    key_t key = ftok("/home/yixin/Temp", 22);
+    key_t key = ftok("/home/yixin/Temp", 22); // 随机整数
     if (key == -1) {
         perror("ftok fail");
         exit(1);
     }
 
-    int shm_id = shmget(key, 1024, IPC_CREAT | 0664);
+    int shm_id = shmget(key, 1024, IPC_CREAT | 0664); // 创建共享内存返回共享内存标识符
     if (shm_id == -1) {
         perror("shmget fail");
         exit(1);
     }
 
-    char *p_shm = (char*)shmat(shm_id, nullptr, 0);
+    char *p_shm = (char*)shmat(shm_id, nullptr, 0); // 连接到共享内存，返回共享内存指针
     if (p_shm == (char*)-1) {
         perror("shmat fail");
         exit(1);
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
     }
     }
 
-    shmdt(p_shm);
+    shmdt(p_shm); // 将共享内存从当前进程分离
 
     return 0;
 }
