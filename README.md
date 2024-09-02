@@ -1098,6 +1098,15 @@ void copy_array(int *restrict src, int *restrict dest, size_t n) {
         int tm_yday;    // 一年中的第几天 (0代表1月1日) [0,365]
     }; 
 ```
+* [用来表示时间点或时间间隔](./linux/linux系统编程/时间/timespec.cpp)
+```cpp
+    #include <time.h>
+    struct timespec ts; // 用于表示时间点或时间间隔
+    clock_gettime(CLOCK_REALTIME, &ts); // 获取当前时间
+    ts.tv_sec   += 3; // 设置超时时间3秒
+    ts.tv_nsec  += 0; // 设置时间纳秒
+    std::cout << "sec: " << ts.tv_sec << ", nsec: " << ts.tv_nsec << '\n';
+```
 ## 文件读写
 * 文件描述符
     * linux中有三个特殊的文件描述符(程序运行会被自动打开)
