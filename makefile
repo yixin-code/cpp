@@ -1,7 +1,7 @@
 TARGET=a.out
 
 # TEMP=./语言/基础类型/global_variable.cpp
-TEMP=./linux/linux系统编程/时间/timespec.cpp
+TEMP=./linux/linux系统编程/线程/producer_consumer.cpp
 # TEMP=./练习/test.cpp
 
 # 当前目录下所有.cpp文件
