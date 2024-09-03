@@ -864,6 +864,31 @@ int weight_lowest_order(int num) {
     it = l.erase(it);
     std::cout << *it << std::endl; // 2 删除位置的下一位置
 ```
+```cpp
+    std::list<int> l{1, 2, 3, 4, 5};
+    l.pop_back(); // 尾删
+    l.pop_front(); // 头删
+    for (const int& val : l) {
+        std::cout << val << '\n'; // 2 3 4
+    }
+```
+* remove并不会删除元素而是将不需要的元素移动到元素末尾返回新的末尾迭代器
+```cpp
+#include <algorithm> // remove
+    std::list<int> l{1, 2, 3, 3, 4, 5};
+    l.erase(std::remove(l.begin(), l.end(), 3), l.begin()); // 删除元素为3的元素
+    for (const int& val : l) {
+        std::cout << val << '\n'; // 1 2 4 5
+    }
+```
+```cpp
+#include <algorithm> // remove_if
+    std::list<int> l{1, 2, 3, 3, 4, 5};
+    l.erase(std::remove_if(l.begin(), l.end(), [](int num){return num > 3;}), l.end()); // 删除大于3的元素
+    for (const int& val : l) {
+        std::cout << val << '\n'; // 1 2 3 3
+    }
+```
 #### 增加元素
 ```cpp
     std::list<int> l;

@@ -1,11 +1,17 @@
 #include <iostream>
 #include <list>
-#include <algorithm> // std::find
+#include <algorithm> // std::find remove_if
 #include <pthread.h> // pthread_t pthread_create pthread_exit pthread_self
 #include <time.h> // timespec
 
 int main(int argc, char *argv[]) {
-    // std::list<int> l{1, 2, 3, 4, 5};
+    std::list<int> l{1, 2, 3, 3, 4, 5};
+
+    l.erase(std::remove_if(l.begin(), l.end(), [](int num){return num > 3;}), l.end()); // 删除元素为3的元素
+
+    for (const int& val : l) {
+        std::cout << val << '\n';
+    }
     // int num = 3;
     // std::list<int>::iterator it = std::find(l.begin(), l.end(), num);
     // if (it == l.end()) {
