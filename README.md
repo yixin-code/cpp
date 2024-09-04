@@ -1019,6 +1019,21 @@ void copy_array(int *restrict src, int *restrict dest, size_t n) {
 ```
 ### [mutable修饰成员变量使其可以在const成员函数中修改](./语言/说明符/mutable.cpp)
 ```cpp
+#include <iostream>
+class A {
+public:
+    A(int num) : m_num(num) {}
+public:
+    void func() const {
+        std::cout << "num: " << this->m_num << '\n'; // 11
+        this->m_num = 22;
+        std::cout << "num: " << this->m_num << '\n'; // 22
+    }
+private:
+    mutable int m_num;
+};
+    A a(11);
+    a.func();
 ```
 ---
 ---
