@@ -1017,6 +1017,9 @@ void copy_array(int *restrict src, int *restrict dest, size_t n) {
     }  
 }
 ```
+### [mutable修饰成员变量使其可以在const成员函数中修改](./语言/说明符/mutable.cpp)
+```cpp
+```
 ---
 ---
 ---
