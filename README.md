@@ -4035,6 +4035,9 @@ void CCalc::get_res(void) {
 * cat /etc/passwd
 #### 查看用户id
 * id yixin
+#### 查看ip
+* ip add 地址
+* ip link 网卡名
 ### 创建
 #### 创建新会话使其变为新的组长
 * setsid ./a.out
