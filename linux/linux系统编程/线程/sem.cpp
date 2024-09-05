@@ -52,6 +52,9 @@ int main(int argc, char *argv[]) {
     }
 
     pthread_join(pthread, nullptr);
+    pthread_join(pthread2, nullptr);
+    pthread_join(pthread3, nullptr);
+
     sem_destroy(&sem);
     sem_destroy(&sem2);
 

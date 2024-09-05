@@ -4,14 +4,47 @@
 #include <pthread.h> // pthread_t pthread_create pthread_exit pthread_self
 #include <time.h> // timespec
 
-int main(int argc, char *argv[]) {
-    std::list<int> l{1, 2, 3, 3, 4, 5};
-
-    l.erase(std::remove_if(l.begin(), l.end(), [](int num){return num > 3;}), l.end()); // 删除元素为3的元素
-
-    for (const int& val : l) {
-        std::cout << val << '\n';
+class A {
+public:
+    void func() {
+        for (const int &val : this->m_arr) {
+            std::cout << val << '\n';
+        }
     }
+private:
+    int m_arr[11];
+};
+
+int main(int argc, char *argv[]) {
+    A a;
+    a.func();
+
+    return 0;
+}
+
+// void func() {
+//     int num;
+//     std::cout << "num: " << num << ", &num: " << &num << '\n';
+//     num = 11;
+// }
+
+// int main(int argc, char *argv[]) {
+    // func();
+    // std::cout << "------\n";
+    // func();
+    // const int num = 11;
+    // int arr[num];
+
+    // for (const int &element : arr) {
+    //     std::cout << element << '\n';
+    // }
+    // std::list<int> l{1, 2, 3, 3, 4, 5};
+
+    // l.erase(std::remove_if(l.begin(), l.end(), [](int num){return num > 3;}), l.end()); // 删除元素为3的元素
+
+    // for (const int& val : l) {
+    //     std::cout << val << '\n';
+    // }
     // int num = 3;
     // std::list<int>::iterator it = std::find(l.begin(), l.end(), num);
     // if (it == l.end()) {
@@ -20,8 +53,8 @@ int main(int argc, char *argv[]) {
     //     std::cout << "*it: " << *it << ", " << std::distance(l.begin(), it) << '\n'; // 迭代器之间的距离 3 2
     // }
 
-    return 0;
-}
+//     return 0;
+// }
   
 // int main() {  
 //     // 声明 timespec 结构体变量  
