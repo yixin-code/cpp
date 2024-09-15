@@ -258,6 +258,30 @@ int weight_lowest_order(int num) {
     }
 ```
 #### ~num 只有-1取反为0
+## 数学math
+### [x的y次幂](./语言/数学/pow.cpp)
+```cpp
+#include <math.h>
+    std::cout << pow(2, 3) << std::endl; // 8 2的3次幂
+```
+### [四舍五入](./语言/数学/round.cpp)
+```cpp
+#include <math.h>
+    std::cout << round(123.123) << std::endl; // 123
+    std::cout << round(123.723) << std::endl; // 124
+```
+### [向上取整](./语言/数学/ceil.cpp)
+```cpp
+#include <math.h>
+    std::cout << ceil(123.123) << std::endl; // 124
+    std::cout << ceil(123.823) << std::endl; // 124
+```
+### [向下取整](./语言/数学/floor.cpp)
+```cpp
+#include <math.h>
+    std::cout << floor(123.123) << std::endl; // 123
+    std::cout << floor(123.823) << std::endl; // 123
+```
 ## 控制语句
 ### switch 语句
 ```cpp

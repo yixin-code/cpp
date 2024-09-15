@@ -3,24 +3,31 @@
 #include <algorithm> // std::find remove_if
 #include <pthread.h> // pthread_t pthread_create pthread_exit pthread_self
 #include <time.h> // timespec
-
-class A {
-public:
-    void func() {
-        for (const int &val : this->m_arr) {
-            std::cout << val << '\n';
-        }
-    }
-private:
-    int m_arr[11];
-};
+#include <math.h> // pow round
 
 int main(int argc, char *argv[]) {
-    A a;
-    a.func();
+    
 
     return 0;
 }
+
+// class A {
+// public:
+//     void func() {
+//         for (const int &val : this->m_arr) {
+//             std::cout << val << '\n';
+//         }
+//     }
+// private:
+//     int m_arr[11];
+// };
+
+// int main(int argc, char *argv[]) {
+//     A a;
+//     a.func();
+
+//     return 0;
+// }
 
 // void func() {
 //     int num;
