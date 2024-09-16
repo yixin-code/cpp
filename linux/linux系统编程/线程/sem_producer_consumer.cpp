@@ -33,3 +33,9 @@ ProducerConsumer::~ProducerConsumer() {
     sem_destroy(&this->m_producer);
     sem_destroy(&this->m_consumer);
 }
+
+void ProducerConsumer::producer() {
+    while(true) {
+        
+    }
+}

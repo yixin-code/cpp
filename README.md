@@ -264,6 +264,15 @@ int weight_lowest_order(int num) {
 #include <math.h>
     std::cout << pow(2, 3) << std::endl; // 8 2的3次幂
 ```
+### [平方跟](./语言/数学/sqrt.cpp)
+```cpp
+#include <math.h>
+// 两点之间距离
+double distance(double x, double y, double x2, double y2) {
+    return sqrt(pow(x2 - x, 2) + pow(y2 - y, 2));
+}
+    std::cout << distance(1, 2, 9, 8) << std::endl;
+```
 ### [四舍五入](./语言/数学/round.cpp)
 ```cpp
 #include <math.h>
@@ -840,27 +849,32 @@ int weight_lowest_order(int num) {
 ```
 #### 添加元素
 ```cpp
-    #include <vector>
+#include <vector>
     vec.push_back(element);
     //////////////////////////////////////////////////////////////////////////////////
-    class Student {
-    private:
-        std::string m_name;
-        int m_age;
-    public:
-        Student(const std::string &name, int age) : m_name(name), m_age(age) {}
-    };
+class Student {
+private:
+    std::string m_name;
+    int m_age;
+public:
+    Student(const std::string &name, int age) : m_name(name), m_age(age) {}
+};
     std::vector<Student> vec;
     vec.emplace_back("yixin", 11);
 ```
+```cpp
+#include <vector>
+    std::vector<int> v{1, 2, 3};
+    v.insert(v.begin(), 4); // 4 1 2 3
+```
 #### 删除元素
 ```cpp
-    #include <vector>
+#include <vector>
     vec.erase(vec.begin() + 2); // 删除第三元素
 ```
 #### 查找元素
 ```cpp
-    #include <algorithm>
+#include <algorithm>
     std::find(vec.begin(), vec.end(), element);
 ```
 ### list双向链表

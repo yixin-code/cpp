@@ -1,11 +1,41 @@
 #include <iostream>
 #include <list>
+#include <vector>
 #include <algorithm> // std::find remove_if
 #include <pthread.h> // pthread_t pthread_create pthread_exit pthread_self
 #include <time.h> // timespec
 #include <math.h> // pow round
 
+
 int main(int argc, char *argv[]) {
+    std::vector<int> v{1, 2, 3};
+    v.insert(v.begin(), 4); // 4 1 2 3
+    // std::vector<int> v{1, 2, 3};
+
+    // std::cout << "size: " << v.size() << std::endl; // 3
+    // std::cout << "capacity: " << v.capacity() << std::endl; // 3
+
+    // v.resize(11);
+    // std::cout << "size: " << v.size() << std::endl; // 11
+    // std::cout << "capacity: " << v.capacity() << std::endl; // 11
+
+    // v.resize(4);
+    // std::cout << "size: " << v.size() << std::endl; // 4
+    // std::cout << "capacity: " << v.capacity() << std::endl; // 11
+
+    for (const int &val : v) {
+        std::cout << val << ' '; // 1 2 3 0
+    }
+    std::cout << std::endl;
+    // std::vector<int> vec2;
+    // vec2.resize(11);
+    // std::cout << vec2.size() << "\n"; // 11
+    // std::cout << vec2.capacity() << "\n"; // 11
+    // //////////////////////////////////////////////////////////////////////////////////
+    // std::vector<int> vec3;
+    // vec3.reserve(11);
+    // std::cout << vec3.size() << "\n"; // 0
+    // std::cout << vec3.capacity() << "\n"; // 11
     
 
     return 0;
