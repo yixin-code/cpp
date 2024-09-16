@@ -863,6 +863,7 @@ public:
     vec.emplace_back("yixin", 11);
 ```
 ```cpp
+// 元素前插入
 #include <vector>
     std::vector<int> v{1, 2, 3};
     v.insert(v.begin(), 4); // 4 1 2 3
@@ -4243,3 +4244,4 @@ void *thread_func3(void* arg) {
 * [三个有序数组相同元素](./练习/三个有序数组相同元素.cpp)
 * [mycat](./练习/mycat.cpp)
 * [mycp](./练习/mycp.cpp)
+* [makefile](./makefile)
