@@ -13,9 +13,9 @@ public:
     void producer();
     void consumer();
 private:
-    sem_t               m_producer;
-    sem_t               m_consumer;
-    std::vector<int>    m_s_tore;
+    sem_t               m_producer; //
+    sem_t               m_consumer; //
+    std::vector<int>    m_s_tore;   // 仓库
 };
 
 int main(int argc, char *argv[]) {
@@ -36,6 +36,6 @@ ProducerConsumer::~ProducerConsumer() {
 
 void ProducerConsumer::producer() {
     while(true) {
-        
+        this->m_consumer
     }
 }

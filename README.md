@@ -2747,7 +2747,7 @@ void CCalc::get_res(void) {
         return;
     }
 ```
-#### 线程信号量(无符号整数计数器) 信号量加1sem_post 信号量减1sem_wait(信号量为0时，再次调用会阻塞等待) 非阻塞sem_trywait sem_destroy_init销毁初始化(参数2 0进程间不共享 1进程间共享，参数3 信号量初值)
+#### 线程信号量(无符号整数计数器) 信号量加1(sem_post) 信号量减1(sem_wait)(信号量为0时，再次调用会阻塞等待) 非阻塞sem_trywait sem_destroy_init销毁初始化(参数2 0进程间不共享 1进程间共享，参数3 信号量初值)
 * [信号量生产者消费者](./linux/linux系统编程/线程/sem_producer_consumer.cpp)
 ```cpp
 ```
