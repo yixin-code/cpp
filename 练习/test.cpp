@@ -6,29 +6,34 @@
 #include <time.h> // timespec
 #include <math.h> // pow round
 
+enum {A = 1, B};
 
 int main(int argc, char *argv[]) {
-    std::vector<int> v{1, 2, 3};
-    v.insert(v.begin(), 4); // 4 1 2 3
+// enum {A = 1, B};
+    int A = 11;
+    std::cout << "A: " << A << std::endl;
+    
     // std::vector<int> v{1, 2, 3};
+    // v.insert(v.begin(), 4); // 4 1 2 3
+    // // std::vector<int> v{1, 2, 3};
 
-    // std::cout << "size: " << v.size() << std::endl; // 3
-    // std::cout << "capacity: " << v.capacity() << std::endl; // 3
+    // // std::cout << "size: " << v.size() << std::endl; // 3
+    // // std::cout << "capacity: " << v.capacity() << std::endl; // 3
 
-    // v.resize(11);
-    // std::cout << "size: " << v.size() << std::endl; // 11
-    // std::cout << "capacity: " << v.capacity() << std::endl; // 11
+    // // v.resize(11);
+    // // std::cout << "size: " << v.size() << std::endl; // 11
+    // // std::cout << "capacity: " << v.capacity() << std::endl; // 11
 
-    // v.resize(4);
-    // std::cout << "size: " << v.size() << std::endl; // 4
-    // std::cout << "capacity: " << v.capacity() << std::endl; // 11
+    // // v.resize(4);
+    // // std::cout << "size: " << v.size() << std::endl; // 4
+    // // std::cout << "capacity: " << v.capacity() << std::endl; // 11
 
-    for (const int &val : v) {
-        std::cout << val << ' '; // 1 2 3 0
-    }
-    std::cout << std::endl;
-    // std::vector<int> vec2;
-    // vec2.resize(11);
+    // for (const int &val : v) {
+    //     std::cout << val << ' '; // 1 2 3 0
+    // }
+    // std::cout << std::endl;
+    // // std::vector<int> vec2;
+    // // vec2.resize(11);
     // std::cout << vec2.size() << "\n"; // 11
     // std::cout << vec2.capacity() << "\n"; // 11
     // //////////////////////////////////////////////////////////////////////////////////

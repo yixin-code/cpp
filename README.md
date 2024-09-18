@@ -4306,8 +4306,6 @@ void *thread_func3(void* arg) {
 ---
 ---
 # 练习
-* [test](./练习/test.cpp)
-* [test](./练习/test.c)
 * [九九乘法表](./练习/九九乘法表.cpp)
 * [菱形](./练习/菱形.cpp)
 * [空心菱形](./练习/空心菱形.cpp)
@@ -4317,3 +4315,5 @@ void *thread_func3(void* arg) {
 * [mycat](./练习/mycat.cpp)
 * [mycp](./练习/mycp.cpp)
 * [makefile](./makefile)
+* [test](./练习/test.cpp)
+* [test](./练习/test.c)
