@@ -2,8 +2,8 @@ TARGET=a.out
 
 # TEMP=./语言/数学/sqrt.cpp
 # TEMP=./linux/linux系统编程/线程/sem_producer_consumer.cpp
-TEMP=./练习/histogram.cpp
-# TEMP=./练习/test.cpp
+# TEMP=./练习/histogram.cpp
+TEMP=./练习/test.cpp
 
 # 当前目录下所有.cpp文件
 # TEMP=$(wildcard *.cpp)

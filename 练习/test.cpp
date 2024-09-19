@@ -7,9 +7,10 @@
 #include <math.h> // pow round
 
 int main(int argc, char *argv[]) {
-    std::vector<int> v{1, 2, 3};
-    v[2]++;
-    std::cout << v[2] << '\n';
+    std::cout << "hello world"[2] << '\n';
+    // std::vector<int> v{1, 2, 3};
+    // v[2]++;
+    // std::cout << v[2] << '\n';
     // v.reserve(1111);
     // v.resize(1111);
     // std::cout << v.capacity() << '\n';
