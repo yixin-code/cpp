@@ -843,7 +843,8 @@ double distance(double x, double y, double x2, double y2) {
     std::cout << vec2.capacity() << "\n"; // 11
     //////////////////////////////////////////////////////////////////////////////////
     std::vector<int> vec3;
-    vec3.resize(11);
+    vec3.reserve(11); // 不会改变size的大小
+    v[3] = 3;
     std::cout << vec3.size() << "\n"; // 0
     std::cout << vec3.capacity() << "\n"; // 11
 ```
@@ -4312,6 +4313,7 @@ void *thread_func3(void* arg) {
 * [心形](./练习/心形.cpp)
 * [两个有序数组相同元素](./练习/两个有序数组相同元素.cpp)
 * [三个有序数组相同元素](./练习/三个有序数组相同元素.cpp)
+* [直方图](./练习/histogram.cpp)
 * [mycat](./练习/mycat.cpp)
 * [mycp](./练习/mycp.cpp)
 * [makefile](./makefile)
