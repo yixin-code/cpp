@@ -1,20 +1,23 @@
 TARGET=a.out
 
-# TEMP=./语言/数学/sqrt.cpp
+TEMP=./语言/数组/member_wise.cpp
 # TEMP=./linux/linux系统编程/线程/sem_producer_consumer.cpp
 # TEMP=./练习/histogram.cpp
-TEMP=./练习/test.cpp
+# TEMP=./练习/test.cpp
 
 # 当前目录下所有.cpp文件
 # TEMP=$(wildcard *.cpp)
 # 将.cpp替换成.o
 SRC=$(patsubst %.cpp, %.o, $(TEMP))
 
-G = g++
+# G = g++
+# G = gcc
 
 # FLAG=-Wall -std=c++11 -g -fsanitize=address -Werror -O0
 # FLAG=-Wall -std=c++11 -g -O0
-FLAG=-Wall -std=c++11 -g
+# FLAG=-Wall -std=c++20 -g
+# FLAG=-Wall -std=c++11 -g
+# FLAG=-Wall -std=c99 -g
 
 # 动态库
 # -fPIC -shared

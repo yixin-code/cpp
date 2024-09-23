@@ -516,6 +516,17 @@ double distance(double x, double y, double x2, double y2) {
     const int arr[3] {1, 2, 3};
     arr[0] = 11; // error
 ```
+* [数组局部初始化](./语言/数组/member_wise.cpp)
+```cpp
+#include <stdio.h>
+    int arr[3][4] = {[2][1] = 11, [2][3] = 22}; // c99中可以
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            printf("%d ", arr[i][j]);
+        }
+    }
+    printf("\n");
+```
 ### 两个有序数组相同元素
 ```cpp
     while (i != vec.size() && j != vec2.size()) {
