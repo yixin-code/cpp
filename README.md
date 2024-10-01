@@ -4327,6 +4327,7 @@ void *thread_func3(void* arg) {
 * [直方图](./练习/histogram.cpp)
 * [mycat](./练习/mycat.cpp)
 * [mycp](./练习/mycp.cpp)
+* [剪刀石头布](./练习/finger-guessing.cpp)
 * [makefile](./makefile)
 * [test](./练习/test.cpp)
 * [test](./练习/test.c)
