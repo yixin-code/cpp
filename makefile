@@ -10,7 +10,7 @@ TEMP=./语言/数组/member_wise.cpp
 # 将.cpp替换成.o
 SRC=$(patsubst %.cpp, %.o, $(TEMP))
 
-# G = g++
+G = g++
 # G = gcc
 
 # FLAG=-Wall -std=c++11 -g -fsanitize=address -Werror -O0
