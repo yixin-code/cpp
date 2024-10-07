@@ -4241,6 +4241,22 @@ void *thread_func3(void* arg) {
 ---
 ---
 ---
+# git
+git status  显示工作目录中有哪些更改尚未提交
+git add .   当前目录下所有文件添加到暂存区
+git commit -m '信息'    提交暂存区的更改描述提交内容
+git push    推送到主分支
+    git push 远程仓库名 分支名  推送到特定分支
+---
+---
+---
+---
+---
+---
+---
+---
+---
+---
 # 软件
 ## 微信
 * yay -Sy wechat-uos
