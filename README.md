@@ -4211,8 +4211,16 @@ void *thread_func3(void* arg) {
 ## 打印信息
 * p num
 * ptype num 显示类型
+* display num
+* undisplay num
 ## 查看信息
 * i(info) locals 查看当前栈针中的变量
+## 断点
+* b(break) 函数名或行号     设置断点
+* b if 条件     设置条件断点
+* delete breakpoints 断点编号       删除断点
+* disable breakpoints 断点编号      禁用断点
+* enable 断点编号       启用断点
 ## 查看内存中的值
 * x/16xw 0x01 查看以0x01开始，16个单元每个单元4字节
     * x 16进制，d 10进制，u 无符号，t2 进制
