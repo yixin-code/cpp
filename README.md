@@ -4201,12 +4201,18 @@ void *thread_func3(void* arg) {
 # GDB
 ## 下一步
 * n 不进入函数
-* s 进入函数
+* s(step) 进入函数
+    * finish 从当前函数返回
+## 查看栈针
+* bt(backtrace)
+    * f(frame) 栈针编号 选择栈针
 ## 继续执行
 * c
 ## 打印信息
 * p num
 * ptype num 显示类型
+## 查看信息
+* i(info) locals 查看当前栈针中的变量
 ## 查看内存中的值
 * x/16xw 0x01 查看以0x01开始，16个单元每个单元4字节
     * x 16进制，d 10进制，u 无符号，t2 进制
@@ -4242,11 +4248,17 @@ void *thread_func3(void* arg) {
 ---
 ---
 # git
-git status  显示工作目录中有哪些更改尚未提交
-git add .   当前目录下所有文件添加到暂存区
-git commit -m '信息'    提交暂存区的更改描述提交内容
+git status      显示工作目录中有哪些更改尚未提交
+git add .       当前目录下所有文件添加到暂存区
+git commit -m '信息'        提交暂存区的更改描述提交内容
 git push    推送到主分支
-    git push 远程仓库名 分支名  推送到特定分支
+    git push 远程仓库名 分支名      推送到特定分支
+git pull        等同于 git fetch + git merge
+    git fetch 仓库名        从远程仓库获取最新更改，不会合并或更改工作目录中的任何文件
+    git branch -r      查看所有远程分支
+    git log 仓库名/分支名       查看特定远程分支的提交历史
+    git checkout 分支名     切换到你的本地分支
+    git merge origin/分支名     合并远程分支的更改
 ---
 ---
 ---
