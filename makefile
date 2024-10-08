@@ -13,10 +13,9 @@ SRC=$(patsubst %.cpp, %.o, $(TEMP))
 G = g++
 # G = gcc
 
-# FLAG=-Wall -std=c++11 -g -fsanitize=address -Werror -O0
-# FLAG=-Wall -std=c++11 -g -O0
+# FLAG=-Wall -std=c++11 -g -fsanitize=address -Werror -O2
+FLAG=-Wall -std=c++11 -g
 # FLAG=-Wall -std=c++20 -g
-# FLAG=-Wall -std=c++11 -g
 # FLAG=-Wall -std=c99 -g
 
 # 动态库
