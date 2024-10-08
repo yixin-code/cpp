@@ -4364,6 +4364,7 @@ git pull        等同于 git fetch + git merge
 * [mycat](./练习/mycat.cpp)
 * [mycp](./练习/mycp.cpp)
 * [剪刀石头布](./练习/finger-guessing.cpp)
+* [字符串反转](./练习/string_reverse.cpp)
 * [makefile](./makefile)
 * [test](./练习/test.cpp)
 * [test](./练习/test.c)
