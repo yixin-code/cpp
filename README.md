@@ -506,7 +506,18 @@ double distance(double x, double y, double x2, double y2) {
         *str = '\0';
     }
 ```
-### 字符串转数字 atoi(str) std::stoi(str)
+### [字符串转数字 atoi(str) std::stoi(str)](./语言/字符串/string_to_number.cpp)
+```cpp
+#include <iostream>
+#include <string>
+    std::string str;
+    int sum = 0;
+    std::cin >> str;
+    for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
+        sum = sum * 10 + (*it - '0');
+    }
+    std::cout << "sum: " << sum << std::endl;
+```
 ## 数组
 * 数组下标从0开始
     * 数组地址即是首元素地址，如果从1开始会浪费空间，增加计算量(-1)
@@ -889,6 +900,43 @@ public:
 ```cpp
 #include <algorithm>
     std::find(vec.begin(), vec.end(), element);
+```
+### string字符串
+#### [查找](./语言/字符串/find.cpp)
+```cpp
+#include <string>
+    std::string str = "hello world";
+    uint64_t    pos = str.find("world");
+    if (pos == std::string::npos) {
+        std::cout << "not found" << std::endl;
+    } else {
+        std::cout << "pos: " << pos << std::endl; // 6 字符下标
+    }
+    pos = str.find('o');
+    if (pos == std::string::npos) {
+        std::cout << "not found" << std::endl;
+    } else {
+        std::cout << "pos: " << pos << std::endl; // 4
+    }
+```
+#### [截取](./语言/字符串/substr.cpp)
+```cpp
+// str2 = str.substr(pos); 截取到字符串结尾
+// str3 = str.substr(pos, 2); 截取2个字符
+#include <iostream>
+#include <string>
+    std::string str = "hello world";
+    std::string str2;
+    std::string str3;
+    uint64_t    pos = str.find("world");
+    if (pos == std::string::npos) {
+        std::cout << "not found" << std::endl;
+    } else {
+        str2 = str.substr(pos);
+        std::cout << "str2: " << str2 << std::endl; // world
+        str3 = str.substr(pos, 2);
+        std::cout << "str3: " << str3 << std::endl; // wo
+    }
 ```
 ### list双向链表
 #### 大小
@@ -4365,6 +4413,6 @@ git pull        等同于 git fetch + git merge
 * [mycp](./练习/mycp.cpp)
 * [剪刀石头布](./练习/finger-guessing.cpp)
 * [字符串反转](./练习/string_reverse.cpp)
-* [makefile](./makefile)
 * [test](./练习/test.cpp)
 * [test](./练习/test.c)
+* [makefile](./makefile)

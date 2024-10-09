@@ -1,8 +1,8 @@
 TARGET=a.out
 
-# TEMP=./语言/输入输出/scanf2.cpp
+TEMP=./语言/字符串/substr.cpp
 # TEMP=./linux/linux系统编程/线程/sem_producer_consumer.cpp
-TEMP=./练习/string_reverse.cpp
+# TEMP=./练习/string_reverse.cpp
 # TEMP=./练习/test.cpp
 
 # 当前目录下所有.cpp文件
