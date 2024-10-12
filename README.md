@@ -331,7 +331,7 @@ double distance(double x, double y, double x2, double y2) {
 ### 三目运算符 从右向左结合
 ```cpp
     int i = 1, j = 2, k = 0;
-    k = i > j ? ++i : ++j;
+    k = i > j ? ++i : ++j; // 先计算 i > j -> false -> ++j -> k = j
     i : 1, j : 3, k : 3
 ```
 ### goto不能跨函数 不能跳过定义

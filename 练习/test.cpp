@@ -8,21 +8,28 @@
 #include <string>
 
 int main(int argc, char *argv[]) {
-    std::string str = "hello world";
+    int i = 2;
+    int j = 3;
+    int k = 0;
 
-    uint64_t    pos = str.find("world");
-    if (pos == std::string::npos) {
-        std::cout << "not found" << std::endl;
-    } else {
-        std::cout << "pos: " << pos << std::endl; // 6 字符下标
-    }
+    k = j > i ? ++i : j;
+    std::cout << "k: " << k << '\n';
+    std::cout << "i: " << i << ", j: " << j << '\n';
+    // std::string str = "hello world";
 
-    pos = str.find('o');
-    if (pos == std::string::npos) {
-        std::cout << "not found" << std::endl;
-    } else {
-        std::cout << "pos: " << pos << std::endl; // 4
-    }
+    // uint64_t    pos = str.find("world");
+    // if (pos == std::string::npos) {
+    //     std::cout << "not found" << std::endl;
+    // } else {
+    //     std::cout << "pos: " << pos << std::endl; // 6 字符下标
+    // }
+
+    // pos = str.find('o');
+    // if (pos == std::string::npos) {
+    //     std::cout << "not found" << std::endl;
+    // } else {
+    //     std::cout << "pos: " << pos << std::endl; // 4
+    // }
 
     return 0;
 }
