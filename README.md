@@ -1163,6 +1163,21 @@ private:
 ```cpp
     for (int i = 0; i < n; ++i)
 ```
+## 排序查找
+### [插入排序](./数据结构/排序查找/insert_sort.cpp)
+```cpp
+void insert_sort(std::vector<int> &nums) {
+    int size = nums.size();
+    for (int i = 1; i < size; ++i) { // 首元素为有序
+        int j = i - 1; // 已有序位置
+        // nums[j + 1] 为待插入元素
+        while (j >= 0 && nums[j] > nums[j + 1]) { // 未有序位置和有序位置逐一比较交换(插入)
+            std::swap(nums[j], nums[j + 1]);
+            --j;
+        }
+    }
+}
+```
 ## 链表
 ---
 ---
