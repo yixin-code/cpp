@@ -4261,6 +4261,8 @@ void *thread_func3(void* arg) {
 * ptype num 显示类型
 * display num
 * undisplay num
+## 设置观察点,内存被修改时会中断
+* watch arr[5]
 ## 查看信息
 * i(info) locals 查看当前栈针中的变量
 ## 断点
@@ -4270,9 +4272,10 @@ void *thread_func3(void* arg) {
 * disable breakpoints 断点编号      禁用断点
 * enable 断点编号       启用断点
 ## 查看内存中的值
-* x/16xw 0x01 查看以0x01开始，16个单元每个单元4字节
-    * x 16进制，d 10进制，u 无符号，t2 进制
-    * b 1字节，h 2字节，w 4字节，g 8字节
+* x/16xw 0x01 查看以0x01开始,16个单元每个单元4字节
+    * x 16进制,d 10进制,u 无符号,t 2进制
+    * b 1字节,h 2字节,w 4字节,g 8字节
+* x/2b arr 查看2组1字节
 ## 查看反汇编
 * disassemble /m 地址或函数名
 ## 设置变量值
