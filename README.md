@@ -1188,6 +1188,7 @@ void insert_sort(std::vector<int> &nums) {
     }
 }
 ```
+### [归并排序](./数据结构/排序查找/merge_sort.cpp)
 ## 链表
 ---
 ---
