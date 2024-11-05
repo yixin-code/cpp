@@ -922,7 +922,7 @@ public:
 #### 查找元素
 ```cpp
 #include <algorithm>
-    std::find(vec.begin(), vec.end(), element);
+    std::find(vec.begin(), vec.end(), element); // 未找到返回end()
 ```
 ### string字符串
 #### [查找](./语言/字符串/find.cpp)
@@ -1186,7 +1186,7 @@ private:
 ```cpp
     for (int i = 0; i < n; ++i)
 ```
-## 排序查找
+## 排序
 ### [插入排序](./数据结构/排序查找/insert_sort.cpp)
 ```cpp
 #include <iostream>
@@ -1288,6 +1288,40 @@ int main(int argc, char *argv[]) {
         std::cout << val << " ";
     }
     std::cout << std::endl;
+
+    return 0;
+}
+```
+## 查找
+### [二分查找](./数据结构/排序查找/binary_search.cpp)
+```cpp
+#include <iostream>
+#include <vector>
+
+int binary_search(std::vector<int> &nums, int target) {
+    int left = 0;
+    int right = nums.size() - 1;
+
+    while (left <= right) { // 一个元素时也需要查找
+        int mid = (left + right) / 2;
+        if (nums[mid] == target) {
+            return mid;
+        } else if (nums[mid] < target) { // 大于中间元素，在右边查找
+            left = mid + 1;
+        } else { // 小于中间元素，在左边查找
+            right = mid - 1;
+        }
+    }
+
+    return -1;
+}
+
+int main(int argc, char *argv[]) {
+    // std::vector<int> nums{1, 2, 3, 4, 5, 6, 7, 8};
+    std::vector<int> nums{1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+    // std::cout << binary_search(nums, 5) << std::endl;
+    std::cout << binary_search(nums, 11) << std::endl;
 
     return 0;
 }
