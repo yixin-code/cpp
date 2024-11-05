@@ -1326,6 +1326,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 ```
+## [栈](./数据结构/数据结构/stack.cpp)
 ## 链表
 ---
 ---

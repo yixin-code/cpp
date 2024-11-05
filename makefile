@@ -3,7 +3,7 @@ TARGET=a.out
 # TEMP=./语言/输入输出/cout_format.cpp
 # TEMP=./linux/linux系统编程/线程/sem_producer_consumer.cpp
 # TEMP=./练习/test.cpp
-TEMP=./数据结构/排序查找/binary_search.cpp
+TEMP=./数据结构/数据结构/stack.cpp
 
 # 当前目录下所有.cpp文件
 # TEMP=$(wildcard *.cpp)
