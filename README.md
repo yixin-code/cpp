@@ -861,9 +861,22 @@ double distance(double x, double y, double x2, double y2) {
     * int size = ifstream.tell() 获取文件指针当前位置到文件开始的偏移量
 ## STL
 ### vector动态数组
+#### 初始化
+```cpp
+#include <vector>
+    std::vector<int> v{1, 2, 3};
+    std::vector<int> v2(v); // 1 2 3
+    std::vector<int> v3(3); // 0 0 0
+    std::cout << "v.size = " << v.size() << '\n'; // 3
+    std::cout << "v.size = " << v.capacity() << '\n'; // 3
+    std::cout << "v2.size = " << v2.size() << '\n'; // 3
+    std::cout << "v2.size = " << v2.capacity() << '\n'; // 3
+    std::cout << "v3.size = " << v3.size() << '\n'; // 3
+    std::cout << "v3.size = " << v3.capacity() << '\n'; // 3
+```
 #### 大小，空间
 ```cpp
-    #include <vector>
+#include <vector>
     std::vector<int> vec;
     std::cout << vec.size() << "\n"; // 0
     std::cout << vec.capacity() << "\n"; // 0
@@ -1176,10 +1189,15 @@ private:
 ## 排序查找
 ### [插入排序](./数据结构/排序查找/insert_sort.cpp)
 ```cpp
+#include <iostream>
+#include <vector>
+
 void insert_sort(std::vector<int> &nums) {
     int size = nums.size();
+
     for (int i = 1; i < size; ++i) { // 首元素为有序
         int j = i - 1; // 已有序位置
+
         // nums[j + 1] 为待插入元素
         while (j >= 0 && nums[j] > nums[j + 1]) { // 未有序位置和有序位置逐一比较交换(插入)
             std::swap(nums[j], nums[j + 1]);
@@ -1187,8 +1205,93 @@ void insert_sort(std::vector<int> &nums) {
         }
     }
 }
+
+int main(int argc, char *argv[]) {
+    std::vector<int> nums = {5, 4, 3, 2, 1};
+
+    insert_sort(nums);
+
+    for (auto num : nums) {
+        std::cout << num << " ";
+    }
+    std::cout << std::endl;
+
+    return 0;
+}
 ```
 ### [归并排序](./数据结构/排序查找/merge_sort.cpp)
+```cpp
+#include <iostream>
+#include <vector>
+
+void merge(std::vector<int> &nums, int left, int mid, int right) {
+    // 两个元素时 left = 0, mid = 0, right = 1
+    // mid = 0, left = 0, left_size = 1
+    int left_size = mid - left + 1; // 左边临时数组长度
+    // right = 1, mid = 0, right_size = 1
+    int right_size = right - mid; // 右边临时数组长度
+
+    std::vector<int> left_arr(left_size);
+    std::vector<int> right_arr(right_size);
+
+    for (int i = 0; i < left_size; ++i) {
+        left_arr[i] = nums[left + i];
+    }
+    for (int i = 0; i < right_size; ++i) {
+        right_arr[i] = nums[mid + 1 + i];
+    }
+
+    int i = 0;
+    int j = 0;
+    int k = left;
+
+    // 小于放入左边元素,否则放入右边元素
+    while (i < left_size && j < right_size) {
+        if (left_arr[i] < right_arr[j]) {
+            nums[k++] = left_arr[i++];
+        } else {
+            nums[k++] = right_arr[j++];
+        }
+    }
+
+    // 如果存在剩余元素，拷贝剩余元素
+    while (i < left_size) {
+        nums[k++] = left_arr[i++];
+    }
+    while (j < right_size) {
+        nums[k++] = right_arr[j++];
+    }
+}
+
+void merge_sort(std::vector<int> &nums, int left, int right) {
+    if (left >= right) { // 一个数不需要排序
+        return;
+    }
+
+    int mid = (left + right) / 2; // 拿到中间点
+
+    // 两个元素时 left = 0, mid = 0, right = 1
+    // left = 0, mid = 0
+    merge_sort(nums, left, mid); // 左边排序
+    // mid = 1 , right = 1
+    merge_sort(nums, mid + 1, right); // 右边排序 
+
+    merge(nums, left, mid, right); // 合并
+}
+int main(int argc, char *argv[]) {
+    // std::vector<int> nums{8, 7, 6, 5, 4, 3, 2, 1};
+    std::vector<int> nums{8, 7, 6, 5, 4, 3, 2};
+
+    merge_sort(nums, 0, nums.size() - 1);
+
+    for (const int &val : nums) {
+        std::cout << val << " ";
+    }
+    std::cout << std::endl;
+
+    return 0;
+}
+```
 ## 链表
 ---
 ---

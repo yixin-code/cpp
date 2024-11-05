@@ -8,13 +8,27 @@
 #include <string>
 
 int main(int argc, char *argv[]) {
-    int i = 2;
-    int j = 3;
-    int k = 0;
+    std::vector<int> v{1, 2, 3};
+    std::vector<int> v2(v); // 1 2 3
+    std::vector<int> v3(3); // 0 0 0
 
-    k = j > i ? ++i : j;
-    std::cout << "k: " << k << '\n';
-    std::cout << "i: " << i << ", j: " << j << '\n';
+    std::cout << "v.size = " << v.size() << '\n'; // 3
+    std::cout << "v.size = " << v.capacity() << '\n'; // 3
+    std::cout << "v2.size = " << v2.size() << '\n'; // 3
+    std::cout << "v2.size = " << v2.capacity() << '\n'; // 3
+    std::cout << "v3.size = " << v3.size() << '\n'; // 3
+    std::cout << "v3.size = " << v3.capacity() << '\n'; // 3
+
+    for (const int &val : v3) {
+        std::cout << "[" << val << "]" << '\n';
+    }
+    // int i = 2;
+    // int j = 3;
+    // int k = 0;
+
+    // k = j > i ? ++i : j;
+    // std::cout << "k: " << k << '\n';
+    // std::cout << "i: " << i << ", j: " << j << '\n';
     // std::string str = "hello world";
 
     // uint64_t    pos = str.find("world");
