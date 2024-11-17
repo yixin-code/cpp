@@ -10,7 +10,9 @@ int main(int argc, char *argv[]) {
             sleep(1);
         }
     } else {
-        
+        while(true) {
+            
+        }
     }
 
     return 0;
