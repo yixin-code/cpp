@@ -6,22 +6,26 @@
 #include <time.h> // timespec
 #include <math.h> // pow round
 #include <string>
+#include <unistd.h>
 
 int main(int argc, char *argv[]) {
-    std::vector<int> v{1, 2, 3};
-    std::vector<int> v2(v); // 1 2 3
-    std::vector<int> v3(3); // 0 0 0
+    // while (true) {
+    //     sleep(1);
+    // }
+    // std::vector<int> v{1, 2, 3};
+    // std::vector<int> v2(v); // 1 2 3
+    // std::vector<int> v3(3); // 0 0 0
 
-    std::cout << "v.size = " << v.size() << '\n'; // 3
-    std::cout << "v.size = " << v.capacity() << '\n'; // 3
-    std::cout << "v2.size = " << v2.size() << '\n'; // 3
-    std::cout << "v2.size = " << v2.capacity() << '\n'; // 3
-    std::cout << "v3.size = " << v3.size() << '\n'; // 3
-    std::cout << "v3.size = " << v3.capacity() << '\n'; // 3
+    // std::cout << "v.size = " << v.size() << '\n'; // 3
+    // std::cout << "v.size = " << v.capacity() << '\n'; // 3
+    // std::cout << "v2.size = " << v2.size() << '\n'; // 3
+    // std::cout << "v2.size = " << v2.capacity() << '\n'; // 3
+    // std::cout << "v3.size = " << v3.size() << '\n'; // 3
+    // std::cout << "v3.size = " << v3.capacity() << '\n'; // 3
 
-    for (const int &val : v3) {
-        std::cout << "[" << val << "]" << '\n';
-    }
+    // for (const int &val : v3) {
+    //     std::cout << "[" << val << "]" << '\n';
+    // }
     // int i = 2;
     // int j = 3;
     // int k = 0;

@@ -3260,24 +3260,30 @@ void *thread_func3(void* arg) {
 |SIGHUP|1|终止当前shell中的进程|关闭终端|
 |SIGINT|2|终止程序|按下ctrl+c|
 |SIGQUIT|3|终止程序|按下ctrl+\ 会生成核心转储文件以便后续调试|
+|SIGABRT|6|终止程序|程序检查到无法恢复的错误时会主动调用,例如,空指针解引用、非法参数、数组越界访问等|
 |SIGKILL|9|终止程序，不能捕获忽略|强制杀死程序|
 |SIGUSR1|10|终止程序||
 |SIGSEGV|11|段错误，不能捕获忽略|无效内存引用（数组越界，错误指针操作）|
 |SIGUSR2|12|终止程序||
+|SIGPIPE|13|终止程序|管道只有读端损坏|
 |SIGALRM|14|终止程序|闹钟信号alarm|
 |SIGTERM|15|终止程序|杀死程序 kill 编号 killall 进程名|
 |SIGCHLD|17|忽略不做处理|子进程结束信号|
 |SIGIO|29|终止进程或忽略|异步通知I/O事件|
 |SIGSYS|31|终止进程|收到无效的系统调用|
-### 发送信号kill
-* [发送信号](./linux/linux系统编程/信号/发送信号.cpp)
+### 发送信号 kill(给指定进程发送信号) raise(给当前进程发送信号) abort(给当前进程发送abort信号,程序检查到无法恢复的错误时会主动调用,例如,空指针解引用、非法参数、数组越界访问等)
+* [发送信号](./linux/linux系统编程/信号/发送信号kill.cpp)
 ```cpp
-    #include <iostream>
-    #include <unistd.h>
-    #include <signal.h>
-    pid_t pid = fork();
+#include <iostream>
+#include <unistd.h>
+#include <signal.h>
+
+int main() {
+    pid_t pid;
+    pid = fork();
     // 失败返回一个负数，等于0子进程pid，大于0为父进程
-    if (pid < 0) { // 失败
+    if (pid < 0) {
+        perror("7, fork error");
         exit(1);
     } else if (pid == 0) { // 子进程
         while (true) {
@@ -3294,7 +3300,12 @@ void *thread_func3(void* arg) {
         }
     }
 
+    std::cout << "main end\n";
+
+    return 0;
+}
 ```
+* [发送信号](./linux/linux系统编程/信号/发送信号raise.cpp)
 ### 信号处理
 #### signal
 * 信号处理采用系统的默认操作，大部分信号默认操作都是终止进程
@@ -4363,12 +4374,15 @@ void *thread_func3(void* arg) {
 * du -h
 #### 查看进程
 * ps -ef 查看所有进程
+* ps -aux | grep -E 'PID|a.out|fish'
+    * -a:显示所有用户的进程。默认情况下,只显示当前用户的进程。
+    * -u:以用户为主的格式显示进程信息。用户ID(UID)、PID(进程ID)、控制终端、进程状态等
+    * -x:显示没有控制终端的进程。这通常包括后台进程和守护进程
 * ps -ef | grep $(环境变量当前shell的pid)查看当前shell中的所有进程
     * sid 会话id
     * pgid 进程组id
 * ps -eo pid,ppid,sid,pgid,cmd | grep -E 'PID|a.out|fish'
     * o 指定输出选项
-* ps -aux | grep -E 'PID|a.out|fish'
 #### 查看文件信息
 * stat test.txt 
 #### 查看系统中的用户
@@ -4453,9 +4467,9 @@ void *thread_func3(void* arg) {
 * set follow-fork-mode parent
 ## 段错误 调试core文件
 * 查看用户资源限定
-    * umilit -a
-    * 设置无限制
-        * umilit -c unlimited 
+    * ulimit -a
+    * 设置core文件大小
+        * umilit -c 1024
     * 调试
         * gdb core文件名
         * 查看函数调用栈
