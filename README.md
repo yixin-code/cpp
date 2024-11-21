@@ -1873,33 +1873,33 @@ int main(int argc, char *argv[]) {
     }
     std::cout << "main end\n";
 ```
-### 僵尸进程(子进程先终止，父进程没有使用wait/waitpid等待回收资源，STAT为Z)
+### 僵尸进程(子进程先终止,父进程没有使用wait/waitpid等待回收资源,STAT为Z)
 * 进程结束会关闭所有文件描述符，释放分配的内存。
-    * PCB(进程控制块)还会存在，父进程调用wait/waitpid查看信息，并清除子进程
+    * PCB(进程控制块)还会存在,父进程调用wait/waitpid查看信息,并清除子进程
 * 僵尸进程无法使用kill -9 终止，只能终止正在运行的程序
-#### 父进程可以通过处理SIGCHLD信号，在信号处理函数中调用waitpid来解决僵尸进程
-#### waitpid(pid_t pid, int &status, int option)与WNOHANG一起使用返回0表示没有子进程退出，返回-1失败，成功返回子进程pid
+#### 父进程可以通过处理SIGCHLD信号,在信号处理函数中调用waitpid来解决僵尸进程
+#### waitpid(pid_t pid, int &status, int option)与WNOHANG一起使用返回0表示没有子进程退出,返回-1失败,成功返回子进程pid
 * [wait(&stat)==waitpid(-1, &stat, 0)](./linux/linux系统编程/进程/等待子进程.cpp)
 * pid
     * **-1, 等待所有子进程**
     * **大于0，等待指定进程**
-    * 0，等待同组子进程
-    * 小于-1，等待以-pid为组长的子进程
+    * 0,等待同组子进程
+    * 小于-1,等待以-pid为组长的子进程
 * status
-    * null，不关心返回状态
+    * null,不关心返回状态
     * 非null
         * WIFEXITED(status) 正常退出返回true
             * WEXITSTATUS(status) 返回状态码(return或exit中的数字)
-        * WIFSIGNALED(status) 被signal结束的，返回true
+        * WIFSIGNALED(status) 被signal结束的,返回true
             * WTERMSIG(status) 返回被信号结束的信号编号
 * option
-    * 0，会阻塞等待子进程结束
-    * WNOHANG，不会阻塞等待子进程结束
+    * 0,会阻塞等待子进程结束
+    * WNOHANG,不会阻塞等待子进程结束
 * 返回-1
     * **errno == EINTR 调用被某个信号中断**
     * **errno == GCHILD 没有子进程**
 ### 守护进程(一般后台长期运行，不和控制终端相关联)
-* ppid为0的进程是内核进程，跟随系统启动关闭
+* ppid为0的进程是内核进程,跟随系统启动关闭
 * tty是?为守护进程
     * 带中括号的为内核守护进程，不带中括号的为用户守护进程
 * 守护进程脱离终端，后台进程并没有脱离终端
@@ -3271,8 +3271,8 @@ void *thread_func3(void* arg) {
 |SIGCHLD|17|忽略不做处理|子进程结束信号|
 |SIGIO|29|终止进程或忽略|异步通知I/O事件|
 |SIGSYS|31|终止进程|收到无效的系统调用|
-### 发送信号 kill(给指定进程发送信号) raise(给当前进程发送信号) abort(给当前进程发送abort信号,程序检查到无法恢复的错误时会主动调用,例如,空指针解引用、非法参数、数组越界访问等)
-* [发送信号](./linux/linux系统编程/信号/发送信号kill.cpp)
+### 发送信号 kill(给指定进程发送信号,参数1为0时给所在的进程组发送信号) raise(给当前进程发送信号) abort(给当前进程发送abort信号,程序检查到无法恢复的错误时会主动调用,例如,空指针解引用、非法参数、数组越界访问等)
+* [发送信号kill](./linux/linux系统编程/信号/发送信号kill.cpp)
 ```cpp
 #include <iostream>
 #include <unistd.h>
@@ -3305,7 +3305,75 @@ int main() {
     return 0;
 }
 ```
-* [发送信号](./linux/linux系统编程/信号/发送信号raise.cpp)
+#### [发送信号raise](./linux/linux系统编程/信号/发送信号raise.cpp)
+```cpp
+#include <iostream>
+#include <signal.h>
+
+void catch_sig(int sig) {
+    std::cout << "catch sig:" << sig << std::endl;
+    raise(SIGINT); // 向当前进程发送sigint信号
+}
+
+int main(int argc, char *argv[]) {
+    pid_t pid = fork();
+
+    if (pid == 0) {
+        while (true) {
+            std::cout << "child process" << std::endl;
+            sleep(1);
+        }
+    } else {
+        struct sigaction sa;
+
+        sa.sa_flags = 0;
+        sa.sa_handler = catch_sig;
+        sigemptyset(&sa.sa_mask);
+
+        sigaction(SIGALRM, &sa, nullptr); // 捕捉闹钟信号
+
+        alarm(5); // 5秒后发送sigalrm信号
+
+        while(true) {
+            std::cout << "parent process" << std::endl;
+            sleep(1);
+        }
+    }
+
+    return 0;
+}
+```
+#### [发送信号abort](./linux/linux系统编程/信号/发送信号abort.cpp)
+```cpp
+#include <iostream>
+#include <signal.h>
+#include <unistd.h>
+
+void catch_sig(int signo) {
+    std::cout << "catch signal: " << signo << std::endl;
+    std::cout << "abort success" << std::endl;
+    abort();
+}
+
+int main(int argc, char *argv[]) {
+    alarm(5); // 5秒后发送闹钟信号
+
+    struct sigaction sa;
+
+    sa.sa_handler  = catch_sig;
+    sa.sa_flags = 0;
+    sigemptyset(&sa.sa_mask);
+
+    sigaction(SIGALRM, &sa, nullptr);
+
+    while (true) {
+        std::cout << "send message..." << std::endl;
+        sleep(1);
+    }
+    
+    return 0;
+}
+```
 ### 信号处理
 #### signal
 * 信号处理采用系统的默认操作，大部分信号默认操作都是终止进程
