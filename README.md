@@ -2037,29 +2037,45 @@ int main(int argc, char *argv[]) {
 #include <sys/wait.h> // waitpid
 #include <unistd.h> // pipe fork close write read
 #include <string.h>
+
+int main(int argc, char *argv[]) {
     int fds[2] = {0};
     if (pipe(fds) == -1) {
         perror("pipe fail");
         exit(1);
     }
+
     pid_t pid = fork();
+
     if (pid == -1) {
         perror("fork fail");
         exit(1);
     } else if (pid == 0) {
         close(fds[1]); // 关闭写端
+
         char buf[20] = {0};
+
         read(fds[0], buf, 20);
+
         std::cout << buf << '\n';
+
         close(fds[0]);
+
         std::cout << "child end\n";
     } else {
         close(fds[0]); // 关闭读端
+
         write(fds[1], "hello world", strlen("hello world"));
+
         waitpid(-1, nullptr, 0);
+
         close(fds[1]);
+
         std::cout << "parent end\n";
     }
+
+    return 0;
+}
 ```
 ##### 管道 popen(创建一个管道，fork一个子进程，关闭管道不使用的端，exec执行一个命令，返回一个FILE指针) pclose
 * 参数二: r 读、w 写
@@ -3271,7 +3287,7 @@ void *thread_func3(void* arg) {
 |SIGCHLD|17|忽略不做处理|子进程结束信号|
 |SIGIO|29|终止进程或忽略|异步通知I/O事件|
 |SIGSYS|31|终止进程|收到无效的系统调用|
-### 发送信号 kill(给指定进程发送信号,参数1为0时给所在的进程组发送信号) raise(给当前进程发送信号) abort(给当前进程发送abort信号,程序检查到无法恢复的错误时会主动调用,例如,空指针解引用、非法参数、数组越界访问等)
+### 发送信号 kill(给指定进程发送信号,参数1为0时给所在的进程组发送信号,-1发送给所有进程,-pid发送给进程组) raise(给当前进程发送信号) abort(给当前进程发送abort信号,程序检查到无法恢复的错误时会主动调用,例如,空指针解引用、非法参数、数组越界访问等)
 * [发送信号kill](./linux/linux系统编程/信号/发送信号kill.cpp)
 ```cpp
 #include <iostream>
@@ -3430,7 +3446,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 ```
-### 闹钟信号(定时任务)
+### 闹钟信号(定时任务) alarm(0)时会取消之前所有设置的闹钟
 * [定时任务](./linux/linux系统编程/信号/闹钟.cpp)
 ```cpp
     #include <unistd.h>
