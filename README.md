@@ -1326,6 +1326,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 ```
+### [迷宫问题深度优先搜索](./数据结构/排序查找/深度优先搜索/dfs.cpp)
 ## [栈](./数据结构/数据结构/stack.cpp)
 ## 链表
 ---
@@ -3268,7 +3269,7 @@ void *thread_func3(void* arg) {
         sleep(5);
     }
 ```
-## 信号
+## 信号 kill -l/kill -L查看信号
 * 发出一个信号时,会从用户态切换到内核态在该进程的PCB中记录信号该信号.从内核态返回用户态时会先处理PCB中的信号.
 ### 常用信号
 |信号名|信号值|默认处理动作|发出信号原因|
@@ -3446,24 +3447,53 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 ```
-### 闹钟信号(定时任务) alarm(0)时会取消之前所有设置的闹钟
+### 闹钟信号(定时任务) alarm(0)时会取消之前所有设置的闹钟 两个闹钟参数都是非0,第二个闹钟会返回第一个闹钟的剩余时间
 * [定时任务](./linux/linux系统编程/信号/闹钟.cpp)
 ```cpp
-    #include <unistd.h>
-    #include <signal.h>
-    void alarm_func(int sig) {
-        std::cout << "收到信号: " << sig << ", 执行定时任务\n";
-        alarm(3); // 之后每3秒执行一次，并不是递归
+#include <iostream>
+#include <unistd.h>
+#include <signal.h>
+
+void alarm_func(int sig) {
+    std::cout << "收到信号: " << sig << ", 执行定时任务\n";
+    alarm(3); // 之后每3秒执行一次，并不是递归
+}
+
+int main() {
+    signal(SIGALRM, alarm_func);
+    alarm(3); // 3秒后执行
+
+    while (true) {
+        std::cout << "等待中...\n";
+        sleep(1);
     }
-    int main() {
-        signal(SIGALRM, alarm_func);
-        alarm(3); // 3秒后执行
-        while (true) {
-            std::cout << "等待中...\n";
-            sleep(1);
-        }
-        return 0;
+
+    return 0;
+}
+```
+* [两个闹钟参数都是非0,第二个闹钟会返回第一个闹钟的剩余时间](./linux/linux系统编程/信号/alarm.cpp)
+```cpp
+#include <iostream>
+#include <signal.h>
+#include <unistd.h>
+
+int main(int argc, char *argv[]) {
+    alarm(3);
+
+    sleep(2);
+
+    unsigned int surplus = alarm(5);
+
+    std::cout << "surplus: " << surplus << std::endl; // 1
+
+    // 5秒后被闹钟信号终止
+    while (true) {
+        std::cout << "wait..." << std::endl;
+        sleep(1);
     }
+
+    return 0;
+}
 ```
 ### 可重入函数，信号处理时是安全的
 * [不可重入函数](./linux/linux系统编程/信号/不可重入函数.cpp)
@@ -3491,8 +3521,11 @@ int main(int argc, char *argv[]) {
     * 必要情况下需确保调用函数是可重入函数
     * 需要调用修改errno，可以先备份在恢复
 ### 信号阻塞
-* a信号在处理时会阻塞等待a信号处理完才会再次接收a信号。如果发送多个a信号，等待该信号处理完毕，会再次处理一次a信号
-* 处理信号a时，发送b信号会立刻处理b信号，a信号会阻塞等待b信号执行完，继续处理a信号
+* 实际执行信号的处理动作称为信号递达(delivery),信号从产生到抵达之间的状态称为未决(pending)，进程可以选择阻塞(block)某个信号。被阻塞的信号产生时会保持在未决状态，直到解除阻塞执行递达动作。
+* 实时信号产生多次只会记录一次
+* 非实时信号
+    * a信号在处理时会阻塞等待a信号处理完才会再次接收a信号。如果发送多个a信号，等待该信号处理完毕，会再次处理一次a信号
+    * 处理信号a时，发送b信号会立刻处理b信号，a信号会阻塞等待b信号执行完，继续处理a信号
 * [信号阻塞](./linux/linux系统编程/信号/信号阻塞.cpp)
 ### 信号集(每个进程中都会有一个信号集)
 * 相当于一串二进制，计入了哪些信号被阻塞。所以相同信号函数正在处理时，将不会继续捕获该信号
@@ -3502,6 +3535,7 @@ int main(int argc, char *argv[]) {
 #### 将信号集全部置0, sigemptyset(&sig)
 #### 将某个信号值1(相当于阻塞该信号), sigaddset(&sig, SIGHUP)
 #### 将某个信号值0, sigdelset(&sig, SIGHUP)
+#### 测试一个信号是否被阻塞。sigismember(&sig, SIGINT)阻塞返回1 没有阻塞返回0 失败返回-1
 #### sigprocmask 可以设置进程中信号集的内容
 * 参数1
     * SIG_BLOCK 设置阻塞信号(会在当前信号屏蔽字上增加信号)
@@ -3511,27 +3545,49 @@ int main(int argc, char *argv[]) {
     * 信号集指针，要添加删除或添加的信号，null为不设置
 * 参数3
     * 保存设置前的信号集，null为不保存
-#### 测试一个信号是否被阻塞。sigismember(&sig, SIGINT)阻塞返回1 没有阻塞返回0 失败返回-1
 * 信号被阻塞等待处理，阻塞该信号结束继续处理
 * [信号集](./linux/linux系统编程/信号/信号集.cpp)
 ```cpp
-    #include <signal.h>
-    #include <unistd.h>
+#include <iostream>
+#include <signal.h>
+#include <unistd.h>
+
+void func_sigint(int val) {
+    std::cout << "sigint capture\n";
+    sleep(1);
+    signal(val, SIG_DFL);
+    std::cout << "sigint restore default\n";
+}
+
+int main() {
     sigset_t new_make, old_make;  // 信号集结构体
     sigemptyset(&new_make);       // 清空信号集
     sigaddset(&new_make, SIGINT); // 设置SIGINT信号
+
     signal(SIGINT, func_sigint);
-    if (sigprocmask(SIG_BLOCK, &new_make, &old_make) == -1) { // 设置信号集，保存原信号集
+
+    // 设置信号集，保存原信号集
+    if (sigprocmask(SIG_BLOCK, &new_make, &old_make) == -1) {
         perror("20, if (sigprocmask(SIG_BLOCK, &new_make, &old_make) == -1)");
         exit(1);
     }
-    if (sigismember(&new_make, SIGINT) == 1) { // 测试信号是否被阻塞
+
+    // 测试信号是否被阻塞
+    if (sigismember(&new_make, SIGINT) == 1) {
         std::cout << "sigint signal obstruct\n";
     }
+
+    sleep(11);
+
     if (sigprocmask(SIG_SETMASK, &old_make, nullptr) == -1) { // 恢复原始信号集
         perror("31, if (sigprocmask(SIGINT, &old_make, nullptr) == -1) {");
         exit(1);
     }
+
+    std::cout << "sigint signal restore\n";
+
+    return 0;
+}
 ```
 #### 临时改变信号屏蔽字 sigsuspend(&sigset) 会临时替换当前的信号屏蔽，使进程在此挂起。待接收到信号后，恢复原信号屏蔽，进程继续执行
 * 需要暂停进程并等待一个信号时
