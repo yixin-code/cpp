@@ -3519,13 +3519,13 @@ int main(int argc, char *argv[]) {
 ```
 * 尽可能的不要在信号处理函数中调用系统函数
     * 必要情况下需确保调用函数是可重入函数
-    * 需要调用修改errno，可以先备份在恢复
+    * 需要调用修改errno,可以先备份在恢复
 ### 信号阻塞
 * 实际执行信号的处理动作称为信号递达(delivery),信号从产生到抵达之间的状态称为未决(pending)，进程可以选择阻塞(block)某个信号。被阻塞的信号产生时会保持在未决状态，直到解除阻塞执行递达动作。
 * 实时信号产生多次只会记录一次
 * 非实时信号
-    * a信号在处理时会阻塞等待a信号处理完才会再次接收a信号。如果发送多个a信号，等待该信号处理完毕，会再次处理一次a信号
-    * 处理信号a时，发送b信号会立刻处理b信号，a信号会阻塞等待b信号执行完，继续处理a信号
+    * a信号在处理时会阻塞等待a信号处理完才会再次接收a信号。如果发送多个a信号,等待该信号处理完毕,会再次处理一次a信号
+    * 处理信号a时,发送b信号会立刻处理b信号,a信号会阻塞等待b信号执行完,继续处理a信号
 * [信号阻塞](./linux/linux系统编程/信号/信号阻塞.cpp)
 ### 信号集(每个进程中都会有一个信号集)
 * 相当于一串二进制，计入了哪些信号被阻塞。所以相同信号函数正在处理时，将不会继续捕获该信号
@@ -3542,9 +3542,9 @@ int main(int argc, char *argv[]) {
     * SIG_UNBLOCK 移除阻塞信号
     * SIG_SETMASK 设置当前信号集为第二参数指向(会将信号屏蔽字完全替换)
 * 参数2
-    * 信号集指针，要添加删除或添加的信号，null为不设置
+    * 信号集指针,要添加删除或添加的信号,null为不设置
 * 参数3
-    * 保存设置前的信号集，null为不保存
+    * 保存设置前的信号集,null为不保存
 * 信号被阻塞等待处理，阻塞该信号结束继续处理
 * [信号集](./linux/linux系统编程/信号/信号集.cpp)
 ```cpp
@@ -3585,6 +3585,55 @@ int main() {
     }
 
     std::cout << "sigint signal restore\n";
+
+    return 0;
+}
+```
+* [信号集](./linux/linux系统编程/信号/sigset.cpp)
+```cpp
+#include <iostream>
+#include <unistd.h>
+#include <signal.h>
+
+void sig_handler(int sig) {
+    std::cout << "receive signal: " << sig << std::endl;
+
+    for (int i = 0; i < 10; ++i) {
+        sleep(1);
+        std::cout << "sleep: " << i + 1 << std::endl;
+    }
+
+    exit(0);
+}
+
+int main(int argc, char *argv[]) {
+    struct sigaction sa;
+
+    sa.sa_handler = sig_handler;
+    sa.sa_flags = 0;
+    sigemptyset(&sa.sa_mask);
+
+    if (sigaddset(&sa.sa_mask, SIGINT) == -1) {
+        perror("sigaddset");
+        exit(1);
+    }
+
+    sigset_t old_set;
+    if (sigprocmask(SIG_BLOCK, &sa.sa_mask, &old_set) == -1) {
+        perror("sigprocmask");
+        exit(1);
+    }
+
+    sigaction(SIGINT, &sa, nullptr);
+
+    for (int i = 0; i < 10; ++i) {
+        sleep(1);
+        std::cout << "sleep: " << i + 1 << std::endl;
+    }
+
+    sigprocmask(SIG_SETMASK, &old_set, nullptr);
+
+    while (true);
 
     return 0;
 }
