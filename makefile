@@ -1,7 +1,7 @@
 TARGET=a.out
 
-# TEMP=./语言/输入输出/cout_format.cpp
-TEMP=./linux/linux系统编程/信号/sigset.cpp
+TEMP=./语言/类/member_func_ptr.cpp
+# TEMP=./linux/linux系统编程/信号/sigset.cpp
 # TEMP=./练习/test.cpp
 # TEMP=./数据结构/数据结构/stack.cpp
 

@@ -197,10 +197,39 @@ int g_num = pow(2, 3); // 2的3次幂 c++中居然可以
     typedef void (*p_func_type)(void);
     using p_func_type = void(*)(void);
 ```
-* 成员函数指针
+* [成员函数指针](./语言/类/member_func_ptr.cpp)
 ```cpp
     typedef void (A::*p_m_func_type)(void);
     using p_m_func_type = void(A::*)(void);
+```
+```cpp
+#include <iostream>
+
+class A {
+public:
+    A(int num) : m_num(num) {}
+public:
+    void func();
+private:
+    int m_num;
+};
+
+using PA_func = void (A::*) ();
+
+int main(int argc, char *argv[]) {
+    PA_func pa_func = &A::func;
+
+    A a(11);
+
+    a.func();
+    (a.*pa_func)();
+
+    return 0;
+}
+
+void A::func() {
+    std::cout << "m_num: " << this->m_num << std::endl;
+}
 ```
 ## sizeof 编译时期确定 得到的结果是一个常量表达式
 ## 运算符
