@@ -1,8 +1,8 @@
 TARGET=a.out
 
-TEMP=./语言/类/member_func_ptr.cpp
-# TEMP=./linux/linux系统编程/信号/sigset.cpp
 # TEMP=./练习/test.cpp
+TEMP=./语言/函数/func_ptr.cpp
+# TEMP=./linux/linux系统编程/信号/sigset.cpp
 # TEMP=./数据结构/数据结构/stack.cpp
 
 # 当前目录下所有.cpp文件

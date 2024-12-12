@@ -8,6 +8,18 @@
 #include <string>
 #include <unistd.h>
 
+// void func() {
+//     std::cout << "func" << std::endl;
+// }
+
+// using p_func_type = void (*) ();
+// int main(int argc, char *argv[]) {
+//     p_func_type p_func = func;
+//     (*p_func)();
+
+//     return 0;
+// }
+
 // class A {
 // public:
 //     void func() {

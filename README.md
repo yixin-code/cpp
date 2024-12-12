@@ -192,10 +192,25 @@ int g_num = pow(2, 3); // 2的3次幂 c++中居然可以
     typedef int arr_type[11];
     using arr_type = int[11];
 ```
-* 函数指针
+* [函数指针](./语言/函数/func_ptr.cpp)
 ```cpp
     typedef void (*p_func_type)(void);
     using p_func_type = void(*)(void);
+```
+```cpp
+#include <iostream>
+
+void func() {
+    std::cout << "func" << std::endl;
+}
+
+using p_func_type = void (*) ();
+int main(int argc, char *argv[]) {
+    p_func_type p_func = func;
+    (*p_func)();
+
+    return 0;
+}
 ```
 * [成员函数指针](./语言/类/member_func_ptr.cpp)
 ```cpp
