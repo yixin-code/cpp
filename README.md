@@ -4739,17 +4739,17 @@ int main(int argc, char *argv[]) {
 ---
 ---
 # git
-git status      显示工作目录中有哪些更改尚未提交
-git add .       当前目录下所有文件添加到暂存区
-git commit -m '信息'        提交暂存区的更改描述提交内容
-git push    推送到主分支
-    git push 远程仓库名 分支名      推送到特定分支
-git pull        等同于 git fetch + git merge
-    git fetch 仓库名        从远程仓库获取最新更改，不会合并或更改工作目录中的任何文件
-    git branch -r      查看所有远程分支
-    git log 仓库名/分支名       查看特定远程分支的提交历史
-    git checkout 分支名     切换到你的本地分支
-    git merge origin/分支名     合并远程分支的更改
+* git status      显示工作目录中有哪些更改尚未提交
+* git add .       当前目录下所有文件添加到暂存区
+* git commit -m '信息'        提交暂存区的更改描述提交内容
+* git push    推送到主分支
+    * git push 远程仓库名 分支名      推送到特定分支
+* git pull        等同于 git fetch + git merge
+    * git fetch 仓库名        从远程仓库获取最新更改，不会合并或更改工作目录中的任何文件
+    * git branch -r      查看所有远程分支
+    * git log 仓库名/分支名       查看特定远程分支的提交历史
+    * git checkout 分支名     切换到你的本地分支
+    * git merge origin/分支名     合并远程分支的更改
 ---
 ---
 ---
