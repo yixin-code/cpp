@@ -8,6 +8,19 @@
 #include <string>
 #include <unistd.h>
 
+int main(int argc, char *argv[]) {
+    int arr[] = {1, 2, 3, 4, 5};
+
+    std::cout << "arr: " << arr << std::endl; // 0x00
+    std::cout << "arr + 1: " << arr + 1 << std::endl; // 0x04
+    std::cout << "&arr[0]: " << &arr[0] << std::endl; // 0x00
+    std::cout << "&arr[0] + 1: " << &arr[0] + 1 << std::endl; // 0x04
+    std::cout << "&arr: " << &arr << std::endl; // 0x00
+    std::cout << "&arr + 1: " << &arr + 1 << std::endl; // 0xa4
+
+    return 0;
+}
+
 // void func() {
 //     std::cout << "func" << std::endl;
 // }

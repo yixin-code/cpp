@@ -574,12 +574,21 @@ double distance(double x, double y, double x2, double y2) {
 ```
 ## 数组
 * 数组下标从0开始
-    * 数组地址即是首元素地址，如果从1开始会浪费空间，增加计算量(-1)
+    * 数组地址即是首元素地址,如果从1开始会浪费空间,增加计算量(-1)
 * arr[i] == *(arr + i)
 ```cpp
     // 数组元素不能发生改变
     const int arr[3] {1, 2, 3};
     arr[0] = 11; // error
+```
+```cpp
+    int arr[] = {1, 2, 3, 4, 5};
+    std::cout << "arr: " << arr << std::endl; // 0x00
+    std::cout << "arr + 1: " << arr + 1 << std::endl; // 0x04
+    std::cout << "&arr[0]: " << &arr[0] << std::endl; // 0x00
+    std::cout << "&arr[0] + 1: " << &arr[0] + 1 << std::endl; // 0x04
+    std::cout << "&arr: " << &arr << std::endl; // 0x00
+    std::cout << "&arr + 1: " << &arr + 1 << std::endl; // 0xa4
 ```
 * [数组局部初始化](./语言/数组/member_wise.c)
 ```cpp
