@@ -3490,6 +3490,7 @@ int main(int argc, char *argv[]) {
     sa.sa_flags = 0;
     sigemptyset(&sa.sa_mask);
 
+    // 处理信号时会先屏蔽掉信号
     sigaction(SIGINT, &sa, nullptr); // 信号 新动作 原动作
 
     while (true) {
@@ -3588,9 +3589,80 @@ int main(int argc, char *argv[]) {
 #### 将信号集全部置0, sigemptyset(&sig)
 #### 将某个信号值1(相当于阻塞该信号), sigaddset(&sig, SIGHUP)
 #### 将某个信号值0, sigdelset(&sig, SIGHUP)
-#### sigprocmask 可以设置进程中信号集的内容
 #### 测试一个信号是否被阻塞。sigismember(&sig, SIGINT)阻塞返回1 没有阻塞返回0 失败返回-1
 #### [读取未决信号集, sigpending(&sig)](./linux/linux系统编程/信号/sigpending.cpp)
+```cpp
+#include <iostream>
+#include <signal.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+void sig_handler(int signo) {
+    std::cout << "signo: " << signo << std::endl;
+}
+
+void print_pend(const sigset_t &pend_sig) {
+    for (int i = 1; i <= 31; ++i) {
+        sigismember(&pend_sig, i) ? std::cout << '1' : std::cout << '0';
+    }
+}
+
+int main(int argc, char *argv[]) {
+    pid_t pid = fork();
+    switch (pid) {
+    case -1: {
+        perror("fork");
+        exit(1);
+    }
+    case 0: {
+        sigset_t            old_sig;
+        sigset_t            pend_sig;
+        struct sigaction    sa;
+
+        sa.sa_handler = sig_handler;
+        sa.sa_flags   = 0;
+
+        // 设置临时信号集
+        sigemptyset(&sa.sa_mask);
+
+        sigaddset(&sa.sa_mask, 1);
+        sigaddset(&sa.sa_mask, 2);
+        sigaddset(&sa.sa_mask, 3);
+
+        if (sigprocmask(SIG_BLOCK, &sa.sa_mask, &old_sig) == -1) {
+            perror("sigprocmask fail");
+            exit(1);
+        }
+
+        for (int i = 0; i < 10; ++i) {
+            sigpending(&pend_sig);
+            print_pend(pend_sig);
+            sleep(1);
+            std::cout << std::endl;
+        }
+
+        sigprocmask(SIG_SETMASK, &old_sig, nullptr);
+
+        std::cout << "child end" << std::endl;
+    }
+    default: {
+        sleep(2);
+        kill(pid, 1);
+        sleep(2);
+        kill(pid, 2);
+        sleep(2);
+        kill(pid, 3);
+
+        std::cout << "parent end" << std::endl;
+
+        waitpid(-1, nullptr, 0);
+    }
+    }
+
+    return 0;
+}
+```
+#### sigprocmask 可以设置进程中信号集的内容
 * 参数1
     * SIG_BLOCK 设置阻塞信号(会在当前信号屏蔽字上增加信号)
     * SIG_UNBLOCK 移除阻塞信号
