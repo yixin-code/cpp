@@ -3588,8 +3588,9 @@ int main(int argc, char *argv[]) {
 #### 将信号集全部置0, sigemptyset(&sig)
 #### 将某个信号值1(相当于阻塞该信号), sigaddset(&sig, SIGHUP)
 #### 将某个信号值0, sigdelset(&sig, SIGHUP)
-#### 测试一个信号是否被阻塞。sigismember(&sig, SIGINT)阻塞返回1 没有阻塞返回0 失败返回-1
 #### sigprocmask 可以设置进程中信号集的内容
+#### 测试一个信号是否被阻塞。sigismember(&sig, SIGINT)阻塞返回1 没有阻塞返回0 失败返回-1
+#### [读取未决信号集, sigpending(&sig)](./linux/linux系统编程/信号/sigpending.cpp)
 * 参数1
     * SIG_BLOCK 设置阻塞信号(会在当前信号屏蔽字上增加信号)
     * SIG_UNBLOCK 移除阻塞信号
