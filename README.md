@@ -3490,7 +3490,7 @@ int main(int argc, char *argv[]) {
     sa.sa_flags = 0;
     sigemptyset(&sa.sa_mask);
 
-    // 处理信号时会先屏蔽掉信号
+    // 处理信号时会先屏蔽掉信号 当信号处理函数返回时自动恢复原信号屏蔽字
     sigaction(SIGINT, &sa, nullptr); // 信号 新动作 原动作
 
     while (true) {
@@ -3501,7 +3501,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 ```
-### 闹钟信号(定时任务) alarm(0)时会取消之前所有设置的闹钟 两个闹钟参数都是非0,第二个闹钟会返回第一个闹钟的剩余时间
+### 闹钟信号(定时任务) alarm(0)时会取消之前所有设置的闹钟,返回之前闹钟所剩余的时间 两个闹钟参数都是非0,第二个闹钟会返回第一个闹钟的剩余时间
 * [定时任务](./linux/linux系统编程/信号/闹钟.cpp)
 ```cpp
 #include <iostream>
@@ -3769,6 +3769,12 @@ int main(int argc, char *argv[]) {
     * 创建子进程，父进程调用 sigsuspend 等待子进程发送一个表示它已经初始化完成的信号。
 * 需要临时改变信号屏蔽字，执行一些操作，然后恢复原来的屏蔽字时。
     * 调用 sigsuspend，可以无需手动保存和恢复信号屏蔽字。
+#### [int pause(void) 进程挂起直到有信号抵达](./linux/linux系统编程/信号/pause.cpp)
+|信号动作|返回|描述|
+|------|----|---|
+|终止|没有返回的机会|进程终止|
+|忽略|不会返回|进程继续处于挂起状态|
+|捕获|调用信号处理函数|信号处理之后返回-1,errno设置为EINTR|
 ## 系统错误 errno
 * [系统错误errno](./linux/linux系统编程/系统错误/系统错误.cpp)
 ```cpp
