@@ -3770,11 +3770,107 @@ int main(int argc, char *argv[]) {
 |终止|没有返回的机会|进程终止|
 |忽略|不会返回|进程继续处于挂起状态|
 |捕获|调用信号处理函数|信号处理之后返回-1,errno设置为EINTR|
-#### 争强版pause 临时改变信号屏蔽字 sigsuspend(&sigset) 会临时替换当前的信号屏蔽，使进程在此挂起。待接收到信号后，恢复原信号屏蔽，进程继续执行
+```cpp
+#include <signal.h>
+#include <iostream>
+#include <unistd.h>
+
+void alarm_handler(int signo) {
+    return;
+}
+
+uint64_t yx_sleep(uint64_t sec) {
+    struct sigaction sa;
+    struct sigaction old_sa;
+
+    sa.sa_handler = alarm_handler;
+    sa.sa_flags   = 0;
+
+    sigemptyset(&sa.sa_mask);
+
+    sigaction(SIGALRM, &sa, &old_sa);
+
+    alarm(sec);
+    pause(); // alarm信号可能会在pause为执行时已被处理
+
+    int temp = alarm(0); // 取消闹钟，返回上一个闹钟剩余时间
+
+    return temp;
+}
+
+int main(int argc, char *argv[]) {
+    for (int i = 0; i < 5; ++i) {
+        std::cout << i + 1 << "sec" << std::endl;
+        yx_sleep(1);
+    }
+
+    std::cout << "end" << std::endl;
+
+    return 0;
+}
+```
+#### [争强版pause 临时改变信号屏蔽字 sigsuspend(&sigset) 会临时替换当前的信号屏蔽，使进程在此挂起。待接收到信号后，恢复原信号屏蔽，进程继续执行](./linux/linux系统编程/信号/sigsuspend.cpp)
+|信号动作|返回|描述|
+|------|----|---|
+|终止|没有返回的机会|进程终止|
+|忽略|不会返回|进程继续处于挂起状态|
+|捕获|调用信号处理函数|信号处理之后返回-1,errno设置为EINTR|
 * 需要暂停进程并等待一个信号时
     * 创建子进程，父进程调用 sigsuspend 等待子进程发送一个表示它已经初始化完成的信号。
 * 需要临时改变信号屏蔽字，执行一些操作，然后恢复原来的屏蔽字时。
-    * 调用 sigsuspend，可以无需手动保存和恢复信号屏蔽字。
+    * 调用 sigsuspend,可以无需手动保存和恢复信号屏蔽字。
+```cpp
+#include <signal.h>
+#include <iostream>
+#include <unistd.h>
+
+void alarm_handler(int signo) {
+    return;
+}
+
+uint64_t yx_sleep(uint64_t sec) {
+    struct sigaction sa;
+    struct sigaction old_sa;
+    sigset_t sigset;
+    sigset_t old_sigset;
+
+    sa.sa_handler = alarm_handler;
+    sa.sa_flags   = 0;
+
+    sigemptyset(&sa.sa_mask);
+
+    sigaction(SIGALRM, &sa, &old_sa);
+
+    sigemptyset(&sigset);
+    sigaddset(&sigset, SIGALRM);
+    sigprocmask(SIG_BLOCK, &sigset, &old_sigset);
+
+    alarm(sec);
+
+    sigset_t temp_sigset = old_sigset;
+    sigdelset(&temp_sigset, SIGALRM);
+    // 只有执行到 sigsuspend 程序才会继续执行 否则一直挂起
+    sigsuspend(&temp_sigset); // 执行后会恢复信号屏蔽字
+
+    int temp = alarm(0); // 取消闹钟，返回上一个闹钟剩余时间
+
+    sigaction(SIGALRM, &old_sa, nullptr); // 先恢复动作 以防止屏蔽恢复处理动作不是想要动作
+    sigprocmask(SIG_SETMASK, &old_sigset, nullptr);
+
+    return temp;
+}
+
+int main(int argc, char *argv[]) {
+    for (int i = 0; i < 5; ++i) {
+        std::cout << i + 1 << "sec" << std::endl;
+        yx_sleep(1);
+    }
+
+    std::cout << "end" << std::endl;
+
+    return 0;
+}
+```
 ## 系统错误 errno
 * [系统错误errno](./linux/linux系统编程/系统错误/系统错误.cpp)
 ```cpp
