@@ -40,16 +40,16 @@ int main(int argc, char *argv[]) {
             exit(1);
         }
 
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 1; i < 10; ++i) {
             sigpending(&pend_sig);
             print_pend(pend_sig);
             sleep(1);
             std::cout << std::endl;
         }
 
-        sigprocmask(SIG_SETMASK, &old_sig, nullptr);
-
         std::cout << "child end" << std::endl;
+
+        sigprocmask(SIG_SETMASK, &old_sig, nullptr);
     }
     default: {
         sleep(2);
