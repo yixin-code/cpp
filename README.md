@@ -1931,7 +1931,7 @@ int main(int argc, char *argv[]) {
 * 进程结束会关闭所有文件描述符，释放分配的内存。
     * PCB(进程控制块)还会存在,父进程调用wait/waitpid查看信息,并清除子进程
 * 僵尸进程无法使用kill -9 终止，只能终止正在运行的程序
-#### 父进程可以通过处理SIGCHLD信号,在信号处理函数中调用waitpid来解决僵尸进程
+#### [子进程结束会向父进程发送SIGHED信号(默认处理动作为忽略),父进程可以通过处理SIGCHLD信号,在信号处理函数中调用waitpid来解决僵尸进程](./linux/linux系统编程/信号/sigched.cpp)
 #### waitpid(pid_t pid, int &status, int option)与WNOHANG一起使用返回0表示没有子进程退出,返回-1失败,成功返回子进程pid
 * [wait(&stat)==waitpid(-1, &stat, 0)](./linux/linux系统编程/进程/等待子进程.cpp)
 * pid
@@ -3481,9 +3481,9 @@ void catch_sig(int signo) {
 
 int main(int argc, char *argv[]) {
     struct sigaction sa;
-    // sa.__sigaction_handler.sa_handler -> void(*)(int) -> sa.sa_flags = 0
+    // sa.sa_handler -> void(*)(int) -> sa.sa_flags = 0
         // 还可以赋值SIG_DFL默认处理 SIG_IGN忽略
-    // sa.__sigaction_handler.sa_sigaction -> void(*)(int, siginfo_t*, void*) -> sa.sa_flags = SA_SIGINFO
+    // sa.sa_sigaction -> void(*)(int, siginfo_t*, void*) -> sa.sa_flags = SA_SIGINFO
     // sa.sa_mask 临时信号集 sigemptyset(&sa.sa_mask);
 
     sa.sa_handler = catch_sig;
@@ -4903,6 +4903,21 @@ int main(int argc, char *argv[]) {
 ## 调试正在运行的程序
     * ps -ef | grep ./a.out
     * gdb ./a.out -p 进程编号
+---
+---
+---
+---
+---
+---
+---
+---
+---
+---
+# vim
+* 反撤销 ctrl+r
+## 跳转
+* 返回上次跳转 ctrl+o
+* 返回上次跳转 g+; 返回下次跳转 g+,
 ---
 ---
 ---
