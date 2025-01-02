@@ -1931,7 +1931,62 @@ int main(int argc, char *argv[]) {
 * 进程结束会关闭所有文件描述符，释放分配的内存。
     * PCB(进程控制块)还会存在,父进程调用wait/waitpid查看信息,并清除子进程
 * 僵尸进程无法使用kill -9 终止，只能终止正在运行的程序
-#### [子进程结束会向父进程发送SIGHED信号(默认处理动作为忽略),父进程可以通过处理SIGCHLD信号,在信号处理函数中调用waitpid来解决僵尸进程](./linux/linux系统编程/信号/sigched.cpp)
+#### [子进程结束会向父进程发送SIGHLD信号(默认处理动作为忽略),父进程可以通过处理SIGCHLD信号,在信号处理函数中调用waitpid来解决僵尸进程](./linux/linux系统编程/信号/sigchld.cpp)
+```cpp
+#include <iostream>
+#include <signal.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+void sigchld_handler(int sig) {
+    int status = 0;
+
+    waitpid(-1, &status, 0);
+
+    if (WIFEXITED(status)) {
+        std::cout << "exit status: " << WEXITSTATUS(status) << std::endl;
+    }
+
+    std::cout << "sig: " << sig << std::endl;
+}
+
+int main(int argc, char *argv[]) {
+    pid_t pid = fork();
+
+    switch (pid) {
+    case -1: {
+        perror("fork fail");
+        exit(1);
+    }
+    case 0: { // 子进程退出 向父进程发送sigchld信号
+        sleep(1);
+        std::cout << "child process exit" << std::endl;
+        exit(0);
+    }
+    default: { // 父进程处理sigchld信号，回收子进程资源
+        struct sigaction sa;
+        struct sigaction old_sa;
+        
+        sa.sa_handler   = sigchld_handler;
+        sa.sa_flags     = 0;
+        sigemptyset(&sa.sa_mask);
+
+        sigaction(SIGCHLD, &sa, &old_sa);
+
+        for (int i = 0; i < 5; ++i) {
+            std::cout << "parent sleep" << std::endl;
+            sleep(1);
+        }
+
+        sigaction(SIGCHLD, &old_sa, nullptr);
+    }
+    }
+
+    std::cout << "main end" << std::endl;
+
+    return 0;
+}
+```
 #### waitpid(pid_t pid, int &status, int option)与WNOHANG一起使用返回0表示没有子进程退出,返回-1失败,成功返回子进程pid
 * [wait(&stat)==waitpid(-1, &stat, 0)](./linux/linux系统编程/进程/等待子进程.cpp)
 * pid
