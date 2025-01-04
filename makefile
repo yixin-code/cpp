@@ -1,8 +1,8 @@
 TARGET=a.out
 
 # TEMP=./练习/test.cpp
-# TEMP=./语言/函数/func_ptr.cpp
-TEMP=./linux/linux系统编程/信号/sigchld.cpp
+TEMP=./语言/STL/map.cpp
+# TEMP=./linux/linux系统编程/信号/sigchld.cpp
 # TEMP=./数据结构/数据结构/stack.cpp
 
 # 当前目录下所有.cpp文件
@@ -14,6 +14,7 @@ G = g++
 # G = gcc
 
 # FLAG=-Wall -std=c++11 -g -fsanitize=address -Werror -O2
+# FLAG=-Wall -std=c++17 -g
 FLAG=-Wall -std=c++11 -g
 # FLAG=-Wall -std=c++20 -g
 # FLAG=-Wall -std=c99 -g
