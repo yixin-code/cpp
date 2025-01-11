@@ -912,6 +912,28 @@ double distance(double x, double y, double x2, double y2) {
 * tellp 获取文件大小
     * ifstream.seek(0, std::ios::end) 将文件指针移动到尾部
     * int size = ifstream.tell() 获取文件指针当前位置到文件开始的偏移量
+## 类
+* [转换构造](./语言/类/convert_constructor.cpp)
+```cpp
+#include <iostream>
+
+class A {
+public:
+    A(int num) {}
+};
+
+class B {
+public:
+    explicit B(int num) {} // 防止隐身类型转换
+};
+
+int main(int argc, char *argv[]) {
+    A a = 11;
+    // B b = 11; // error
+
+    return 0;
+}
+```
 ## STL
 ### vector动态数组
 #### 初始化
@@ -1331,6 +1353,27 @@ private:
 };
     A a(11);
     a.func();
+```
+### [explicit 防止隐式类型转换](./语言/类/convert_constructor.cpp)
+```cpp
+#include <iostream>
+
+class A {
+public:
+    A(int num) {}
+};
+
+class B {
+public:
+    explicit B(int num) {} // 防止隐身类型转换
+};
+
+int main(int argc, char *argv[]) {
+    A a = 11;
+    // B b = 11; // error
+
+    return 0;
+}
 ```
 ---
 ---
