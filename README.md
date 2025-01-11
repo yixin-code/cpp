@@ -913,23 +913,41 @@ double distance(double x, double y, double x2, double y2) {
     * ifstream.seek(0, std::ios::end) 将文件指针移动到尾部
     * int size = ifstream.tell() 获取文件指针当前位置到文件开始的偏移量
 ## 类
-* [转换构造](./语言/类/convert_constructor.cpp)
+* [转换构造 一个参数的构造函数](./语言/类/convert_constructor.cpp)
 ```cpp
 #include <iostream>
 
 class A {
-public:
-    A(int num) {}
-};
+private:
+    int m_num;
 
-class B {
 public:
-    explicit B(int num) {} // 防止隐身类型转换
+    // explicit A(int num) : m_num(num) { // explicit可以防止隐式类型转换
+    A(int num) : m_num(num) {
+        std::cout << "A(int)" << std::endl;
+    }
+    ~A() {
+        std::cout << "~A()" << std::endl;
+    }
+
+public:
+    A& operator=(const A& a) { // 赋值运算符重载
+        std::cout << "operator=" << std::endl;
+        this->m_num = a.m_num;
+
+        return *this;
+    }
+
+public:
+    void display() const {
+        std::cout << "m_num: " << this->m_num << std::endl;
+    }
 };
 
 int main(int argc, char *argv[]) {
     A a = 11;
-    // B b = 11; // error
+    a = 22; // a = A(22) 隐式类型转换生成匿名对象
+    a.display();
 
     return 0;
 }
@@ -1359,13 +1377,19 @@ private:
 #include <iostream>
 
 class A {
+private:
+    int m_num;
+
 public:
-    A(int num) {}
+    A(int num) : m_num(num) {}
 };
 
 class B {
+private:
+    int m_num;
+
 public:
-    explicit B(int num) {} // 防止隐身类型转换
+    explicit B(int num) : m_num(num) {} // 防止隐身类型转换
 };
 
 int main(int argc, char *argv[]) {
