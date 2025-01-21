@@ -637,7 +637,7 @@ double distance(double x, double y, double x2, double y2) {
     // 3组 组元素为 int[4]
     int arr[3][4] {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}};
 ```
-## new/delete
+## new/delete 堆栈在运行阶段才会存在
 * c++11中可以对new出来的数组进行初始化
 ```cpp
     char *p = new char[11]{'1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', '\0'};
@@ -645,6 +645,34 @@ double distance(double x, double y, double x2, double y2) {
     for (int i = 0; i < 11; ++i) {
         std::cout << '[' << p[i] << ']'; // [1][2][3][4][5][6][7][8][9][a][]
     }
+```
+* [new/delete](./语言/new_delete/new_delete.cpp)
+```cpp
+#include <iostream>
+
+int main(int argc, char *argv[]) {
+    int *p = new int[11]{0};
+
+    for (int i = 0; i < 11; ++i) {
+        std::cout << p[i] << " "; // 11个0
+    }
+    std::cout << std::endl;
+
+    int *p2 = new int[11];
+
+    for (int i = 0; i < 11; ++i) {
+        std::cout << p2[i] << " "; // 11个0
+    }
+    std::cout << std::endl;
+
+    delete[] p;
+    // delete[] p; 非空连续释放会崩溃
+    p = nullptr;
+
+    delete[] p; // 空指针可以连续释放
+
+    return 0;
+}
 ```
 ## 命令行参数
 ![命令行参数](./资源/命令行参数.png)
@@ -913,7 +941,8 @@ double distance(double x, double y, double x2, double y2) {
     * ifstream.seek(0, std::ios::end) 将文件指针移动到尾部
     * int size = ifstream.tell() 获取文件指针当前位置到文件开始的偏移量
 ## 类
-* [转换构造 一个参数的构造函数](./语言/类/convert_constructor.cpp)
+### 构造函数
+#### [转换构造 一个参数的构造函数](./语言/类/convert_constructor.cpp)
 ```cpp
 #include <iostream>
 
@@ -948,6 +977,247 @@ int main(int argc, char *argv[]) {
     A a = 11;
     a = 22; // a = A(22) 隐式类型转换生成匿名对象
     a.display();
+
+    return 0;
+}
+```
+#### [拷贝构造函数 一个对象初始化列一个对象 函数传参时调用的是拷贝构造](./语言/类/copy_constructor.cpp)
+```cpp
+#include <iostream>
+
+class A {
+public:
+    A(int num) : m_num(num) {
+        std::cout << "A(int)" << std::endl;
+    }
+    A(const A &a) : m_num(a.m_num) {
+        std::cout << "A(const A&)" << std::endl;
+    }
+    ~A() {
+        std::cout << "~A()" << std::endl;
+    }
+
+public:
+    A& operator=(const A &a) {
+        this->m_num = a.m_num;
+
+        std::cout << "A& operator=(const A&)" << std::endl;
+
+        return *this;
+    }
+
+public:
+    void display() const {
+        std::cout << "m_num: " << m_num << std::endl;
+    }
+
+private:
+    int m_num;
+};
+
+// void func (A a) { // 调用的是拷贝构造
+void func (A &a) {
+    a.display();
+}
+
+int main(int argc, char *argv[]) {
+    A a(11);
+    func(a);
+
+    return 0;
+}
+```
+#### [深拷贝](./语言/类/deep_copy.cpp)
+```cpp
+#include <iostream>
+#include <cstring>
+
+class Array {
+public:
+    Array(int size) : m_size(size), m_p(new int[size]{0}) {
+        std::cout << "Array(int size) : m_size(size), m_p(new int[size]{0})" << std::endl;
+    }
+    Array(const Array &other) {
+        std::cout << "Array(const Array &other)" << std::endl;
+        if (this == &other) {
+            return;
+        }
+
+        m_size = other.m_size;
+        m_p = new int[other.m_size];
+        memcpy(m_p, other.m_p, other.m_size * sizeof(int));
+    }
+    ~Array() {
+        std::cout << "~Array()" << std::endl;
+        delete[] m_p;
+    }
+
+public:
+    void display() const {
+        for (int i = 0; i < m_size; ++i) {
+            std::cout << m_p[i] << ' ';
+        }
+        std::cout << std::endl;
+    }
+private:
+    int m_size;
+    int *m_p;
+};
+
+int main(int argc, char *argv[]) {
+    Array a(11);
+    Array b(a);
+    a.display();
+    b.display();
+
+    return 0;
+}
+```
+### 重载
+#### [operator= 深拷贝](./语言/类/重载/operator_equal.cpp)
+```cpp
+#include <iostream>
+#include <cstring>
+
+class Array {
+public:
+    Array(int size) : m_size(size), m_p(new int[size]{0}) {
+        std::cout << "Array(int size) : m_size(size), m_p(new int[size]{0})" << std::endl;
+    }
+    Array(const Array &other) {
+        std::cout << "Array(const Array &other)" << std::endl;
+        if (this == &other) {
+            return;
+        }
+
+        m_size = other.m_size;
+        m_p = new int[other.m_size];
+        memcpy(m_p, other.m_p, other.m_size * sizeof(int));
+    }
+    ~Array() {
+        std::cout << "~Array()" << std::endl;
+        delete[] m_p;
+    }
+
+public:
+    Array& operator=(const Array &other) {
+        std::cout << "Array& operator=(const Array &other)" << std::endl;
+        if (this == &other) {
+            return *this;
+        }
+
+        m_size = other.m_size;
+        delete[] m_p; // 释放原空间
+
+        if (other.m_p != nullptr) {
+            m_p = new int[other.m_size];
+            memcpy(m_p, other.m_p, other.m_size * sizeof(int));
+        } else {
+            m_p = nullptr;
+        }
+
+        return *this;
+    }
+public:
+    void display() const {
+        std::cout << "m_p: " << m_p << std::endl;
+        for (int i = 0; i < m_size; ++i) {
+            std::cout << m_p[i] << ' ';
+        }
+        std::cout << std::endl;
+    }
+private:
+    int m_size;
+    int *m_p;
+};
+
+int main(int argc, char *argv[]) {
+    Array a(11);
+    Array b(2);
+    a.display();
+    b.display();
+    b = a;
+    a.display();
+    b.display();
+
+    return 0;
+}
+```
+#### [operator[]](./语言/类/重载/operator_bracket.cpp)
+```cpp
+#include <iostream>
+#include <cstring>
+
+class Array {
+public:
+    Array(int size) : m_size(size), m_p(new int[size]{0}) {
+        std::cout << "Array(int size) : m_size(size), m_p(new int[size]{0})" << std::endl;
+    }
+    Array(const Array &other) {
+        std::cout << "Array(const Array &other)" << std::endl;
+        if (this == &other) {
+            return;
+        }
+
+        m_size = other.m_size;
+        m_p = new int[other.m_size];
+        memcpy(m_p, other.m_p, other.m_size * sizeof(int));
+    }
+    ~Array() {
+        std::cout << "~Array()" << std::endl;
+        delete[] m_p;
+    }
+
+public:
+    Array& operator=(const Array &other) {
+        std::cout << "Array& operator=(const Array &other)" << std::endl;
+        if (this == &other) {
+            return *this;
+        }
+
+        m_size = other.m_size;
+        delete[] m_p; // 释放原空间
+
+        if (other.m_p != nullptr) {
+            m_p = new int[other.m_size];
+            memcpy(m_p, other.m_p, other.m_size * sizeof(int));
+        } else {
+            m_p = nullptr;
+        }
+
+        return *this;
+    }
+
+    int& operator[](int index) {
+        if (index >= m_size || index < 0) {
+            std::cout << "array bound, return m_p[0]" << std::endl;
+            return m_p[0];
+        }
+        return m_p[index];
+    }
+public:
+    void display() const {
+        std::cout << "m_p: " << m_p << std::endl;
+        for (int i = 0; i < m_size; ++i) {
+            std::cout << m_p[i] << ' ';
+        }
+        std::cout << std::endl;
+    }
+private:
+    int m_size;
+    int *m_p;
+};
+
+int main(int argc, char *argv[]) {
+    Array a(11);
+    Array b(2);
+    a.display();
+    b.display();
+    b = a;
+    a[1] = 11;
+    b[1] = 22;
+    a.display();
+    b.display();
 
     return 0;
 }
