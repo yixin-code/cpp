@@ -1352,6 +1352,75 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 ```
+### 静态成员变量/成员函数
+#### [静态成员变量](./语言/类/static_member.cpp)
+```cpp
+// 静态成员属于整个类，所有对象共享
+// 静态成员类外初始化
+#include <iostream>
+
+class MyClass {
+public:
+    void set_num(int num) {
+        m_s_num = num;
+    }
+    void display() const {
+        std::cout << "m_s_num: " << m_s_num << std::endl;
+    }
+
+private:
+    static int m_s_num;
+};
+
+int main(int argc, char *argv[]) {
+    MyClass mc;
+    mc.display();
+    
+    MyClass mc2;
+    mc2.set_num(11);
+
+    mc.display();
+
+    return 0;
+}
+
+int MyClass::m_s_num = 0; // 类外初始化
+```
+#### [静态成员函数](./语言/类/static_member_func.cpp)
+```cpp
+// 静态成员函数无法 访问非静态成员 无法调用非静态成员函数
+// 通过类名直接调用 不需要实例对象
+#include <iostream>
+
+class MyClass {
+public:
+    void display() const {
+        std::cout << "m_num: " << m_num << std::endl;
+        std::cout << "m_s_num: " << m_s_num << std::endl;
+    }
+    static void s_display();
+
+private:
+    int m_num = 11;
+    static int m_s_num;
+};
+
+int main(int argc, char *argv[]) {
+    MyClass ms;
+    ms.display();
+    ms.s_display();
+
+    return 0;
+}
+
+int MyClass::m_s_num = 22;
+
+void MyClass::s_display() {
+    // display();
+    // std::cout << "m_num: " << m_num << std::endl; error 静态成员函数不能调用非静态成员/函数
+    std::cout << "m_s_num: " << m_s_num << std::endl;
+}
+```
 ## STL
 ### vector动态数组
 #### 初始化
