@@ -942,6 +942,60 @@ int main(int argc, char *argv[]) {
     * int size = ifstream.tell() 获取文件指针当前位置到文件开始的偏移量
 ## 类
 ### 构造函数
+#### [初始化列表](./语言/类/init_list.cpp)
+```cpp
+#include <iostream>
+#include <string>
+
+class A {
+public:
+    A(int num, const std::string &str) : m_num(num), m_str(str) {
+        std::cout << "A(int num, const std::string &str)" << std::endl;
+    }
+
+    ~A() {
+        std::cout << "~A()" << std::endl;
+    }
+
+public:
+    void display() const {
+        std::cout << "m_num: " << m_num << ", m_str: " << m_str << std::endl;
+    }
+
+private:
+    int m_num;
+    std::string m_str;
+};
+
+class MyClass {
+public:
+    // 初始化列表中初始化其他类成员,后续可以继续初始化本类成员。委托构造时不可以在连续初始化其他成员
+    MyClass(int num, const std::string &str, int num2, const std::string &str2) : m_a(num, str), m_num(num2), m_str(str2) {
+        std::cout << "MyClass(int num, const std::string &str, int num2, const std::string &str2)" << std::endl;
+    }
+
+    ~MyClass() {
+        std::cout << "~MyClass()" << std::endl;
+    }
+
+public:
+    void display() const {
+        std::cout << "m_num: " << m_num << ", m_str: " << m_str << std::endl;
+        m_a.display();
+    }
+private:
+    A m_a;
+    int m_num;
+    std::string m_str;
+};
+
+int main(int argc, char *argv[]) {
+    MyClass mc(11, "kg", 22, "yixin");
+    mc.display();
+
+    return 0;
+}
+```
 #### [转换构造 一个参数的构造函数](./语言/类/convert_constructor.cpp)
 ```cpp
 #include <iostream>
@@ -1069,6 +1123,46 @@ int main(int argc, char *argv[]) {
     Array b(a);
     a.display();
     b.display();
+
+    return 0;
+}
+```
+#### [委托构造](./语言/类/wt_constructor.cpp)
+```cpp
+#include <iostream>
+#include <string>
+
+class MyClass {
+public:
+    MyClass(int num) : m_num(num), m_str("default") {
+        std::cout << "MyClass(int num) : m_num(num), m_str(\"default\")" << std::endl;
+    }
+
+    // MyClass(int num, const std::string &str) : MyClass(num), m_str(str) { // error 委托构造初始化列表中不能在初始化其他成员
+    MyClass(int num, const std::string &str) : MyClass(num) {
+        std::cout << "MyClass(int num, const std::string &str) : MyClass(num)" << std::endl;
+        m_str = str;
+    }
+
+    ~MyClass() {
+        std::cout << "~MyClass()" << std::endl;
+    }
+
+public:
+    void display() const {
+        std::cout << "m_num: " << m_num << ", m_str: " << m_str << std::endl;
+    }
+private:
+    int m_num;
+    std::string m_str;
+};
+
+int main(int argc, char *argv[]) {
+    MyClass mc(11);
+    mc.display();
+
+    MyClass mc2(11, "yixin"); // 会先调用 构造 然后再次调用委托构造 两次构造函数
+    mc2.display();
 
     return 0;
 }
