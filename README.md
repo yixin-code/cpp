@@ -637,7 +637,7 @@ double distance(double x, double y, double x2, double y2) {
     // 3组 组元素为 int[4]
     int arr[3][4] {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}};
 ```
-## new/delete 堆栈在运行阶段才会存在
+## new/delete 堆栈在运行阶段才会存在 new/delete会调用构造和析构，mallco和free则不会
 * c++11中可以对new出来的数组进行初始化
 ```cpp
     char *p = new char[11]{'1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', '\0'};

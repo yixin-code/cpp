@@ -4,18 +4,32 @@
 #include <unistd.h>
 #include <map>
 
+class A {
+public:
+    A(int num) : m_num(num) {
+        std::cout << "A(int num): " << this << std::endl;
+    }
+
+    A(const A &a) : m_num(a.m_num) {
+        std::cout << "A(const A &a): " << this << std::endl;
+    }
+
+    ~A() {
+        std::cout << "~A(): " << this << std::endl;
+    }
+
+private:
+    int m_num;
+};
+
+A func() {
+    A a(11);
+
+    return a;
+}
+
 int main(int argc, char *argv[]) {
-    std::map<int, std::string> m = {{1, "aaa"}, {2, "bbb"}, {3, "ccc"}, {4, "ddd"}, {5, "eee"}};
-    // 不小于 大于
-    auto er = m.equal_range(3);
-    std::cout << er.first->first << " " << er.first->second << std::endl; // 3 ccc
-    std::cout << er.second->first << " " << er.second->second << std::endl; // 2 bbb
-    // 不小于
-    auto lb = m.lower_bound(2);
-    std::cout << lb->first << " " << lb->second << std::endl; // 2 bbb
-    // 大于
-    auto ub = m.upper_bound(3);
-    std::cout << ub->first << " " << ub->second << std::endl; // 2 bbb
+    A a = func();
 
     return 0;
 }
