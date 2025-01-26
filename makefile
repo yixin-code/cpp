@@ -1,7 +1,7 @@
 TARGET=a.out
 
 # TEMP=./练习/test.cpp
-TEMP=./语言/类/重载/operator_add.cpp
+TEMP=./语言/类/functor.cpp
 # TEMP=./linux/linux系统编程/信号/sigchld.cpp
 # TEMP=./数据结构/数据结构/stack.cpp
 

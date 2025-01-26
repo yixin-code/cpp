@@ -1432,6 +1432,28 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 ```
+#### [operator<<](./语言/类/重载/operator_left_shift.cpp)
+```cpp
+// 重载左移运算符
+#include <iostream>
+#include <vector>
+
+std::ostream &operator<<(std::ostream &os, const std::vector<int> &v) {
+    for (const int &val : v) {
+        os << val << " ";
+    }
+
+    return os;
+}
+
+int main(int argc, char *argv[]) {
+    std::vector<int> v{1, 2, 3, 3, 4, 5};
+
+    std::cout << v << std::endl;
+
+    return 0;
+}
+```
 ### 静态成员变量/成员函数
 #### [静态成员变量](./语言/类/static_member.cpp)
 ```cpp
@@ -1533,6 +1555,45 @@ int main(int argc, char *argv[]) {
     mc.display();
     func(mc);
     mc.display();
+
+    return 0;
+}
+```
+### [仿函数](./语言/类/functor.cpp)
+```cpp
+#include <iostream>
+#include <set>
+
+class Comp {
+private:
+    bool m_flag;
+public:
+    Comp(bool flag = true) : m_flag(flag) {}
+public:
+    bool operator()(int num, int num2) {
+        if (m_flag) {
+            return num < num2;
+        } else {
+            return num > num2;
+        }
+    }
+};
+
+int main(int argc, char *argv[]) {
+    std::set<int, Comp> s{3, 4, 1, 2, 5, 23, 53, 99, 22, 33, 8, 9};
+
+    for (const int &val : s) {
+        std::cout << val << " ";
+    }
+    std::cout << std::endl;
+
+    std::set<int, Comp> s2(Comp(false));
+    s2.insert(s.begin(), s.end());
+
+    for (const int &val : s2) {
+        std::cout << val << " ";
+    }
+    std::cout << std::endl;
 
     return 0;
 }
