@@ -1388,6 +1388,50 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 ```
+#### [operator++ 前置++是原子操作 operator++(int)](./语言/类/重载/operator_add.cpp)
+```cpp
+// 前置++是原子操作
+#include <iostream>
+
+class MyClass {
+public:
+    MyClass(int num) : m_num(num) {
+        std::cout << "MyClass(int num)" << std::endl;
+    }
+    MyClass(const MyClass &mc) : m_num(mc.m_num) {
+        std::cout << "MyClass(const MyClass &mc)" << std::endl;
+    }
+    ~MyClass() {
+        std::cout << "~MyClass()" << std::endl;
+    }
+public:
+    MyClass& operator++() {
+        ++m_num;
+        return *this;
+    }
+    MyClass operator++(int) { // 后置++
+        MyClass temp(*this);
+        ++(*this);
+        return temp;
+    }
+public:
+    void display() const {
+        std::cout << "m_num: " << m_num << std::endl;
+    }
+private:
+    int m_num;
+};
+int main(int argc, char *argv[]) {
+    MyClass mc(11);
+    mc.display();
+    mc++;
+    mc.display();
+    ++mc;
+    mc.display();
+
+    return 0;
+}
+```
 ### 静态成员变量/成员函数
 #### [静态成员变量](./语言/类/static_member.cpp)
 ```cpp
@@ -1455,6 +1499,42 @@ void MyClass::s_display() {
     // display();
     // std::cout << "m_num: " << m_num << std::endl; error 静态成员函数不能调用非静态成员/函数
     std::cout << "m_s_num: " << m_s_num << std::endl;
+}
+```
+### [friend 友元函数](./语言/类/friend_func.cpp)
+```cpp
+#include <iostream>
+
+class MyClass {
+public:
+    MyClass(int num) : m_num(num) {
+        std::cout << "MyClass(int num)" << std::endl;
+    }
+    void display() const {
+        std::cout << "m_num:" << m_num << std::endl;
+    }
+    ~MyClass() {
+        std::cout << "~MyClass()" << std::endl;
+    }
+
+public:
+    friend void func(MyClass &mc); // 友元函数 访问权限和实际操作无关 起到设计作用
+
+private:
+    int m_num;
+};
+
+void func(MyClass &mc) {
+    mc.m_num = 22;
+}
+
+int main(int argc, char *argv[]) {
+    MyClass mc(11);
+    mc.display();
+    func(mc);
+    mc.display();
+
+    return 0;
 }
 ```
 ## STL
