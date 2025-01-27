@@ -5971,6 +5971,7 @@ int main(int argc, char *argv[]) {
 * [直方图](./练习/histogram.cpp)
 * [mycat](./练习/mycat.cpp)
 * [mycp](./练习/mycp.cpp)
+* [sort](./练习/mysort.cpp)
 * [剪刀石头布](./练习/finger-guessing.cpp)
 * [字符串反转](./练习/string_reverse.cpp)
 * [test](./练习/test.cpp)
