@@ -1012,6 +1012,141 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 ```
+## 智能指针
+### [独占指针](./语言/智能指针/unique_ptr.cpp)
+```cpp
+// 智能指针，独占指针，使用最多
+// 只能由一个指针管理内存
+// 超出作用域，内存自动释放
+// 不能copy只能move
+// unique_ptr.get() 获取原始指针 可同原始指针一样操作
+// unique_ptr.release() 释放所有权返回裸指针（原始指针）
+// std::move(unique_ptr) 释放所有权转移指针
+#include <iostream>
+#include <memory>
+
+class MyClass {
+private:
+    int m_num;
+public:
+    MyClass(int num = 11) {
+        std::cout << "MyClass()" << std::endl;
+    }
+    ~MyClass() {
+        std::cout << "~MyClass()" << std::endl;
+    }
+public:
+    void display() const {
+        std::cout << "display" << std::endl;
+    }
+};
+
+int main(int argc, char *argv[]) {
+    std::unique_ptr<MyClass> up(new MyClass);
+    std::unique_ptr<MyClass> up2(std::move(up)); // 智能移动不能赋值
+    // up = up2; // error
+    up = std::move(up2);
+
+    up->display();
+
+    up.get()->display(); // 返回原始指针
+
+    MyClass *p = up.release(); // 释放所有权返回裸指针 指针不再智能
+    p->display();
+    delete p;
+
+    std::unique_ptr<MyClass[]> up3(new MyClass[5]{1, 2, 3, 4, 5}); // 数组
+
+    return 0;
+}
+```
+### [共享指针](./语言/智能指针/shared_ptr.cpp)
+```cpp
+// sp = nullptr; // 同样会释放掉资源
+// 共享指针又称计数指针
+// 与uniptr不同是可以复制，shared中有计数器，复制+1，销毁-1(use_count)
+#include <iostream>
+#include <memory>
+
+class MyClass {
+private:
+    int m_num;
+public:
+    MyClass(int num = 11) : m_num(num) {
+        std::cout << "MyClass(int num = 11)" << std::endl;
+    }
+    ~MyClass() {
+        std::cout << "~MyClass()" << std::endl;
+    }
+public:
+    void display() const {
+        std::cout << "m_num: " << m_num << std::endl;
+    }
+};
+
+int main(int argc, char *argv[]) {
+    std::shared_ptr<MyClass> sp(new MyClass(33));
+    sp->display();
+    sp.get()->display();
+    std::cout << "count: " << sp.use_count() << std::endl; // 1
+
+    std::shared_ptr<MyClass> sp2 = sp;
+    std::cout << "count: " << sp.use_count() << std::endl; // 2
+    sp2 = nullptr;
+    std::cout << "count: " << sp.use_count() << std::endl; // 1
+    sp = nullptr; // 同样会释放掉资源
+
+    std::cout << "yixin" << std::endl; // 会在析构函数之后输出
+
+    return 0;
+}
+```
+### 独占指针转成共享指针
+```cpp
+shared_ptr<int> sp = move(up); // 独占指针不能赋值只能移动
+```
+### [弱指针解决循环依赖](./语言/智能指针/weak_ptr.cpp)
+```cpp
+// weak_ptr不能单独创建需要使用 
+// unique_ptr本身就是独占指针 不存在相互依赖的情况
+#include <iostream>
+#include <memory>
+
+class MyClass {
+private:
+    int m_num;
+    // std::shared_ptr<MyClass> m_sp_ptr;
+    std::weak_ptr<MyClass> m_wp_ptr;
+public:
+    MyClass(int num = 11) : m_num(num) {
+        std::cout << "MyClass(int num)" << std::endl;
+    }
+    ~MyClass() {
+        std::cout << "~MyClass()" << std::endl;
+    }
+public:
+    void set_ptr(std::shared_ptr<MyClass> sp) {
+        // m_sp_ptr = sp;
+        m_wp_ptr = sp;
+    }
+    void display() {
+        std::cout << "m_num: " << m_num << std::endl;
+    }
+};
+
+int main(int argc, char *argv[]) {
+    // 循环依赖导致 不会调用析构函数 可将类中的shared_ptr改为weak_ptr
+    // sp sp2 相互依赖
+    std::shared_ptr<MyClass> sp(new MyClass);
+    std::shared_ptr<MyClass> sp2(new MyClass);
+    sp->set_ptr(sp2);
+    sp2->set_ptr(sp);
+    sp->display();
+    sp2->display();
+
+    return 0;
+}
+```
 ## 类
 ### 构造函数
 #### [初始化列表](./语言/类/init_list.cpp)
