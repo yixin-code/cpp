@@ -1831,6 +1831,9 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 ```
+#### [继承时子类需要使用 拷贝构造 赋值运算时 父类也需要实现对应内容](./语言/类/继承/inherit2.cpp)
+```cpp
+```
 ## STL
 ### vector动态数组
 #### 初始化
