@@ -1148,6 +1148,9 @@ int main(int argc, char *argv[]) {
 }
 ```
 ## 类
+### delete 删除限定 A(const &A a) = delete;
+### default 默认限定 A(const &A a) = default;
+### final 防止类继承 class A final {};
 ### 构造函数
 #### [初始化列表](./语言/类/init_list.cpp)
 ```cpp
@@ -1831,6 +1834,16 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 ```
+#### [final 限制继承](./语言/类/继承/final_class.cpp)
+```cpp
+#include <iostream>
+
+class Parent final {
+};
+
+// class Son : public Parent { // error 不能将final做基类
+// };
+```
 #### [继承时子类需要使用 拷贝构造 赋值运算时 父类也需要实现对应内容](./语言/类/继承/inherit2.cpp)
 ```cpp
 #include <iostream>
@@ -1945,6 +1958,81 @@ int main(int argc, char *argv[]) {
 ```
 #### [多继承](./语言/类/继承/multi_inherit.cpp)
 ```cpp
+#include <iostream>
+
+class A {
+public:
+    int m_data;
+public:
+    A(int data) : m_data(data) {
+        std::cout << "A(int data): " << &m_data << std::endl;
+    }
+};
+
+class AB : public A {
+public:
+    AB() : A(11) {
+        std::cout << "AB(): " << &(A::m_data) << std::endl;
+    }
+};
+
+class AC : public A {
+public:
+    AC() : A(11) {
+        std::cout << "AC(): " << &(A::m_data) << std::endl;
+    }
+};
+
+class ABC : public AB, public AC {
+public:
+    ABC() {
+        std::cout << "ABC(): " << &(AB::m_data) << std::endl;
+        std::cout << "ABC(): " << &(AC::m_data) << std::endl;
+    }
+};
+
+int main(int argc, char *argv[]) {
+    // AB ab; // A AB 中的m_data地址相同
+    // AC ac; // A AC 中的m_data地址相同
+    ABC abc; // ABC 中会出现两个 AB AC 中的m_data地址不相同
+
+    return 0;
+}
+```
+### [虚函数 父类对象的指针或引用指向子类对象 形成多态](./语言/类/继承/virtual_func.cpp)
+```cpp
+#include <iostream>
+
+class Parent {
+public:
+    virtual void func() const {
+        std::cout << "parent func" << std::endl;
+    }
+    virtual void func2() const final { // 限定子类从写该函数
+        std::cout << "parent func final" << std::endl;
+    }
+};
+
+class Son : public Parent {
+public:
+    virtual void func() const override { // override 说明符 表示函数已被重写
+        std::cout << "son func" << std::endl;
+    }
+    // virtual void func2() const override { // 无法从写final函数 error
+    //     std::cout << "son func final" << std::endl;
+    // }
+};
+
+int main(int argc, char *argv[]) {
+    Parent *p = new Son();
+    p->func();
+
+    Son s;
+    Parent &r = s;
+    r.func();
+
+    return 0;
+}
 ```
 ## STL
 ### vector动态数组
@@ -2392,6 +2480,17 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+```
+### override 说明符 表示函数被重写
+```cpp
+class A {
+public:
+    virtual void func() {}
+};
+class B : A {
+public:
+    void func() override {}
+};
 ```
 ---
 ---
