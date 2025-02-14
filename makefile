@@ -1,7 +1,7 @@
 TARGET=a.out
 
 # TEMP=./练习/test.cpp
-TEMP=./语言/类/继承/inherit2.cpp
+TEMP=./语言/类/继承/multi_inherit.cpp
 # TEMP=./linux/linux系统编程/信号/sigchld.cpp
 # TEMP=./数据结构/排序查找/quick_sort.cpp
 
